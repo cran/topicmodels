@@ -1,0 +1,24 @@
+useDynLib(topicmodels)
+
+importFrom(modeltools, posterior)
+importFrom(stats4, logLik)
+
+export(LDA,
+       CTM,
+       get_terms,
+       get_topics,
+       build_graph)
+
+exportClass(TopicModel,
+            LDA,
+            CTM,
+            LDA_VEMcontrol,
+            LDA_Gibbscontrol,
+            CTM_VEMcontrol,
+            OPTcontrol)
+
+exportMethods(logLik,
+              posterior)
+
+
+
