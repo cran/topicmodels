@@ -15,11 +15,11 @@
 \source{
   Accompanying material to the source code for fitting LDA models
   provided by David M. Blei. Downloaded from:
-  http://www.cs.berkeley.edu/~blei
+  \url{http://www.cs.berkeley.edu/~blei}
 }
 \references{
   D. Harman (1992) Overview of the first text retrieval conference
   (TREC-1). In Proceedings of the First Text Retrieval Conference
-  (TREC-1), 1-20.
+  (TREC-1), 1--20.
 }
 \keyword{datasets}

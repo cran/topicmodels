@@ -280,12 +280,12 @@ The JSS data is available as a list matrix in the package \pkg{corpus.JSS.papers
 can be installed and loaded by 
 <<eval=false>>=
 install.packages("corpus.JSS.papers", 
-                 repos = "http://datacube.wu.ac.at/")
+                 repos = "http://datacube.wu.ac.at/", type = "source")
 <<corpus>>
 @ 
 
 Alternatively package \pkg{OAIHarvester} can be used to harvest the
-meta information of the papers published at JSS from its webpage. 
+meta information of the papers published at JSS from its web page. 
 <<eval=false>>=
 <<OAIHarvester>>
 @ 

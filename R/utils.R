@@ -28,9 +28,9 @@ get_most_likely <- function(object, which = c("terms", "topics"), k, threshold, 
   labels <- if (which == "terms") object@terms else seq_len(object@k)
   post <- posterior(object)[[which]]
   if (missing(k)) {
-    k <- ifelse(missing(threshold), 1, object@k)
+    k <- ifelse(missing(threshold), 1, ncol(post))
   } else {
-    k <- min(object@k, k)
+    k <- min(ncol(post), k)
   }
   if (!missing(threshold)) {
     most <- sapply(seq_len(nrow(post)), function(i) {

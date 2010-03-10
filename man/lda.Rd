@@ -30,16 +30,19 @@ LDA(x, k, method = c("VEM", "Gibbs"), control = NULL,
   \code{"\linkS4class{LDA}"}. 
 }
 \references{
-  Blei D.M., Ng A.Y., Jordan M.I. (2003). Latent Dirichlet
-  Allocation. Journal of Machine Learning Research, 3, 993-1022.
+  Blei D.M., Ng A.Y., Jordan M.I. (2003).
+  Latent Dirichlet Allocation.
+  \emph{Journal of Machine Learning Research}, \bold{3}, 993--1022.
 
-  Phan X.H., Nguyen L.M., Horguchi S. (2008). Learning to Classify Short
-  and Sparse Text & Web with Hidden Topics from Large-scale Data
-  Collections. In "Proceedings of the 17th International World Wide Web
-  Conference (WWW 2008)," pp.91-100. Beijing, China.
+  Phan X.H., Nguyen L.M., Horguchi S. (2008).
+  Learning to Classify Short and Sparse Text & Web with Hidden Topics
+  from Large-scale Data Collections.
+  In \dQuote{Proceedings of the 17th International World Wide Web
+    Conference (WWW 2008)}, pages 91--100.
+  Beijing, China.
 }
 \author{Bettina Gruen}
-\seealso{"\linkS4class{LDAcontrol}"}
+\seealso{\code{"\linkS4class{LDAcontrol}"}}
 \examples{
 data("AssociatedPress", package = "topicmodels")
 lda <- LDA(AssociatedPress[1:20,], control = list(alpha = 0.1), k = 2)

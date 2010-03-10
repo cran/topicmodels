@@ -1,0 +1,10 @@
+Changes in topicmodels version 0.0-4
+
+  o Code for installing the package "corpus.JSS.papers" in the
+    vignette improved.
+
+  o dir.create() now called with showWarnings = FALSE.
+
+  o bug fixed in get_most_likely() for maximum possible k
+
+First version released on CRAN: 0.0-3

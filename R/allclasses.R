@@ -13,7 +13,8 @@ setClass("TopicModelcontrol",
          representation(
             verbose    = "integer",
             prefix     = "character",
-           "VIRTUAL"))
+           "VIRTUAL"),
+         prototype(verbose = 5L))
 
 setMethod("initialize", "TopicModelcontrol", function(.Object, prefix, ...) {
   if (missing(prefix)) prefix <- tempfile()
@@ -29,8 +30,7 @@ setClass("VEMcontrol",
         "VIRTUAL"),
     prototype(var = new("OPTcontrol", iter.max = 500L, tol = 10^-5),
               em = new("OPTcontrol", iter.max = 1000L, tol = 10^-3),
-              initialize = "random",
-              verbose = 5L))
+              initialize = "random"))
 
 setMethod("initialize", "VEMcontrol", function(.Object, initialize = "random", ...) {
   initialize <- match.arg(initialize, c("random", "seeded", "model"))
@@ -70,6 +70,7 @@ setClass("CTM_VEMcontrol",
                    shrinkage.covariance = "logical"),
          contains = c("TopicModelcontrol", "VEMcontrol"),
          prototype(cg = new("OPTcontrol", iter.max = 500L, tol = 10^-5),
+                   verbose = 5L,
                    shrinkage.covariance = FALSE))
 
 setMethod("initialize", "CTM_VEMcontrol", function(.Object, prefix, initialize = "random", ...) {

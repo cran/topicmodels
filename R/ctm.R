@@ -13,7 +13,7 @@ CTM <- function(x, k, method = "VEM",
     k <- model@k
   }
   result_dir <- paste(control@prefix, "-ctm", sep = "")
-  dir.create(result_dir)
+  dir.create(result_dir, showWarnings = FALSE)
   obj <- .Call("rctm",
                ## simple_triplet_matrix
                as.integer(x$i),

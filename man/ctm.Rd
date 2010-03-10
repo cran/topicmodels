@@ -27,11 +27,12 @@ CTM(x, k, method = "VEM", control = NULL, model = NULL,
   \code{"\linkS4class{CTM}"}.
 }
 \references{  
-  Blei D.M., Lafferty J.D. (2007). A Correlated Topic Model of
-  Science. The Annals of Applied Statistics, 1(1), 17-35. 
+  Blei D.M., Lafferty J.D. (2007).
+  A Correlated Topic Model of Science.
+  \emph{The Annals of Applied Statistics}, \bold{1}(1), 17--35. 
 }
 \author{Bettina Gruen}
-\seealso{"\linkS4class{CTM_VEMcontrol}"}
+\seealso{\code{"\linkS4class{CTM_VEMcontrol}"}}
 \examples{
 data("AssociatedPress", package = "topicmodels")
 ctm <- CTM(AssociatedPress[1:20,], k = 2)

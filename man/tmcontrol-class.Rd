@@ -37,7 +37,7 @@
     \item{\code{var}:}{Object of class \code{"OPTcontrol"}; controls the
       variational inference for a single document.}
     \item{\code{em}:}{Object of class \code{"OPTcontrol"}; controls the
-      variational EM alogorithm.}
+      variational EM algorithm.}
     \item{\code{initialize}:}{Object of class \code{"character"}; one of
       \code{"random"}, \code{"seeded"} and \code{"model"}.}
   }
