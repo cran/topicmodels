@@ -24,8 +24,8 @@
 
 \Address{
   Bettina Gr\"un, Kurt Hornik\\
-  Department of Statistics and Mathematics\\
-  Wirtschaftsuniversit\"at Wien\\
+  Institute for Statistics and Mathematics\\
+  WU Wirtschaftsuniversit\"at Wien\\
   Augasse 2--6\\
   A-1090 Wien, Austria\\
   E-mail: \email{Bettina.Gruen@wu.ac.at}, \email{Kurt.Hornik@R-project.org}\\

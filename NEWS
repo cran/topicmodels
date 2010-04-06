@@ -1,3 +1,8 @@
+Changes in topicmodels version 0.0-5
+
+  o Header files changed in utilities.cpp following an advice by
+    Prof. Brian Ripley.
+
 Changes in topicmodels version 0.0-4
 
   o Code for installing the package "corpus.JSS.papers" in the
