@@ -23,9 +23,9 @@ setAs("list", "CTM_VEMcontrol", function(from, to) .list2VEMcontrol(from, to))
   if(any(is.na(p)))
     stop(paste("\nInvalid slot name(s) for class",
                to, ":", paste(n[is.na(p)], collapse=" ")))
+  slotTypes <- getClass(to)@slots[p]
+  from <- lapply(seq_along(from), function(i) as(from[[i]], slotTypes[[i]]))
   names(from) = s[p]
-  index <- names(from) %in% c("var", "em")
-  from[index] <- lapply(from[index], as, "OPTcontrol")
   do.call("new", c(from, Class=to))
 }
 

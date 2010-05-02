@@ -29,12 +29,13 @@
 #include "model.h"
 
 model lda(int *i, int *j, double *v, int length, 
-	  int niters, int savestep, int K, int M, int V, double alpha, double beta,
+	  int niters, int verbose, int save, int K, int M, int V, double alpha, double beta,
 	  int model_status, string dir, double *init_phi) 
 {
   model lda;
   lda.niters = niters;
-  lda.savestep = savestep;
+  lda.verbose = verbose;
+  lda.save = save;
   lda.K = K;
   lda.M = M;
   lda.V = V;
@@ -93,7 +94,7 @@ SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
     for (j = 0; j < model->K; j++)
       m[i + model->M * j] = model->theta[i][j];
   SET_SLOT(ans, install("gamma"), tp);
-  UNPROTECT(1); 
+  UNPROTECT(1);
   
   wordassign = PROTECT(allocVector(VECSXP, 6));
   total = 0;
@@ -119,6 +120,7 @@ SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
       }
       word_new[model->ptrndata->docs[d]->words[j]] = 1;
     }
+    free(word_new);
   }
   I = PROTECT(allocVector(INTSXP, i));
   J = PROTECT(allocVector(INTSXP, i));
@@ -165,6 +167,7 @@ SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
   setAttrib(wordassign, R_ClassSymbol, mkString("simple_triplet_matrix"));
   SET_SLOT(ans, install("wordassignments"), wordassign);
   UNPROTECT(1);
+  free(It); free(Jt); free(Vt);
   return(ans);
 }
 
@@ -189,6 +192,7 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 		    LENGTH(v),
 		    *INTEGER(GET_SLOT(control, install("iter"))),
 		    *INTEGER(GET_SLOT(control, install("verbose"))),
+		    *INTEGER(GET_SLOT(control, install("save"))),
 		    *INTEGER(AS_INTEGER(k)),
 		    *INTEGER(nrow),
 		    *INTEGER(ncol),

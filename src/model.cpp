@@ -54,9 +54,9 @@ model::~model() {
 	delete[] p;
     }
 
-//     if (ptrndata) {
-//         delete ptrndata;
-//     }
+    if (ptrndata) {
+        delete ptrndata;
+    }
     
     if (z) {
 	for (m = 0; m < M; m++) {
@@ -71,6 +71,14 @@ model::~model() {
 		delete[] wordassign[m];
 	    }
 	}
+    }
+
+    if (nw) {
+      for (w = 0; w < V; w++) {
+	if (nw[w]) {
+	  delete[] nw[w];
+	}
+      }
     }
 
     if (nd) {
@@ -103,14 +111,6 @@ model::~model() {
 	    }
 	}
     }
-
-    if (nw) {
-      for (w = 0; w < V; w++) {
-	if (nw[w]) {
-	  delete[] nw[w];
-	}
-      }
-    }
 }
 
 void model::set_default_values() {
@@ -132,7 +132,8 @@ void model::set_default_values() {
     beta = 0.1;
     niters = 2000;
     liter = 0;
-    savestep = 200;    
+    verbose = 200;    
+    save = 0;
     
     p = NULL;
     z = NULL;
@@ -146,19 +147,19 @@ void model::set_default_values() {
 }
 
 int model::save_model(string model_name) {
-    if (save_model_tassign(dir + model_name + tassign_suffix)) {
+    if (save_model_tassign(dir + "/" + model_name + tassign_suffix)) {
 	return 1;
     }
     
-    if (save_model_others(dir + model_name + others_suffix)) {
+    if (save_model_others(dir + "/" + model_name+ others_suffix)) {
 	return 1;
     }
     
-    if (save_model_theta(dir + model_name + theta_suffix)) {
+    if (save_model_theta(dir + "/" + model_name+ theta_suffix)) {
 	return 1;
     }
     
-    if (save_model_phi(dir + model_name + phi_suffix)) {
+    if (save_model_phi(dir + "/" + model_name+ phi_suffix)) {
 	return 1;
     }
     
@@ -245,7 +246,7 @@ int model::save_model_others(string filename) {
 int model::init(int *i, int *j, double *v, int length) {
     int m, n, w, k;
     
-    Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
+    if (verbose > 0) Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
     p = new double[K];
 
     // + read training data
@@ -255,7 +256,7 @@ int model::init(int *i, int *j, double *v, int length) {
     // + allocate memory and assign values for variables
     // K: from command line or default value
     // alpha, beta: from command line or default values
-    // niters, savestep: from command line or default values
+    // niters, verbose: from command line or default values
 
     nwsum = new int[K];
     for (k = 0; k < K; k++) {
@@ -314,14 +315,14 @@ int model::init(int *i, int *j, double *v, int length) {
     for (k = 0; k < K; k++) {
         phi[k] = new double[V];
     }    
-    
+
     return 0;
 }
 
 int model::initc(int *i, int *j, double *v, int length, double *Phi) {
     int m, n, w, k;
     
-    Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
+    if (verbose > 0) Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
     p = new double[K];
 
     // + read training data
@@ -331,7 +332,7 @@ int model::initc(int *i, int *j, double *v, int length, double *Phi) {
     // + allocate memory and assign values for variables
     // K: from command line or default value
     // alpha, beta: from command line or default values
-    // niters, savestep: from command line or default values
+    // niters, verbose: from command line or default values
 
     nwsum = new int[K];
     for (k = 0; k < K; k++) {
@@ -396,7 +397,7 @@ int model::initc(int *i, int *j, double *v, int length, double *Phi) {
 
 int model::get_z(int m, int n, double *Phi) 
 {
-  int topic;
+  int topic = 0;
   int w = ptrndata->docs[m]->words[n];
   for (int k = 0; k < K; k++) {
     p[k] = Phi[k * (w  + 1)];
@@ -418,7 +419,7 @@ int model::get_z(int m, int n, double *Phi)
 }
 
 void model::estimate() {
-    Rprintf("Sampling %d iterations!\n", niters);
+  if (verbose > 0) Rprintf("Sampling %d iterations!\n", niters);
 
     int last_iter = liter;
     for (liter = last_iter + 1; liter <= niters + last_iter; liter++) {
@@ -433,18 +434,16 @@ void model::estimate() {
 	    }
 	}
 	
-	if (savestep > 0) {
-	    if (liter % savestep == 0) {
-		// saving the model
-		Rprintf("Saving the model at iteration %d ...\n", liter);
-		compute_theta();
-		compute_phi();
-		save_model(utilities::generate_model_name(liter));
-	    }
-	}
+	if ((save > 0) && (liter % save == 0)) {
+	  if (verbose > 0) Rprintf("Saving the model at iteration %d ...\n", liter);
+	  compute_theta();
+	  compute_phi();
+	  save_model(utilities::generate_model_name(liter));
+	  
+	} else if ((verbose > 0) && (liter % verbose == 0)) Rprintf("Iteration %d ...\n", liter);
     }
     
-    Rprintf("Gibbs sampling completed!\n");
+    if (verbose > 0) Rprintf("Gibbs sampling completed!\n");
     compute_theta();
     compute_phi();
     // compute wordassign;
@@ -454,7 +453,7 @@ void model::estimate() {
       }
     }
     liter--;    
-    save_model(utilities::generate_model_name(-1));
+    if (save > 0) save_model(utilities::generate_model_name(-1));
 }
 
 int model::sampling(int m, int n) {
@@ -496,7 +495,7 @@ int model::sampling(int m, int n) {
 }
 
 int model::get_wordassign(int m, int n) {
-    int topic;
+    int topic = 0;
     int w;
 
     w = ptrndata->docs[m]->words[n];

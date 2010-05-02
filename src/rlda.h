@@ -20,6 +20,7 @@
 float EM_CONVERGED;
 int EM_MAX_ITER;
 int ESTIMATE_ALPHA;
+int SAVE;
 double INITIAL_ALPHA;
 int LAG;
 int NTOPICS;

@@ -1,6 +1,7 @@
 CTM <- function(x, k, method = "VEM",
                 control = NULL, model = NULL, ...) {
   if (!is(x, "DocumentTermMatrix")) stop("x is of class ", dQuote(class(x)))
+  if (!all(slam::row_sums(x) > 0)) stop("All documents in the DocumentTermMatrix need to contain at least one term.")
   mycall <- match.call()
   method <- match.arg(method)
   control <- as(control, "CTM_VEMcontrol")
@@ -13,7 +14,7 @@ CTM <- function(x, k, method = "VEM",
     k <- model@k
   }
   result_dir <- paste(control@prefix, "-ctm", sep = "")
-  dir.create(result_dir, showWarnings = FALSE)
+  if (control@save) dir.create(result_dir, showWarnings = FALSE)
   obj <- .Call("rctm",
                ## simple_triplet_matrix
                as.integer(x$i),

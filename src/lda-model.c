@@ -24,7 +24,7 @@
  *
  */
 
-void lda_mle(lda_model* model, lda_suffstats* ss, int estimate_alpha)
+void lda_mle(lda_model* model, lda_suffstats* ss, int estimate_alpha, int verbose)
 {
     int k; int w;
 
@@ -48,7 +48,7 @@ void lda_mle(lda_model* model, lda_suffstats* ss, int estimate_alpha)
                                  ss->num_docs,
                                  model->num_topics);
 
-        Rprintf("new alpha = %5.5f\n", model->alpha);
+        if (verbose > 0) Rprintf("new alpha = %5.5f\n", model->alpha);
     }
 }
 

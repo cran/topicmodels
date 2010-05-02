@@ -1,3 +1,11 @@
+Changes in topicmodels version 0.0-6
+
+  o Memory bug fixed in returnObjectGibbsLDA.
+
+  o A slot save is added to the control objects to specify if the
+    results and with which step size intermediate results are saved
+    into files.
+
 Changes in topicmodels version 0.0-5
 
   o Header files changed in utilities.cpp following an advice by

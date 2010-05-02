@@ -293,10 +293,11 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   corpus* corpus;
   const char *start, *directory;
   SEXP ans; 
-  int l, d, n, max_length;
+  int l, d, n, max_length, verbose = 0;
   lda_model *model = NULL;
   double **var_gamma, ***phi, **phi_sums, *llh;
   document* doc;
+  FILE* likelihood_file = NULL;
   char filename[100];
   lda_suffstats* ss = NULL;
   double likelihood, likelihood_old = 0, converged = 1;
@@ -306,6 +307,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   EM_MAX_ITER = *INTEGER(GET_SLOT(GET_SLOT(control, install("em")), install("iter.max")));
   EM_CONVERGED = *REAL(GET_SLOT(GET_SLOT(control, install("em")), install("tol")));
   LAG = *INTEGER(GET_SLOT(control, install("verbose")));
+  SAVE = *INTEGER(GET_SLOT(control, install("save")));
   ESTIMATE_ALPHA = *LOGICAL(GET_SLOT(control, install("estimate.alpha")));
   NTOPICS = *INTEGER(AS_INTEGER(k));
   INITIAL_ALPHA = *REAL(GET_SLOT(control, install("alpha")));
@@ -342,7 +344,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
       model = new_lda_model(corpus->num_terms, NTOPICS);
       ss = new_lda_suffstats(model);
       corpus_initialize_ss(ss, model, corpus);
-      lda_mle(model, ss, 0);
+      lda_mle(model, ss, 0, LAG > 0);
       model->alpha = INITIAL_ALPHA;
     }
   else if (strcmp(start, "random")==0)
@@ -350,7 +352,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
       model = new_lda_model(corpus->num_terms, NTOPICS);
       ss = new_lda_suffstats(model);
       random_initialize_ss(ss, model);
-      lda_mle(model, ss, 0);
+      lda_mle(model, ss, 0, LAG > 0);
       model->alpha = INITIAL_ALPHA;
     }
   else 
@@ -360,17 +362,21 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
     }
   
   sprintf(filename,"%s/000",directory);
-  save_lda_model(model, filename);
+  if (SAVE > 0) save_lda_model(model, filename);
   
   // run expectation maximization
   
   l = 0;
-  sprintf(filename, "%s/likelihood.dat", directory);
-  FILE* likelihood_file = fopen(filename, "w");
+  if (SAVE > 0) {
+    sprintf(filename, "%s/likelihood.dat", directory);
+    likelihood_file = fopen(filename, "w");
+  }
   
   while (((converged < 0) || (converged > EM_CONVERGED) || (l <= 2)) && (l <= EM_MAX_ITER))
     {
-      l++; Rprintf("**** em iteration %d ****\n", l);
+      l++; 
+      verbose = (LAG > 0) && ((l % LAG) == 0);
+      if (verbose) Rprintf("**** em iteration %d ****\n", l);
       likelihood = 0;
       zero_initialize_ss(ss, model);
       
@@ -378,7 +384,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
       
       for (d = 0; d < corpus->num_docs; d++)
         {
-	  if (((d % 1000) == 0) && (d>0)) Rprintf("document %d\n",d);
+	  if (verbose && ((d % 1000) == 0) && (d>0)) Rprintf("document %d\n",d);
 	  likelihood += doc_e_step(&(corpus->docs[d]),
 				   var_gamma[d],
 				   phi[d],
@@ -388,7 +394,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
       
       // m-step
       
-      lda_mle(model, ss, ESTIMATE_ALPHA);
+      lda_mle(model, ss, ESTIMATE_ALPHA, verbose);
       
       // check for convergence
       
@@ -398,22 +404,24 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
       
       // output model and likelihood
       
-      fprintf(likelihood_file, "%10.10f\t%5.5e\n", likelihood, converged);
-      fflush(likelihood_file);
-      if ((l % 5) == 0)
-        {
-	  sprintf(filename,"%s/%03d",directory, l);
-	  save_lda_model(model, filename);
-	  sprintf(filename,"%s/%03d.gamma",directory, l);
-	  save_gamma(filename, var_gamma, corpus->num_docs, model->num_topics);
-        }
+      if (SAVE > 0) {
+	fprintf(likelihood_file, "%10.10f\t%5.5e\n", likelihood, converged);
+	fflush(likelihood_file);
+	if ((l % SAVE) == 0)
+	  {
+	    sprintf(filename,"%s/%03d",directory, l);
+	    save_lda_model(model, filename);
+	    sprintf(filename,"%s/%03d.gamma",directory, l);
+	    save_gamma(filename, var_gamma, corpus->num_docs, model->num_topics);
+	  }
+      }
     }
   
   // output the word assignments (for visualization)
   
   for (d = 0; d < corpus->num_docs; d++) {
       doc = &(corpus->docs[d]);
-      if (((d % 100) == 0) && (d>0)) Rprintf("final e step document %d\n",d);
+      if (verbose && ((d % 100) == 0) && (d>0)) Rprintf("final e step document %d\n",d);
       llh[d] = lda_inference(&(corpus->docs[d]), model, var_gamma[d], phi[d]);
       likelihood += llh[d];
       for (l = 0; l < model->num_topics; l++) {
@@ -422,17 +430,19 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 	}
       }
     }
-  fclose(likelihood_file);
   // END CODE FROM run_em (lda-estimate.c)
   // BG: word assignments are not saved but returned in the R object
   // output the final model
   
-  sprintf(filename,"%s/final",directory);
-  save_lda_model(model, filename);
-  sprintf(filename,"%s/final.gamma",directory);
-  save_gamma(filename, var_gamma, corpus->num_docs, model->num_topics);
-  sprintf(filename, "%s/final.phi-sum", directory);
-  save_gamma(filename, phi_sums, corpus->num_docs, model->num_topics);
+  if (SAVE > 0) {
+    fclose(likelihood_file);
+    sprintf(filename,"%s/final",directory);
+    save_lda_model(model, filename);
+    sprintf(filename,"%s/final.gamma",directory);
+    save_gamma(filename, var_gamma, corpus->num_docs, model->num_topics);
+    sprintf(filename, "%s/final.phi-sum", directory);
+    save_gamma(filename, phi_sums, corpus->num_docs, model->num_topics);
+  }
   
   // construct return object
   ans = PROTECT(NEW_OBJECT(MAKE_CLASS("LDA_VEM")));

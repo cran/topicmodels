@@ -13,8 +13,10 @@ setClass("TopicModelcontrol",
          representation(
             verbose    = "integer",
             prefix     = "character",
+            save       = "integer",
            "VIRTUAL"),
-         prototype(verbose = 5L))
+         prototype(verbose = 0L,
+                   save = 0L))
 
 setMethod("initialize", "TopicModelcontrol", function(.Object, prefix, ...) {
   if (missing(prefix)) prefix <- tempfile()
@@ -61,7 +63,7 @@ setClass("LDA_Gibbscontrol",
         delta = "numeric",
         iter = "integer"),
     contains = "LDAcontrol", 
-    prototype(verbose = 200L,
+    prototype(verbose = 0L,
               iter = 2000L))
 
 setClass("CTM_VEMcontrol",

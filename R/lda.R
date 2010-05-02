@@ -28,7 +28,7 @@ LDA <- function(x, k, method = c("VEM", "Gibbs"),
     }
   }
   result_dir <- paste(control@prefix, "-lda", sep = "")
-  dir.create(result_dir, showWarnings = FALSE)
+  if (control@save) dir.create(result_dir, showWarnings = FALSE)
   if (length(control@alpha) == 0) control@alpha <- 50/k
   if (method == "VEM") {
     obj <- .Call("rlda", 

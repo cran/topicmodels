@@ -61,7 +61,7 @@ public:
 				// MODEL_STATUS_EST: estimating from scratch
 				// MODEL_STATUS_ESTC: continue to estimate the model from a previous one
 				// MODEL_STATUS_INF: do inference
-
+    int save;                   // save results into files
     dataset * ptrndata;	// pointer to training dataset object
 
     // --- model parameters and variables ---    
@@ -71,7 +71,7 @@ public:
     double alpha, beta; // LDA hyperparameters 
     int niters; // number of Gibbs sampling iterations
     int liter; // the iteration at which the model was saved
-    int savestep; // saving period
+    int verbose; // saving period
 
     double * p; // temp variable for sampling
     int ** z; // topic assignments for words, size M x doc.size()

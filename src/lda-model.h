@@ -19,7 +19,7 @@ lda_suffstats* new_lda_suffstats(lda_model* model);
 void corpus_initialize_ss(lda_suffstats* ss, lda_model* model, corpus* c);
 void random_initialize_ss(lda_suffstats* ss, lda_model* model);
 void zero_initialize_ss(lda_suffstats* ss, lda_model* model);
-void lda_mle(lda_model* model, lda_suffstats* ss, int estimate_alpha);
+void lda_mle(lda_model* model, lda_suffstats* ss, int estimate_alpha, int verbose);
 lda_model* load_lda_model(char* model_root);
 
 #endif

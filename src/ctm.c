@@ -9,7 +9,7 @@
 
 // CTM-C is distributed in the hope that it will be useful, but WITHOUT
 // ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+// FITNESS FOR A PATICULAR PURPOSE.  See the GNU General Public License
 // for more details.
 
 // You should have received a copy of the GNU General Public License
@@ -98,7 +98,7 @@ void write_ss(llna_ss * ss)
  *
  */
 
-llna_model* corpus_init(int ntopics, corpus* corpus)
+llna_model* corpus_init(int ntopics, corpus* corpus, int verbose)
 {
     llna_model* model = new_llna_model(ntopics, corpus->nterms);
     gsl_rng * r = gsl_rng_alloc(gsl_rng_taus);
@@ -106,9 +106,9 @@ llna_model* corpus_init(int ntopics, corpus* corpus)
     int i, k, n, d;
     double sum;
     time_t seed;
-    time(&seed);
-    Rprintf("SEED = %ld\n", seed);
-    Rprintf("USING 1115574245\n");
+    (void) time(&seed);
+    if (verbose > 0) Rprintf("SEED = %ld\n", seed);
+    if (verbose > 0) Rprintf("USING 1115574245\n");
     gsl_rng_set(r, (long) 1115574245);
     // gsl_rng_set(r, (long) seed);
     // gsl_rng_set(r, (long) 432403824);
@@ -130,7 +130,7 @@ llna_model* corpus_init(int ntopics, corpus* corpus)
         for (i = 0; i < NUM_INIT; i++)
         {
             d = floor(gsl_rng_uniform(r)*corpus->ndocs);
-            Rprintf("initialized with document %d\n", d);
+            if (verbose > 0) Rprintf("initialized with document %d\n", d);
             doc = &(corpus->docs[d]);
             for (n = 0; n < doc->nterms; n++)
             {
@@ -162,17 +162,17 @@ llna_model* corpus_init(int ntopics, corpus* corpus)
  *
  */
 
-llna_model* random_init(int ntopics, int nterms)
+llna_model* random_init(int ntopics, int nterms, int verbose)
 {
     int i, j;
     double sum, val;
     llna_model* model = new_llna_model(ntopics, nterms);
     gsl_rng * r = gsl_rng_alloc(gsl_rng_taus);
-    long t1;
+    time_t t1;
     (void) time(&t1);
     // !!! DEBUG
     // t1 = gsl_rng_set(r, (long) 1115574245);
-    Rprintf("RANDOM SEED = %ld\n", t1);
+    if (verbose > 0) Rprintf("RANDOM SEED = %ld\n", t1);
     gsl_rng_set(r, t1);
 
     for (i = 0; i < ntopics-1; i++)
@@ -200,66 +200,24 @@ llna_model* random_init(int ntopics, int nterms)
 }
 
 /*
- * read a model
- *
- */
-
-llna_model* read_llna_model(char * root)
-{
-    char filename[200];
-    FILE* fileptr;
-    llna_model* model;
-    int ntopics, nterms;
-
-    // read parameters
-    sprintf(filename, "%s-param.txt", root);
-    Rprintf("reading params from %s\n", filename);
-    fileptr = fopen(filename, "r");
-    fscanf(fileptr, "num_topics %d\n", &ntopics);
-    fscanf(fileptr, "num_terms %d\n", &nterms);
-    fclose(fileptr);
-    Rprintf("%d topics, %d terms\n", ntopics, nterms);
-    // allocate model
-    model = new_llna_model(ntopics, nterms);
-    // read gaussian
-    Rprintf("reading gaussian\n");
-    sprintf(filename, "%s-mu.dat", root);
-    scanf_vector(filename, model->mu);
-    sprintf(filename, "%s-cov.dat", root);
-    scanf_matrix(filename, model->cov);
-    sprintf(filename, "%s-inv-cov.dat", root);
-    scanf_matrix(filename, model->inv_cov);
-    sprintf(filename, "%s-log-det-inv-cov.dat", root);
-    fileptr = fopen(filename, "r");
-    fscanf(fileptr, "%lf\n", &(model->log_det_inv_cov));
-    fclose(fileptr);
-    // read topic matrix
-    Rprintf("reading topics\n");
-    sprintf(filename, "%s-log-beta.dat", root);
-    scanf_matrix(filename, model->log_beta);
-
-    return(model);
-}
-
-/*
  * write a model
  *
  */
 
-void write_llna_model(llna_model * model, char * root)
+void write_llna_model(llna_model * model, char * root, int verbose)
 {
     char filename[200];
     FILE* fileptr;
 
     // write parameters
-    Rprintf("writing params\n");
+    if (verbose > 0) Rprintf("writing params\n");
     sprintf(filename, "%s-param.txt", root);
     fileptr = fopen(filename, "w");
     fprintf(fileptr, "num_topics %d\n", model->k);
     fprintf(fileptr, "num_terms %d\n", (int) model->log_beta->size2);
     fclose(fileptr);
     // write gaussian
-    Rprintf("writing gaussian\n");
+    if (verbose > 0) Rprintf("writing gaussian\n");
     sprintf(filename, "%s-mu.dat", root);
     printf_vector(filename, model->mu);
     sprintf(filename, "%s-cov.dat", root);
@@ -271,7 +229,7 @@ void write_llna_model(llna_model * model, char * root)
     fprintf(fileptr, "%lf\n", model->log_det_inv_cov);
     fclose(fileptr);
     // write topic matrix
-    Rprintf("writing topics\n");
+    if (verbose > 0) Rprintf("writing topics\n");
     sprintf(filename, "%s-log-beta.dat", root);
     printf_matrix(filename, model->log_beta);
 }

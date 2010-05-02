@@ -189,7 +189,7 @@ void expectation(corpus* corpus, llna_model* model, llna_ss* ss,
 		 gsl_vector* likelihood,
                  gsl_matrix* corpus_lambda, gsl_matrix* corpus_nu,
                  gsl_matrix* corpus_phi_sum,
-                 short reset_var, double* converged_pct, llna_var_param** var)
+                 short reset_var, double* converged_pct, llna_var_param** var, int verbose)
 {
     int i;
     doc doc;
@@ -203,7 +203,7 @@ void expectation(corpus* corpus, llna_model* model, llna_ss* ss,
     total = 0;
     for (i = 0; i < corpus->ndocs; i++)
     {
-      if (((i % 1000) == 0) && (i>0)) Rprintf("doc %5d   ", i);
+      if ((verbose > 0) && ((i % (corpus->ndocs-1)) == 0) && (i>0)) Rprintf("doc %5d   ", i);
         doc = corpus->docs[i];
         var[i] = new_llna_var_param(doc.nterms, model->k);
         if (reset_var)
@@ -217,7 +217,8 @@ void expectation(corpus* corpus, llna_model* model, llna_ss* ss,
         gsl_vector_set(likelihood, i, var_inference(var[i], &doc, model));
         update_expected_ss(var[i], &doc, ss);
         total += gsl_vector_get(likelihood, i);
-	if (((i % 1000) == 0) && (i>0)) Rprintf("lhood %5.5e   niter %5d\n", gsl_vector_get(likelihood, i), var[i]->niter);
+	if ((verbose > 0) && ((i % (corpus->ndocs-1)) == 0) && (i>0)) 
+	  Rprintf("lhood %5.5e   niter %5d\n", gsl_vector_get(likelihood, i), var[i]->niter);
         *avg_niter += var[i]->niter;
         *converged_pct += var[i]->converged;
         gsl_matrix_set_row(corpus_lambda, i, var[i]->lambda);
@@ -398,11 +399,11 @@ corpus* DocumentTermMatrix2Corpus(int *i, int *j, double *v, int nrow, int ncol,
 llna_model* em_initial_model(int k, corpus* corpus, const char* start, SEXP init_model)
 {
     llna_model* model;
-    Rprintf("starting from %s\n", start);
+    if (PARAMS.verbose > 0) printf("starting from %s\n", start);
     if (strcmp(start, "rand")==0)
-        model = random_init(k, corpus->nterms);
+      model = random_init(k, corpus->nterms, PARAMS.verbose);
     else if (strcmp(start, "seed")==0)
-        model = corpus_init(k, corpus);
+      model = corpus_init(k, corpus, PARAMS.verbose);
     else
         model = R2llna_model(init_model);
     return(model);
@@ -414,7 +415,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   corpus* corpus;
   llna_model *model;
   llna_ss* ss;
-  FILE* lhood_fptr;
+  FILE* lhood_fptr = NULL;
   char string[100];
   double convergence = 1, lhood = 0, lhood_old = 0;
   time_t t1,t2;
@@ -423,7 +424,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   gsl_matrix *corpus_lambda, *corpus_nu, *corpus_phi_sum;
   short reset_var = 1;
   const char *start, *dir;
-  int NTOPICS, d, iteration;
+  int NTOPICS, d, iteration, verbose;
   llna_var_param **var;
   SEXP ans;
      
@@ -433,7 +434,8 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   PARAMS.em_convergence = *REAL(GET_SLOT(GET_SLOT(control, install("em")), install("tol")));
   PARAMS.cg_max_iter = *INTEGER(GET_SLOT(GET_SLOT(control, install("cg")), install("iter.max")));
   PARAMS.cg_convergence = *REAL(GET_SLOT(GET_SLOT(control, install("cg")), install("tol")));
-  PARAMS.lag = *INTEGER(GET_SLOT(control, install("verbose")));
+  PARAMS.verbose = *INTEGER(GET_SLOT(control, install("verbose")));
+  PARAMS.save = *INTEGER(GET_SLOT(control, install("save")));
   PARAMS.cov_estimate = *LOGICAL(GET_SLOT(control, install("shrinkage.covariance")));
   NTOPICS = *INTEGER(AS_INTEGER(k));
 
@@ -451,8 +453,10 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   // START CODE FROM em (estimate.c)
   // set up the log likelihood log file
   
-  sprintf(string, "%s/likelihood.dat", dir);
-  lhood_fptr = fopen(string, "w");
+  if (PARAMS.save > 0) {
+    sprintf(string, "%s/likelihood.dat", dir);
+    lhood_fptr = fopen(string, "w");
+  }
   
   // run em
 
@@ -461,35 +465,37 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   corpus_lambda = gsl_matrix_alloc(corpus->ndocs, model->k);
   corpus_nu = gsl_matrix_alloc(corpus->ndocs, model->k);
   corpus_phi_sum = gsl_matrix_alloc(corpus->ndocs, model->k);
-  time(&t1);
+  (void) time(&t1);
   init_temp_vectors(model->k-1); // !!! hacky
   iteration = 0;
   sprintf(string, "%s/start", dir);
-  write_llna_model(model, string);
+  if (PARAMS.save > 0) write_llna_model(model, string, PARAMS.verbose);
   do
     {
-      Rprintf("***** EM ITERATION %d *****\n", iteration);
+      verbose = PARAMS.verbose > 0 && (iteration % PARAMS.verbose) == 0;
+      if (verbose) Rprintf("***** EM ITERATION %d *****\n", iteration);
       
       expectation(corpus, model, ss, &avg_niter, &lhood,
 		  likelihood, 
 		  corpus_lambda, corpus_nu, corpus_phi_sum,
-		  reset_var, &converged_pct, var);
-      time(&t2);
+		  reset_var, &converged_pct, var,
+		  verbose);
       convergence = (lhood_old - lhood) / lhood_old;
-      fprintf(lhood_fptr, "%d %5.5e %5.5e %5ld %5.5f %1.5f\n",
-	      iteration, lhood, convergence, (int) t2 - t1, avg_niter, converged_pct);
-      
-      if (((iteration % PARAMS.lag)==0) || isnan(lhood))
-        {
-	  sprintf(string, "%s/%03d", dir, iteration);
-	  write_llna_model(model, string);
-	  sprintf(string, "%s/%03d-lambda.dat", dir, iteration);
-	  printf_matrix(string, corpus_lambda);
-	  sprintf(string, "%s/%03d-nu.dat", dir, iteration);
-	  printf_matrix(string, corpus_nu);
-        }
-      time(&t1);
-      
+      if (PARAMS.save > 0) {
+	(void) time(&t2);
+	fprintf(lhood_fptr, "%d %5.5e %5.5e %5.0f %5.5f %1.5f\n",
+		iteration, lhood, convergence, difftime(t2, t1), avg_niter, converged_pct);
+	if (((iteration % PARAMS.save)==0) || isnan(lhood))
+	  {
+	    sprintf(string, "%s/%03d", dir, iteration);
+	    write_llna_model(model, string, PARAMS.verbose);
+	    sprintf(string, "%s/%03d-lambda.dat", dir, iteration);
+	    printf_matrix(string, corpus_lambda);
+	    sprintf(string, "%s/%03d-nu.dat", dir, iteration);
+	    printf_matrix(string, corpus_nu);
+	  }
+	(void) time(&t1);
+      }
       if (convergence < 0)
         {
 	  reset_var = 0;
@@ -505,20 +511,22 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 	  iteration++;
         }
       
-      fflush(lhood_fptr);
+      if (PARAMS.save > 0) fflush(lhood_fptr);
       reset_llna_ss(ss);
       old_conv = convergence;
     }
   while ((iteration < PARAMS.em_max_iter) &&
 	 ((convergence > PARAMS.em_convergence) || (convergence < 0)));
   
-  sprintf(string, "%s/final", dir);
-  write_llna_model(model, string);
-  sprintf(string, "%s/final-lambda.dat", dir);
-  printf_matrix(string, corpus_lambda);
-  sprintf(string, "%s/final-nu.dat", dir);
-  printf_matrix(string, corpus_nu);
-  fclose(lhood_fptr);
+  if (PARAMS.save > 0) {
+    sprintf(string, "%s/final", dir);
+    write_llna_model(model, string, PARAMS.verbose);
+    sprintf(string, "%s/final-lambda.dat", dir);
+    printf_matrix(string, corpus_lambda);
+    sprintf(string, "%s/final-nu.dat", dir);
+    printf_matrix(string, corpus_nu);
+    fclose(lhood_fptr);
+  }
   // END CODE FROM em (estimate.c)
 
   // construct return object
