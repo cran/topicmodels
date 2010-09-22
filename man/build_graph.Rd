@@ -1,9 +1,10 @@
 \name{build_graph}
 \alias{build_graph}
 \title{Construct the adjacency matrix for a topic graph}
-\description{
+\description{ 
   The lasso is used to determine which edges are present in a topic
-  graph.
+  graph. The original R code was written by David M. Blei and co-authors
+  and is available together with the C code for fitting the CTM.
 }
 \usage{
 build_graph(x, lambda, and = TRUE)
@@ -23,5 +24,5 @@ build_graph(x, lambda, and = TRUE)
   A Correlated Topic Model of Science.
   \emph{The Annals of Applied Statistics}, \bold{1}(1), 17--35. 
 }
-\author{David M. Blei, modified by Bettina Gruen}
+\author{David M. Blei, modified by Bettina Gruen.}
 \keyword{dplot}

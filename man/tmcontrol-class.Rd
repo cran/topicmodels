@@ -26,24 +26,38 @@
 \section{Slots}{
   Class \code{"TopicModelcontrol"} contains
   \describe{
-    \item{\code{verbose}:}{Object of class \code{"integer"}; the
-      estimated model is saved all \code{verbose} iterations.}
+    \item{\code{seed}:}{Object of class \code{"integer"}; used to set
+      the seed in the external code.}
+    \item{\code{verbose}:}{Object of class \code{"integer"}. If a
+      positive integer, then the progress is reported every
+      \code{verbose} iterations. If 0 (default), no output is generated
+      during model fitting.}
+    \item{\code{save}:}{Object of class \code{"integer"}. If a positive
+      integer the estimated model is saved all \code{verbose}
+      iterations. If 0 (default), no output is generated during model
+      fitting.}
     \item{\code{prefix}:}{Object of class \code{"character"}; path
       indicating where to save the intermediate results.}
+    \item{\code{estimate.beta}:}{Object of class \code{"logical"};
+      controls if beta, the term distribution of the topics, is fixed,
+      by default equals \code{TRUE}.}
   }
 
   Class \code{"VEMcontrol"} contains
   \describe{
     \item{\code{var}:}{Object of class \code{"OPTcontrol"}; controls the
-      variational inference for a single document.}
+      variational inference for a single document, by default
+      \code{iter.max} equals 500 and \code{tol} 10^-6.}
     \item{\code{em}:}{Object of class \code{"OPTcontrol"}; controls the
-      variational EM algorithm.}
+      variational EM algorithm, by default \code{iter.max} equals 1000
+      and \code{tol} 10^-4.}
     \item{\code{initialize}:}{Object of class \code{"character"}; one of
-      \code{"random"}, \code{"seeded"} and \code{"model"}.}
+      \code{"random"}, \code{"seeded"} and \code{"model"}, by default
+      equals \code{"random"}.}
   }
   
-  Class \code{"LDAcontrol"} extends class \code{"TopicModelcontrol"} and has the additional
-  slots
+  Class \code{"LDAcontrol"} extends class \code{"TopicModelcontrol"} and
+  has the additional slots
   \describe{
     \item{\code{alpha}:}{Object of class \code{"numeric"}; initial
       value for alpha.}
@@ -53,31 +67,37 @@
   \code{"LDAcontrol"} and \code{"VEMcontrol"} and has the
   additional slots
   \describe{
-    \item{\code{estimate.alpha}:}{Object of class \code{"logical"}; by
-      default equals \code{TRUE} and indicates if the parameter alpha is
-      fixed a-priori or estimated.}
+    \item{\code{estimate.alpha}:}{Object of class \code{"logical"};
+      indicates if the parameter alpha is fixed a-priori or estimated, by
+      default equals \code{TRUE}.}
   }
   
   Class \code{"LDA_Gibbscontrol"} extends classes
   \code{"LDAcontrol"} and has the additional slots
   \describe{
     \item{\code{delta}:}{Object of class \code{"numeric"}; initial value
-      for delta.}
+      for delta, by default equals 0.1.}
     \item{\code{iter}:}{Object of class \code{"integer"}; number of
-      Gibbs iterations.}
+      Gibbs iterations, by default equals 2000.}
+    \item{\code{thin}:}{Object of class \code{"integer"}; number of
+      omitted in-between Gibbs iterations, by default equals \code{iter}.}
+    \item{\code{burnin}:}{Object of class \code{"integer"}; number of
+      omitted Gibbs iterations at beginning, by default equals 0.}
+    \item{\code{best}:}{Object of class \code{"logical"}; if \code{TRUE}
+      only the model with the maximum posterior likelihood is returned,
+      by default equals \code{TRUE}.}
   }
   
   Class \code{"CTM_VEMcontrol"} extends classes
-  \code{"TopicModelcontrol"} and \code{"VEMcontrol"} and
-  has the additional slots
+  \code{"TopicModelcontrol"} and \code{"VEMcontrol"} and has the
+  additional slots
   \describe{
     \item{\code{cg}:}{Object of class \code{"OPTcontrol"}; controls the
       conjugate gradient iterations in fitting the variational mean and
-      variance per document.}
-    \item{\code{shrinkage.covariance}:}{Object of class \code{"logical"};
-      indicates how the variance-covariance matrix is estimated.}
+      variance per document, by default \code{iter.max} equals 500 and
+      \code{tol} 10^-5.}
   }
-
+  
   Class \code{"OPTcontrol"} contains
   \describe{
     \item{\code{iter.max}:}{Object of class \code{"integer"}; maximum

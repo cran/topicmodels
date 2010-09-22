@@ -1,5 +1,8 @@
-\name{get}
-\Rdversion{1.1}
+\name{terms/topics}
+\docType{methods}
+\alias{topics}
+\alias{topics,TopicModel-method}
+\alias{terms,TopicModel-method}
 \alias{get_terms}
 \alias{get_topics}
 \title{
@@ -10,11 +13,11 @@
   likely topics for each document.
 }
 \usage{
-get_terms(object, k, threshold, ...)
-get_topics(object, k, threshold, ...)
+\S4method{terms}{TopicModel}(x, k, threshold, ...)
+\S4method{topics}{TopicModel}(x, k, threshold, ...)
 }
 \arguments{
-  \item{object}{Object of class \code{"TopicModel"}.}
+  \item{x}{Object of class \code{"TopicModel"}.}
   \item{k}{The maximum number of terms/topics returned. By default
     set to 1 if no threshold is given.}
   \item{threshold}{Only the terms/topics which are more likely than

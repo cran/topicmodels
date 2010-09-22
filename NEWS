@@ -1,3 +1,24 @@
+Changes in topicmodels version 0.0-7
+
+  o The control for topic models now also has a seed argument to
+    ensure reproducibility of results and a estimate.beta argument
+    which can be used to fix the term distribution over topics after
+    initialization.
+
+  o The control for Gibbs sampling allows to specify to return
+    repeated draws in a list using arguments burnin, thin and iter.
+
+  o In slot beta for class "TopicModel" the log parameters are stored
+    to have a higher accuracy for the VEM code if parameter values are
+    close to zero.
+
+  o Call to assert removed in C code to avoid termination of R.
+
+  o TopicModel now has a slot loglikelihood. For models fitted using
+    Gibbs sampling this contains the loglikelihood of the corpus, for
+    VEM fitted models the vector of loglikelihoods for each document
+    separately.
+
 Changes in topicmodels version 0.0-6
 
   o Memory bug fixed in returnObjectGibbsLDA.

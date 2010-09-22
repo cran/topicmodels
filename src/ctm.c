@@ -29,7 +29,6 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
-#include <time.h>
 
 #include "gsl-wrappers.h"
 #include "ctm.h"
@@ -98,20 +97,15 @@ void write_ss(llna_ss * ss)
  *
  */
 
-llna_model* corpus_init(int ntopics, corpus* corpus, int verbose)
+llna_model* corpus_init(int ntopics, corpus* corpus, int verbose, int seed)
 {
     llna_model* model = new_llna_model(ntopics, corpus->nterms);
     gsl_rng * r = gsl_rng_alloc(gsl_rng_taus);
     doc* doc;
     int i, k, n, d;
     double sum;
-    time_t seed;
-    (void) time(&seed);
-    if (verbose > 0) Rprintf("SEED = %ld\n", seed);
-    if (verbose > 0) Rprintf("USING 1115574245\n");
-    gsl_rng_set(r, (long) 1115574245);
-    // gsl_rng_set(r, (long) seed);
-    // gsl_rng_set(r, (long) 432403824);
+    if (verbose > 0) Rprintf("USING %d\n", seed);
+    gsl_rng_set(r, seed);
 
     // gaussian
     for (i = 0; i < ntopics-1; i++)
@@ -162,18 +156,14 @@ llna_model* corpus_init(int ntopics, corpus* corpus, int verbose)
  *
  */
 
-llna_model* random_init(int ntopics, int nterms, int verbose)
+llna_model* random_init(int ntopics, int nterms, int verbose, int seed)
 {
     int i, j;
     double sum, val;
     llna_model* model = new_llna_model(ntopics, nterms);
     gsl_rng * r = gsl_rng_alloc(gsl_rng_taus);
-    time_t t1;
-    (void) time(&t1);
-    // !!! DEBUG
-    // t1 = gsl_rng_set(r, (long) 1115574245);
-    if (verbose > 0) Rprintf("RANDOM SEED = %ld\n", t1);
-    gsl_rng_set(r, t1);
+    if (verbose > 0) Rprintf("RANDOM SEED = %ld\n", seed);
+    gsl_rng_set(r, seed);
 
     for (i = 0; i < ntopics-1; i++)
     {

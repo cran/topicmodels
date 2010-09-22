@@ -48,7 +48,7 @@ SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* co
   
   tp = PROTECT(allocVector(REALSXP, corpus->ndocs));
   for (i = 0; i < corpus->ndocs; i++) 
-    REAL(tp)[i] = log(gsl_vector_get(likelihood, i));
+    REAL(tp)[i] = gsl_vector_get(likelihood, i);
   SET_SLOT(ans, install("loglikelihood"), tp);
   UNPROTECT(1);
 
@@ -56,7 +56,7 @@ SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* co
   m  = REAL(tp);
   for (i = 0; i < model->k; i++)
     for (j = 0; j < corpus->nterms; j++)
-      m[i + model->k * j] = exp(gsl_matrix_get(model->log_beta, i, j));
+      m[i + model->k * j] = gsl_matrix_get(model->log_beta, i, j);
   SET_SLOT(ans, install("beta"), tp);
   UNPROTECT(1);
 
@@ -74,18 +74,18 @@ SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* co
   SET_SLOT(ans, install("Sigma"), tp);
   UNPROTECT(1);
 
-  tp = PROTECT(allocMatrix(REALSXP, corpus->ndocs, model->k));
+  tp = PROTECT(allocMatrix(REALSXP, corpus->ndocs, model->k - 1));
   m = REAL(tp);
   for (i = 0; i < corpus->ndocs; i++)
-    for (j = 0; j < model->k; j++)
+    for (j = 0; j < (model->k-1); j++)
       m[i + corpus->ndocs * j] = gsl_matrix_get(corpus_nu, i, j);
   SET_SLOT(ans, install("nusquared"), tp);
   UNPROTECT(1);
 
-  tp = PROTECT(allocMatrix(REALSXP, corpus->ndocs, model->k));
+  tp = PROTECT(allocMatrix(REALSXP, corpus->ndocs, model->k - 1));
   m = REAL(tp);
   for (i = 0; i < corpus->ndocs; i++)
-    for (j = 0; j < model->k; j++)
+    for (j = 0; j < model->k - 1; j++)
       m[i + corpus->ndocs * j] = gsl_matrix_get(corpus_lambda, i, j);
   SET_SLOT(ans, install("gamma"), tp);
   UNPROTECT(1);
@@ -94,7 +94,7 @@ SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* co
   total = 0;
   for (d = 0; d < corpus->ndocs; d++) {
     doc = &(corpus->docs[d]);
-    total += doc->total;
+    total += doc->nterms;
   }
   
   I = PROTECT(allocVector(INTSXP, total));
@@ -113,6 +113,7 @@ SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* co
       i++;
     }
   }
+
   SET_VECTOR_ELT(wordassign, 0, I); 
   SET_VECTOR_ELT(wordassign, 1, J);
   SET_VECTOR_ELT(wordassign, 2, V);
@@ -174,7 +175,7 @@ llna_model* R2llna_model(SEXP init_model)
   model->log_det_inv_cov = log_det(model->inv_cov);
   for (i = 0; i < ntopics; i++)
     for (j = 0; j < nterms; j++)
-      gsl_matrix_set(model->log_beta, i, j, log(REAL(GET_SLOT(init_model, install("beta")))[i + ntopics * j]));
+      gsl_matrix_set(model->log_beta, i, j, REAL(GET_SLOT(init_model, install("beta")))[i + ntopics * j]);
   return(model);
 }
 
@@ -401,9 +402,9 @@ llna_model* em_initial_model(int k, corpus* corpus, const char* start, SEXP init
     llna_model* model;
     if (PARAMS.verbose > 0) printf("starting from %s\n", start);
     if (strcmp(start, "rand")==0)
-      model = random_init(k, corpus->nterms, PARAMS.verbose);
+      model = random_init(k, corpus->nterms, PARAMS.verbose, PARAMS.seed);
     else if (strcmp(start, "seed")==0)
-      model = corpus_init(k, corpus, PARAMS.verbose);
+      model = corpus_init(k, corpus, PARAMS.verbose, PARAMS.seed);
     else
         model = R2llna_model(init_model);
     return(model);
@@ -436,7 +437,15 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   PARAMS.cg_convergence = *REAL(GET_SLOT(GET_SLOT(control, install("cg")), install("tol")));
   PARAMS.verbose = *INTEGER(GET_SLOT(control, install("verbose")));
   PARAMS.save = *INTEGER(GET_SLOT(control, install("save")));
-  PARAMS.cov_estimate = *LOGICAL(GET_SLOT(control, install("shrinkage.covariance")));
+  PARAMS.seed = *INTEGER(GET_SLOT(control, install("seed")));
+  /*   No shrinkage estimation is made because it is unclear what this option does. 
+       The estimator based on a simple hierarchical model proposed in
+       Daniels and Kass (2001) is used.  But sometimes rescaled eigenvalues
+       are used where weights depend on the index but ordering of the
+       eigenvalues is not ensured. */
+  //  PARAMS.cov_estimate = *LOGICAL(GET_SLOT(control, install("shrinkage.covariance")));//
+  PARAMS.cov_estimate = 0;
+
   NTOPICS = *INTEGER(AS_INTEGER(k));
 
   corpus = DocumentTermMatrix2Corpus(INTEGER(i),
@@ -473,7 +482,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   do
     {
       verbose = PARAMS.verbose > 0 && (iteration % PARAMS.verbose) == 0;
-      if (verbose) Rprintf("***** EM ITERATION %d *****\n", iteration);
+      if (verbose) Rprintf("***** EM ITERATION %d *****\n", iteration+1);
       
       expectation(corpus, model, ss, &avg_niter, &lhood,
 		  likelihood, 

@@ -2,15 +2,15 @@
 \alias{LDA}
 \title{Latent Dirichlet Allocation}
 \description{
-  Estimate a LDA model using the VEM algorithm or Gibbs Sampling.
+  Estimate a LDA model using for example the VEM algorithm or Gibbs Sampling.
 }
 \usage{
-LDA(x, k, method = c("VEM", "Gibbs"), control = NULL,
+LDA(x, k, method = "VEM", control = NULL,
     model = NULL, ...) 
 }
 \arguments{
   \item{x}{Object of class \code{"DocumentTermMatrix"}}
-  \item{k}{Integer; number of topics}
+  \item{k}{Integer; number of topics.}
   \item{method}{The method to be used for fitting; currently 
       \code{method = "VEM"} or \code{method= "Gibbs"} are
       supported.}
@@ -20,14 +20,13 @@ LDA(x, k, method = c("VEM", "Gibbs"), control = NULL,
   \item{\dots}{Optional arguments. Currently not used.}
 }
 \details{
-  The C code for LDA from David M. Blei is used to estimate and fit a
-  latent dirichlet allocation model with the VEM algorithm.
-
-  For Gibbs Sampling the C++ code from Xuan-Hieu Phan is used.
+  The C code for LDA from David M. Blei and co-authors is used to
+  estimate and fit a latent dirichlet allocation model with the VEM
+  algorithm. For Gibbs Sampling the C++ code from Xuan-Hieu Phan and
+  co-authors is used.
 }
 \value{
-  \code{LDA()} returns an object of class
-  \code{"\linkS4class{LDA}"}. 
+  \code{LDA()} returns an object of class \code{"\linkS4class{LDA}"}. 
 }
 \references{
   Blei D.M., Ng A.Y., Jordan M.I. (2003).
@@ -37,9 +36,8 @@ LDA(x, k, method = c("VEM", "Gibbs"), control = NULL,
   Phan X.H., Nguyen L.M., Horguchi S. (2008).
   Learning to Classify Short and Sparse Text & Web with Hidden Topics
   from Large-scale Data Collections.
-  In \dQuote{Proceedings of the 17th International World Wide Web
-    Conference (WWW 2008)}, pages 91--100.
-  Beijing, China.
+  In Proceedings of the 17th International World Wide Web Conference
+  (WWW 2008), pages 91--100, Beijing, China.
 }
 \author{Bettina Gruen}
 \seealso{\code{"\linkS4class{LDAcontrol}"}}
@@ -47,6 +45,6 @@ LDA(x, k, method = c("VEM", "Gibbs"), control = NULL,
 data("AssociatedPress", package = "topicmodels")
 lda <- LDA(AssociatedPress[1:20,], control = list(alpha = 0.1), k = 2)
 lda_inf <- LDA(AssociatedPress[21:30,], model = lda,
-               control = list(em = list(iter.max = -1L)))
+               control = list(estimate.beta = FALSE))
 }
 \keyword{models}

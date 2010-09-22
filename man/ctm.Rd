@@ -2,11 +2,10 @@
 \alias{CTM}
 \title{Correlated Topic Model}
 \description{
-  Estimate a CTM model using the VEM algorithm.
+  Estimate a CTM model using for example the VEM algorithm.
 }
 \usage{
-CTM(x, k, method = "VEM", control = NULL, model = NULL, 
-    ...)
+CTM(x, k, method = "VEM", control = NULL, model = NULL, ...)
 }
 \arguments{
   \item{x}{Object of class \code{"DocumentTermMatrix"}}
@@ -16,11 +15,11 @@ CTM(x, k, method = "VEM", control = NULL, model = NULL,
   \item{control}{A named list of the control parameters for estimation
     or an object of class \code{"CTM_VEMcontrol"}.}
   \item{model}{Object of class \code{"CTM"} for initialization.}
-  \item{\dots}{Optional arguments. Currently not used.}
+  \item{\dots}{Currently not used.}
 }
 \details{
-  The C code for CTM from David M. Blei is used to estimate and fit a
-  correlated topic model. 
+  The C code for CTM from David M. Blei and co-authors is used to
+  estimate and fit a correlated topic model.
 }
 \value{
   \code{CTM()} returns an object of class

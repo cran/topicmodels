@@ -4,7 +4,7 @@
 \title{Associated Press data}
 \description{
   Associated Press data from the First Text Retrieval Conference
-  (TREC-1) 1992 
+  (TREC-1) 1992.
 }
 \usage{data("AssociatedPress")}
 \format{
@@ -14,8 +14,8 @@
 }
 \source{
   Accompanying material to the source code for fitting LDA models
-  provided by David M. Blei. Downloaded from:
-  \url{http://www.cs.berkeley.edu/~blei}
+  provided by David M. Blei and co-authors. Downloaded from:
+  \url{http://www.cs.berkeley.edu/~blei}.
 }
 \references{
   D. Harman (1992) Overview of the first text retrieval conference

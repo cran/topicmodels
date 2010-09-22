@@ -9,14 +9,15 @@
   address =	 {Thousand Oaks, CA},
 }
 
-@Article{topicmodels:Griffiths+Steyvers+Tenenbaum:2007,
-  author =	 {Thomas L. Griffiths and Mark Steyvers and Joshua B. Tenenbaum},
-  title = 	 {Topics in Semantic Representation},
-  journal = 	 {Psychological Review},
-  year = 	 2007,
-  volume =	 114,
-  number =	 2,
-  pages =	 {211--244},
+@Article{topicmodels:Airoldi+Blei+Fienberg:2008,
+  author =	 {Edoardo M. Airoldi and David M. Blei and Stephen
+                  E. Fienberg and Eric P. Xing},
+  title =	 {Mixed Membership Stochastic Blockmodels},
+  journal =	 {Journal of Machine Learning Research},
+  year =	 2008,
+  volume =	 9,
+  pages =	 {1981--2014},
+  month =	 {September},
 }
 
 @Misc{topicmodels:Avery:2002,
@@ -24,17 +25,6 @@
   title =	 {Caenorrhabditis Genetic Center Bibliography},
   year =	 2002,
   url =		 {http://elegans.swmed.edu/wli/cgcbib},
-}
-
-@Article{topicmodels:Landauer+Dumais:1997,
-  author =	 {T. K. Landauer and S. T. Dumais},
-  title =	 {A Solution to Plato's Problem: The Latent Semantic
-                  Analysis Theory of Acquisition, Induction, and
-                  Representation of Knowledge},
-  journal =	 {Psychological Review},
-  year =	 1997,
-  volume =	 104,
-  pages =	 {211--240},
 }
 
 @Article{topicmodels:Blei+Lafferty:2007,
@@ -47,13 +37,27 @@
   pages =	 {17--35},
 }
 
-@InBook{topicmodels:Blei+Lafferty:2009,
+@InCollection{topicmodels:Blei+Lafferty:2009,
   author =	 {David M. Blei and John D. Lafferty},
   editor =	 {Ashok Srivastava and Mehran Sahami},
   title =	 {Topic Models},
-  booktitle =	 {Text Mining: Theory and Applications},
-  publisher =	 {Taylor and Francis},
+  booktitle =	 {Text Mining: Classification, Clustering, and
+                  Applications},
+  publisher =	 {Chapman \& Hall/CRC Press},
   year =	 2009,
+}
+
+@InCollection{topicmodels:Blei+McAucliffe:2007,
+  title =	 {Supervised Topic Models},
+  author =	 {David Blei and Jon McAuliffe},
+  booktitle =	 {Advances in Neural Information Processing Systems
+                  20},
+  editor =	 {J.C. Platt and D. Koller and Y. Singer and
+                  S. Roweis},
+  publisher =	 {MIT Press},
+  address =	 {Cambridge, MA},
+  pages =	 {121--128},
+  year =	 2008
 }
 
 @Article{topicmodels:Blei+Ng+Jordan:2003,
@@ -65,9 +69,44 @@
   pages =	 {993--1022},
 }
 
+@InProceedings{topicmodels:Chang+Blei:2009,
+  author =	 {Jonathan Chang and David M. Blei},
+  title =	 {Relational Topic Models for Document Networks},
+  booktitle =	 {AISTATS '09: Proceedings of the Twelfth
+                  International Conference on Artificial Intelligence
+                  and Statistics},
+  pages =	 {81--88},
+  year =	 2009,
+  editor =	 {David van Dyk and Max Welling},
+  volume =	 5,
+  series =	 {JMLR: Workshop and Conference Proceedings},
+  address =	 {Clearwater Beach, Florida}
+}
+
+@InProceedings{topicmodels:Chang+Boyd-Graber+Blei:2009,
+  author =	 {Jonathan Chang and Jordan L. Boyd-Graber and David
+                  M. Blei},
+  title =	 {Connections Between the Lines: Augmenting Social
+                  Networks with Text},
+  booktitle =	 {KDD '09: Proceedings of the 15th ACM SIGKDD
+                  International Conference on Knowledge Discovery and
+                  Data Mining},
+  pages =	 {169--178},
+  year =	 2009,
+}
+
+@Manual{topicmodels:Chang:2009,
+  title =	 {\pkg{lda}: Collapsed Gibbs Sampling Methods for
+                  Topic Models},
+  author =	 {Jonathan Chang},
+  year =	 2009,
+  note =	 {\proglang{R}~package version 1.2.1},
+  url =		 {http://CRAN.R-project.org/package=lda},
+}
+
 @Article{topicmodels:Csardi+Nepusz:2006,
-  title =	 {The igraph Software Package for Complex Network
-                  Research},
+  title =	 {The \pkg{igraph} Software Package for Complex
+                  Network Research},
   author =	 {Gabor Csardi and Tamas Nepusz},
   journal =	 {InterJournal},
   volume =	 {Complex Systems},
@@ -76,8 +115,29 @@
   url =		 {http://igraph.sf.net},
 }
 
+@Article{topicmodels:Daniels+Kass:2001,
+  author =	 {Michael J. Daniels and Robert E. Kass},
+  title =	 {Shrinkage Estimators for Covariance Matrices},
+  journal =	 {Biometrics},
+  year =	 2001,
+  volume =	 57,
+  number =	 4,
+  pages =	 {1173--1184},
+  month =	 {December},
+}
+
+@Article{topicmodels:Dempster+Laird+Rubin:1977,
+  author =	 {A. P. Dempster and N. M. Laird and D. B. Rubin},
+  title =	 {Maximum Likelihood from Incomplete Data Via the
+                  {EM}-Algorithm},
+  journal =	 {Journal of the Royal Statistical Society B},
+  volume =	 39,
+  pages =	 {1--38},
+  year =	 1977
+}
+
 @Article{topicmodels:Feinerer+Hornik+Meyer:2008,
-  title =	 {Text Mining Infrastructure in R},
+  title =	 {Text Mining Infrastructure in \proglang{R}},
   author =	 {Ingo Feinerer and Kurt Hornik and David Meyer},
   year =	 2008,
   journal =	 {Journal of Statistical Software},
@@ -85,6 +145,25 @@
   number =	 5,
   url =		 {http://www.jstatsoft.org/v25/i05/},
   month =	 {March},
+}
+
+@Manual{topicmodels:Feinerer:2010,
+  title =	 {\pkg{tm}: Text Mining Package},
+  author =	 {Ingo Feinerer},
+  year =	 2010,
+  note =	 {\proglang{R}~package version 0.5-4.},
+  url =		 {http://tm.r-forge.r-project.org/},
+}
+
+@Article{topicmodels:Griffiths+Steyvers+Tenenbaum:2007,
+  author =	 {Thomas L. Griffiths and Mark Steyvers and Joshua
+                  B. Tenenbaum},
+  title =	 {Topics in Semantic Representation},
+  journal =	 {Psychological Review},
+  year =	 2007,
+  volume =	 114,
+  number =	 2,
+  pages =	 {211--244},
 }
 
 @Article{topicmodels:Griffiths+Steyvers:2004,
@@ -99,6 +178,44 @@
   doi =		 {10.1073/pnas.0307752101}
 }
 
+@Manual{topicmodels:Hahsler+Buchta+Hornik:2010,
+  title =	 {\pkg{seriation}: Infrastructure for Seriation},
+  author =	 {Michael Hahsler and Christian Buchta and Kurt
+                  Hornik},
+  year =	 2010,
+  note =	 {\proglang{R}~package version 1.0-2},
+  url =		 {http://CRAN.R-project.org/package=seriation},
+}
+
+@Article{topicmodels:Hahsler+Hornik+Buchta:2008,
+  author =	 {Michael Hahsler and Kurt Hornik and Christian
+                  Buchta},
+  title =	 {Getting Things in Order: An Introduction to the
+                  \proglang{R} Package \pkg{seriation}},
+  journal =	 {Journal of Statistical Software},
+  volume =	 25,
+  number =	 3,
+  pages =	 {1--34},
+  day =		 18,
+  month =	 3,
+  year =	 2008,
+  URL =		 {http://www.jstatsoft.org/v25/i03},
+}
+
+@InProceedings{topicmodels:Hall+Jurafsky+Manning:2008,
+  author =	 {David Hall and Daniel Jurafsky and Christopher
+                  D. Manning},
+  title =	 {Studying the History of Ideas Using Topic Models},
+  booktitle =	 {2008 Conference on Empirical Methods in Natural
+                  Language Processing, EMNLP 2008, Proceedings of the
+                  Conference, 25-27 October 2008, Honolulu, Hawaii,
+                  USA, A meeting of SIGDAT, a Special Interest Group
+                  of the ACL},
+  year =	 2008,
+  publisher =	 {ACL},
+  pages =	 {363--371},
+}
+
 @InProceedings{topicmodels:Harman:1992,
   author =	 {Donna Harman},
   title =	 {Overview of the First Text Retrieval Conference
@@ -110,21 +227,96 @@
   editor =	 {Donna Harman},
 }
 
-@Manual{topicmodels:McCallum:2002,
-  author =	 {Andrew Kachites McCallum},
-  title =	 {MALLET: A Machine Learning for Language Toolkit},
-  url =		 {http://mallet.cs.umass.edu},
-  year =	 2002
+@Manual{topicmodels:Honrik+Meyer+Buchta:2010,
+  title =	 {\pkg{slam}: Sparse Lightweight Arrays and Matrices},
+  author =	 {Kurt Hornik and David Meyer and Christian Buchta},
+  year =	 2010,
+  note =	 {\proglang{R}~package version 0.1-15},
+  url =		 {http://CRAN.R-project.org/package=slam},
 }
 
-@InBook{topicmodels:Steyver+Griffiths:2007,
-  author =	 {Mark Steyvers and Tom Griffiths},
-  title =	 {Probabilistic Topic Models},
-  booktitle =	 {Handbook of Latent Semantic Analysis},
-  editor =	 {Thomas K. Landauer and Danielle S. McNamara and
-                  Simon Dennis and Walter Kintsch},
-  publisher =	 {Lawrence Erlbaum Associates},
-  year =	 2007
+@Article{topicmodels:Hornik:2005,
+  title =	 {A {CLUE} for {CLU}ster {E}nsembles},
+  author =	 {Kurt Hornik},
+  year =	 2005,
+  journal =	 {Journal of Statistical Software},
+  volume =	 14,
+  number =	 12,
+  url =		 {http://www.jstatsoft.org/v14/i12/},
+  month =	 {September},
+}
+
+@Manual{topicmodels:Hornik:2009,
+  title =	 {Snowball: Snowball Stemmers},
+  author =	 {Kurt Hornik},
+  year =	 {2009},
+  note =	 {\proglang{R}~package version 0.0-7},
+  url =		 {http://CRAN.R-project.org/package=Snowball},
+}
+
+@Manual{topicmodels:Hornik:2010,
+  title =	 {\pkg{clue}: Cluster Ensembles},
+  author =	 {Kurt Hornik},
+  year =	 2010,
+  note =	 {\proglang{R}~package version 0.3-36},
+  url =		 {http://CRAN.R-project.org/package=clue},
+}
+
+@Manual{topicmodels:Hornik:2010a,
+  title =	 {OAIHarvester: Harvest Metadata Using OAI-PMH v2.0},
+  author =	 {Kurt Hornik},
+  year =	 2010,
+  note =	 {\proglang{R}~package version 0.1-2},
+  url =		 {http://CRAN.R-project.org/package=OAIHarvester},
+}
+
+@Article{topicmodels:Landauer+Dumais:1997,
+  author =	 {T. K. Landauer and S. T. Dumais},
+  title =	 {A Solution to Plato's Problem: The Latent Semantic
+                  Analysis Theory of Acquisition, Induction, and
+                  Representation of Knowledge},
+  journal =	 {Psychological Review},
+  year =	 1997,
+  volume =	 104,
+  pages =	 {211--240},
+}
+
+@InCollection{topicmodels:Li+Wang+Xie:2008,
+  author =	 {Zhisheng Li and Chong Wang and Xing Xie and Xufa
+                  Wang and Wei-Ying Ma},
+  title =	 {Exploring {LDA}-Based Document Model for Geographic
+                  Information Retrieval},
+  booktitle =	 {Advances in Multilingual and Multimodal Information
+                  Retrieval},
+  series =	 {Lecture Notes in Computer Science},
+  editor =	 {Carol Peters and Valentin Jijkoun and Thomas Mandl
+                  and Henning M{\"u}ller and Douglas Oard and Anselmo
+                  Pe\~{n}as and Vivien Petras and Diana Santos},
+  publisher =	 {Springer Berlin / Heidelberg},
+  pages =	 {842--849},
+  volume =	 5152,
+  url =		 {http://dx.doi.org/10.1007/978-3-540-85760-0_108},
+  year =	 2008,
+}
+
+@Article{topicmodels:Lunn+Thomas+Best:2000,
+  author =	 {David J. Lunn and Andrew Thomas and Nicky Best and
+                  David Spiegelhalter},
+  title =	 {{WinBUGS}---{A} {B}ayesian Modelling Framework:
+                  {C}oncepts, Structure, and Extensibility},
+  journal =	 {Statistics and Computing},
+  year =	 2000,
+  volume =	 10,
+  number =	 4,
+  pages =	 {325--337},
+}
+
+@Manual{topicmodels:McCallum:2002,
+  author =	 {Andrew Kachites McCallum},
+  title =	 {\proglang{MALLET}: A Machine Learning for Language
+                  Toolkit},
+  url =		 {http://mallet.cs.umass.edu},
+  year =	 2002
 }
 
 @Unpublished{topicmodels:Mochihashi:2004,
@@ -133,6 +325,43 @@
                   {B}ayesian {L}atent {D}irichlet {A}llocation},
   url =		 {http://chasen.org/~daiti-m/paper/lda-fullvb.pdf},
   year =	 2004
+}
+
+@InProceedings{topicmodels:Nallapati+Cohen+Lafferty:2007,
+  author =	 {Ramesh Nallapati and William Cohen and John
+                  Lafferty},
+  title =	 {Parallelized Variational {EM} for {L}atent
+                  {D}irichlet {A}llocation: An Experimental Evaluation
+                  of Speed and Scalability},
+  booktitle =	 {ICDMW '07: Proceedings of the Seventh IEEE
+                  International Conference on Data Mining Workshops},
+  year =	 2007,
+  isbn =	 {0-7695-3033-8},
+  pages =	 {349--354},
+  doi =		 {http://dx.doi.org/10.1109/ICDMW.2007.70},
+  publisher =	 {IEEE Computer Society},
+  address =	 {Washington, DC, USA},
+}
+
+@Article{topicmodels:Newman+Asuncion+Smyth:2009,
+  author =	 {David Newman and Arthur Asuncion and Padhraic Smyth
+                  and Max Welling},
+  title =	 {Distributed Algorithms for Topic Models},
+  journal =	 {Journal of Machine Learning Research},
+  year =	 2009,
+  volume =	 10,
+  pages =	 {1801--1828},
+}
+
+@Article{topicmodels:Newton+Raftery:1994,
+  author =	 {Michael A. Newton and Adrian E. Raftery},
+  title =	 {Approximate {B}ayesian Inference with the Weighted
+                  Likelhood Bootstrap},
+  journal =	 {Journal of the Royal Statistical Society B},
+  year =	 1994,
+  volume =	 56,
+  number =	 1,
+  pages =	 {3--48},
 }
 
 @InProceedings{topicmodels:Phan+Nguyen+Horiguchi:2008,
@@ -148,18 +377,57 @@
   year =	 2008
 }
 
-@Manual{topicmodels:Wild:2009,
-  title =	 {lsa: Latent Semantic Analysis},
-  author =	 {Fridolin Wild},
-  year =	 2009,
-  note =	 {R package version 0.61},
+@InProceedings{topicmodels:Plummer:2003,
+  author =	 {Martyn Plummer},
+  title =	 {\proglang{JAGS}: A Program for Analysis of {B}ayesian
+                  Graphical Models Using {G}ibbs Sampling},
+  booktitle =	 {Proceedings of the 3rd International Workshop on
+                  Distributed Statistical Computing (DSC 2003)},
+  year =	 2003,
+  editor =	 {Kurt Hornik and Friedrich Leisch and Achim Zeileis},
+  address =	 {Technische Universit{\"a}t Wien, Vienna, Austria},
+  url =		 {http://www.ci.tuwien.ac.at/Conferences/DSC.html},
+  note =	 {{ISSN 1609-395X}}
 }
 
-@Manual{topicmodels:Chang:2009,
-  title =	 {lda: Collapsed Gibbs sampling methods for topic
-                  models},
-  author =	 {Jonathan Chang},
-  year =	 2009,
-  note =	 {R package version 1.1},
-  url =		 {http://CRAN.R-project.org/package=lda},
+@Manual{topicmodels:Plummer:2010,
+  title =	 {\pkg{rjags}: Bayesian Graphical Models Using {MCMC}},
+  author =	 {Martyn Plummer},
+  year =	 2010,
+  note =	 {\proglang{R}~package version 2.1.0-9},
+  url =		 {http://CRAN.R-project.org/package=rjags},
+}
+
+@InCollection{topicmodels:Steyvers+Griffiths:2007,
+  author =	 {Mark Steyvers and Tom Griffiths},
+  title =	 {Probabilistic Topic Models},
+  booktitle =	 {Handbook of Latent Semantic Analysis},
+  editor =	 {Thomas K. Landauer and Danielle S. McNamara and
+                  Simon Dennis and Walter Kintsch},
+  publisher =	 {Lawrence Erlbaum Associates},
+  year =	 2007
+}
+
+@Manual{topicmodels:Temple-Lang:2010,
+  title =	 {\pkg{XML}: Tools for Parsing and Generating {XML}
+                  Within \proglang{R} and \proglang{S-PLUS}.},
+  author =	 {Duncan {Temple Lang}},
+  year =	 2010,
+  note =	 {\proglang{R}~package version 3.1-1},
+  url =		 {http://CRAN.R-project.org/package=XML},
+}
+
+@InProceedings{topicmodels:Wei+Croft:2006,
+  author =	 {Xing Wei and W. Bruce Croft},
+  title =	 {{LDA}-Based Document Models for Ad-Hoc Retrieval},
+  booktitle =	 {SIGIR '06: Proceedings of the 29th Annual
+                  International ACM SIGIR Conference on Research and
+                  Development in Information Retrieval},
+  year =	 2006,
+  isbn =	 {1-59593-369-7},
+  pages =	 {178--185},
+  location =	 {Seattle, Washington, USA},
+  doi =		 {http://doi.acm.org/10.1145/1148170.1148204},
+  publisher =	 {ACM},
+  address =	 {New York, NY, USA},
 }

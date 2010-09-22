@@ -32,9 +32,5 @@
 
 #define	BUFF_SIZE_SHORT	512
 
-#define	MODEL_STATUS_UNKNOWN	0
-#define	MODEL_STATUS_EST	1
-#define	MODEL_STATUS_ESTC	2
-
 #endif
 

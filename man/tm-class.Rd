@@ -6,7 +6,7 @@
 \alias{show,TopicModel-method}
 \title{Virtual class "TopicModel"}
 \description{
-  Fitted topic models.
+  Fitted topic model.
 }
 \section{Objects from the Class}{
   Objects of class \code{"LDA"} are returned by \code{\link{LDA}()} and
@@ -15,18 +15,18 @@
 \section{Slots}{
   Class \code{"TopicModel"} contains
   \describe{
-    \item{\code{call}:}{Object of class \code{"call"}}
+    \item{\code{call}:}{Object of class \code{"call"}.}
     \item{\code{Dim}:}{Object of class \code{"integer"}; number of
       documents and terms.}
     \item{\code{control}:}{Object of class \code{"TopicModelcontrol"};
-      options using for estimating the topic model.}
+      options used for estimating the topic model.}
     \item{\code{k}:}{Object of class \code{"integer"}; number of
       topics.}
-    \item{\code{terms}:}{Vector containing the terms.}
+    \item{\code{terms}:}{Vector containing the term names.}
     \item{\code{documents}:}{Vector containing the document names.}
-    \item{\code{beta}:}{Object of class \code{"matrix"}; parameters of
-      the word distribution for each topic.}
-    \item{\code{gamma}:}{Object of class \code{"matrix"}; parameters for
+    \item{\code{beta}:}{Object of class \code{"matrix"}; logarithmized
+      parameters of the word distribution for each topic.}
+    \item{\code{gamma}:}{Object of class \code{"matrix"}; parameters of
       the posterior topic distribution for each document.}
     \item{\code{wordassignments}:}{Object of class
       \code{"simple_triplet_matrix"}; most probable topic for each
@@ -41,7 +41,7 @@
       approximated using the variational parameters and underestimates
       the log likelihood by the Kullback-Leibler divergence between the
       variational posterior probability and the true posterior
-      probability}
+      probability.}
   }
   
   Class \code{"LDA"} extends class \code{"TopicModel"} and has the additional
@@ -55,7 +55,7 @@
   the additional slots
   \describe{
     \item{\code{delta}:}{Object of class \code{"numeric"}; parameter for
-      the prior distribution of the words distribution for topics.}
+      the prior distribution of the word distribution for topics.}
   }
   
   Class \code{"CTM"} extends class \code{"TopicModel"} and has the additional
@@ -72,7 +72,7 @@
   slots
   \describe{
     \item{\code{nusqared}:}{Object of class \code{"matrix"}; variance of the
-      variational distribution on the mu.}		
+      variational distribution on the parameter mu.}		
   }  
 }
 \author{Bettina Gruen}

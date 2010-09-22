@@ -95,7 +95,6 @@ model::~model() {
     if (ndsum) {
 	delete[] ndsum;
     }
-    
     if (theta) {
 	for (m = 0; m < M; m++) {
 	    if (theta[m]) {
@@ -121,7 +120,6 @@ void model::set_default_values() {
     
     dir = "./";
     model_name = "model-final";    
-    model_status = MODEL_STATUS_UNKNOWN;
     
     ptrndata = NULL;
     
@@ -134,6 +132,8 @@ void model::set_default_values() {
     liter = 0;
     verbose = 200;    
     save = 0;
+    loglikelihood = 0;
+    estimate_phi = 1;
     
     p = NULL;
     z = NULL;
@@ -243,7 +243,7 @@ int model::save_model_others(string filename) {
     return 0;
 }
 
-int model::init(int *i, int *j, double *v, int length) {
+int model::init(int *i, int *j, double *v, int length, int seed) {
     int m, n, w, k;
     
     if (verbose > 0) Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
@@ -283,7 +283,7 @@ int model::init(int *i, int *j, double *v, int length) {
     	    nw[w][k] = 0;
         }
     }
-    srandom(time(0)); // initialize for random number generation
+    srandom(seed); // initialize for random number generation
     z = new int*[M];
     wordassign = new int*[M];
     for (m = 0; m < ptrndata->M; m++) {
@@ -315,11 +315,11 @@ int model::init(int *i, int *j, double *v, int length) {
     for (k = 0; k < K; k++) {
         phi[k] = new double[V];
     }    
-
+    if (estimate_phi == 1) compute_phi();
     return 0;
 }
 
-int model::initc(int *i, int *j, double *v, int length, double *Phi) {
+int model::initc(int *i, int *j, double *v, int length, int seed, double *Phi) {
     int m, n, w, k;
     
     if (verbose > 0) Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
@@ -359,7 +359,7 @@ int model::initc(int *i, int *j, double *v, int length, double *Phi) {
     	    nw[w][k] = 0;
         }
     }
-    srandom(time(0)); // initialize for random number generation
+    srandom(seed); // initialize for random number generation
     z = new int*[M];
     wordassign = new int*[M];
     for (m = 0; m < ptrndata->M; m++) {
@@ -369,7 +369,7 @@ int model::initc(int *i, int *j, double *v, int length, double *Phi) {
 	
         // initialize for z
         for (n = 0; n < N; n++) {
-	    int topic = get_z(m, n, Phi);
+	  int topic = get_z(m, n, Phi);
   	    z[m][n] = topic;
     	    // number of instances of word i assigned to topic j
     	    nw[ptrndata->docs[m]->words[n]][topic] += 1;
@@ -389,9 +389,16 @@ int model::initc(int *i, int *j, double *v, int length, double *Phi) {
 	
     phi = new double*[K];
     for (k = 0; k < K; k++) {
-        phi[k] = new double[V];
+      phi[k] = new double[V];
     }    
-    
+    if (estimate_phi == 0) {
+      for (int k = 0; k < K; k++) {
+	for (int w = 0; w < V; w++) {
+	  phi[k][w] = exp(Phi[k + K * w]);
+	}
+      }
+    }
+
     return 0;
 }
 
@@ -400,7 +407,7 @@ int model::get_z(int m, int n, double *Phi)
   int topic = 0;
   int w = ptrndata->docs[m]->words[n];
   for (int k = 0; k < K; k++) {
-    p[k] = Phi[k * (w  + 1)];
+    p[k] = exp(Phi[k + K * w]);
   }
   // cumulate multinomial parameters
   for (int k = 1; k < K; k++) {
@@ -437,7 +444,7 @@ void model::estimate() {
 	if ((save > 0) && (liter % save == 0)) {
 	  if (verbose > 0) Rprintf("Saving the model at iteration %d ...\n", liter);
 	  compute_theta();
-	  compute_phi();
+	  if (estimate_phi == 1) compute_phi();
 	  save_model(utilities::generate_model_name(liter));
 	  
 	} else if ((verbose > 0) && (liter % verbose == 0)) Rprintf("Iteration %d ...\n", liter);
@@ -445,7 +452,7 @@ void model::estimate() {
     
     if (verbose > 0) Rprintf("Gibbs sampling completed!\n");
     compute_theta();
-    compute_phi();
+    if (estimate_phi == 1) compute_phi();
     // compute wordassign;
     for (int m = 0; m < M; m++) {
       for (int n = 0; n < ptrndata->docs[m]->length; n++) {
@@ -467,10 +474,18 @@ int model::sampling(int m, int n) {
 
     double Vbeta = V * beta;
     double Kalpha = K * alpha;    
-    // do multinomial sampling via cumulative method
-    for (int k = 0; k < K; k++) {
+
+    if (estimate_phi == 1) {
+      // do multinomial sampling via cumulative method
+      for (int k = 0; k < K; k++) {
 	p[k] = (nw[w][k] + beta) / (nwsum[k] + Vbeta) *
-		    (nd[m][k] + alpha) / (ndsum[m] + Kalpha);
+	  (nd[m][k] + alpha) / (ndsum[m] + Kalpha);
+      }
+    } else {
+      for (int k = 0; k < K; k++) {
+	p[k] = phi[k][w] *
+	  (nd[m][k] + alpha) / (ndsum[m] + Kalpha);
+      }
     }
     // cumulate multinomial parameters
     for (int k = 1; k < K; k++) {
@@ -530,4 +545,15 @@ void model::compute_phi() {
 	    phi[k][w] = (nw[w][k] + beta) / (nwsum[k] + V * beta);
 	}
     }
+}
+
+void model::inference() {
+  double Vbeta = V * beta;
+  loglikelihood = K * (lgamma(Vbeta) - V * lgamma(beta));
+  for (int k = 0; k < K; k++) {
+    for (int w = 0; w < V; w++) {
+      loglikelihood += lgamma(nw[w][k] + beta);
+    }
+    loglikelihood -= lgamma(nwsum[k] + Vbeta);
+  }
 }

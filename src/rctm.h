@@ -10,7 +10,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <gsl/gsl_blas.h>
-#include <assert.h>
+// #include <assert.h>
 
 #include <R.h>
 #include <Rdefines.h>

@@ -71,8 +71,6 @@ void init_var_unif(llna_var_param * var, doc * doc, llna_model * mod);
 void init_var(llna_var_param *var, doc *doc, llna_model *mod, gsl_vector *lambda, gsl_vector *nu);
 void opt_nu_i(int i, llna_var_param * var, llna_model * mod, doc * d);
 double fixed_point_iter_i(int, llna_var_param *, llna_model *, doc *);
-double sample_lhood(llna_var_param* var, doc* d, llna_model* mod);
-void expected_theta(llna_var_param *var, doc* d, llna_model *mod, gsl_vector* v);
 double log_mult_prob(doc* d, gsl_vector* theta, gsl_matrix* log_beta);
 void write_word_assignment(FILE* f, doc* d, gsl_matrix* phi);
 

@@ -124,7 +124,7 @@ double doc_e_step(document* doc, double* gamma, double** phi,
  *
  */
 
-SEXP returnObjectLDA(SEXP ans, lda_model* model, corpus* corpus, double ***phi, double **phi_sums,
+SEXP returnObjectLDA(SEXP ans, lda_model* model, corpus* corpus, double ***phi, 
 		     double **var_gamma, double *likelihood) {
   SEXP tp, I, J, V, wordassign, nms, dn;
   SEXP ROWNAMES, COLNAMES;
@@ -157,16 +157,8 @@ SEXP returnObjectLDA(SEXP ans, lda_model* model, corpus* corpus, double ***phi, 
   tp = PROTECT(allocMatrix(REALSXP, model->num_topics, corpus->num_terms));
   for (i = 0; i < model->num_topics; i++)
     for (j = 0; j < corpus->num_terms; j++)
-      REAL(tp)[i + model->num_topics * j] = exp(model->log_prob_w[i][j]);
+      REAL(tp)[i + model->num_topics * j] = model->log_prob_w[i][j];
   SET_SLOT(ans, install("beta"), tp);
-  UNPROTECT(1);
-
-  tp = PROTECT(allocMatrix(REALSXP, corpus->num_docs, model->num_topics));
-  m = REAL(tp);
-  for (i = 0; i < corpus->num_docs; i++)
-    for (j = 0; j < model->num_topics; j++)
-      m[i + corpus->num_docs * j] = phi_sums[i][j];
-  SET_SLOT(ans, install("phi"), tp);
   UNPROTECT(1);
 
   tp = PROTECT(allocMatrix(REALSXP, corpus->num_docs, model->num_topics));
@@ -249,8 +241,8 @@ lda_model* R2lda_model(SEXP init_model)
     model->alpha = *REAL(GET_SLOT(init_model, install("alpha")));
      
     for (i = 0; i < num_topics; i++)
-      for (j = 0; j < num_terms; j++)
-	model->log_prob_w[i][j] = log(REAL(GET_SLOT(init_model, install("beta")))[i + num_topics * j]);
+      for (j = 0; j < num_terms; j++) 
+	model->log_prob_w[i][j] = REAL(GET_SLOT(init_model, install("beta")))[i + num_topics * j];
     return(model);
 }
 
@@ -295,7 +287,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   SEXP ans; 
   int l, d, n, max_length, verbose = 0;
   lda_model *model = NULL;
-  double **var_gamma, ***phi, **phi_sums, *llh;
+  double **var_gamma, ***phi, *llh;
   document* doc;
   FILE* likelihood_file = NULL;
   char filename[100];
@@ -309,6 +301,9 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   LAG = *INTEGER(GET_SLOT(control, install("verbose")));
   SAVE = *INTEGER(GET_SLOT(control, install("save")));
   ESTIMATE_ALPHA = *LOGICAL(GET_SLOT(control, install("estimate.alpha")));
+  SEED = *INTEGER(GET_SLOT(control, install("seed")));
+  seedMT(SEED);
+
   NTOPICS = *INTEGER(AS_INTEGER(k));
   INITIAL_ALPHA = *REAL(GET_SLOT(control, install("alpha")));
   corpus = DocumentTermMatrix2corpus(INTEGER(i),
@@ -327,11 +322,9 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 
   max_length = max_corpus_length(corpus);
   var_gamma = malloc(sizeof(double*)*(corpus->num_docs));
-  phi_sums = malloc(sizeof(double*)*(corpus->num_docs));
   phi = malloc(sizeof(double**)*(corpus->num_docs));
   for (d = 0; d < corpus->num_docs; d++) {
     var_gamma[d] = malloc(sizeof(double) * NTOPICS);
-    phi_sums[d] = malloc(sizeof(double) * NTOPICS);
     phi[d] = malloc(sizeof(double*)*max_length);
     for (n = 0; n < max_length; n++)
       phi[d][n] = malloc(sizeof(double) * NTOPICS);
@@ -372,7 +365,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
     likelihood_file = fopen(filename, "w");
   }
   
-  while (((converged < 0) || (converged > EM_CONVERGED) || (l <= 2)) && (l <= EM_MAX_ITER))
+  while (((converged < 0) || (converged > EM_CONVERGED) || (l <= 2)) && (l < EM_MAX_ITER))
     {
       l++; 
       verbose = (LAG > 0) && ((l % LAG) == 0);
@@ -424,11 +417,6 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
       if (verbose && ((d % 100) == 0) && (d>0)) Rprintf("final e step document %d\n",d);
       llh[d] = lda_inference(&(corpus->docs[d]), model, var_gamma[d], phi[d]);
       likelihood += llh[d];
-      for (l = 0; l < model->num_topics; l++) {
-	for (n = 0; n < doc->length; n++) {
-	  phi_sums[d][l] += phi[d][n][l];
-	}
-      }
     }
   // END CODE FROM run_em (lda-estimate.c)
   // BG: word assignments are not saved but returned in the R object
@@ -440,15 +428,13 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
     save_lda_model(model, filename);
     sprintf(filename,"%s/final.gamma",directory);
     save_gamma(filename, var_gamma, corpus->num_docs, model->num_topics);
-    sprintf(filename, "%s/final.phi-sum", directory);
-    save_gamma(filename, phi_sums, corpus->num_docs, model->num_topics);
   }
   
   // construct return object
   ans = PROTECT(NEW_OBJECT(MAKE_CLASS("LDA_VEM")));
-  ans = returnObjectLDA(ans, model, corpus, phi, phi_sums, var_gamma, llh);
+  ans = returnObjectLDA(ans, model, corpus, phi, var_gamma, llh);
 
-  free(phi); free(phi_sums); free(var_gamma); free(llh);
+  free(phi); free(var_gamma); free(llh);
   free(corpus); free_lda_model(model); 
   UNPROTECT(1);
   return(ans);

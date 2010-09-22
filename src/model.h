@@ -56,11 +56,6 @@ public:
 
     string dir;			// model directory
     string model_name;		// model name
-    int model_status;		// model status:
-				// MODEL_STATUS_UNKNOWN: unknown status
-				// MODEL_STATUS_EST: estimating from scratch
-				// MODEL_STATUS_ESTC: continue to estimate the model from a previous one
-				// MODEL_STATUS_INF: do inference
     int save;                   // save results into files
     dataset * ptrndata;	// pointer to training dataset object
 
@@ -72,7 +67,9 @@ public:
     int niters; // number of Gibbs sampling iterations
     int liter; // the iteration at which the model was saved
     int verbose; // saving period
+    int estimate_phi; // topic distribution estimated or fixed
 
+    double loglikelihood; // log P (w | z)
     double * p; // temp variable for sampling
     int ** z; // topic assignments for words, size M x doc.size()
     int ** wordassign; // most probable topic assignments for words, size M x doc.size()
@@ -95,8 +92,8 @@ public:
     void set_default_values();   
 
     // initialize the model
-    int init(int *i, int *j, double *v, int length);
-    int initc(int *i, int *j, double *v, int length, double *Phi);
+    int init(int *i, int *j, double *v, int length, int seed);
+    int initc(int *i, int *j, double *v, int length, int seed, double *Phi);
     int get_z(int m, int n, double *Phi);
     
     // save LDA model to files
@@ -112,6 +109,7 @@ public:
     
     // estimate LDA model using Gibbs sampling
     void estimate();
+    void inference();
     int sampling(int m, int n);
     int get_wordassign(int m, int n);
     void compute_theta();

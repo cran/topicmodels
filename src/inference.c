@@ -24,7 +24,7 @@
 #include <gsl/gsl_multimin.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
-#include <assert.h>
+// #include <assert.h>
 
 #include "gsl-wrappers.h"
 #include "ctm.h"
@@ -120,7 +120,7 @@ void lhood_bnd(llna_var_param* var, doc* doc, llna_model* mod)
         }
     }
     var->lhood = lhood;
-    assert(!isnan(var->lhood));
+    //    assert(!isnan(var->lhood));
 }
 
 
@@ -598,95 +598,6 @@ double sample_term(llna_var_param* var, doc* d, llna_model* mod, double* eta)
     for (i = 0; i < mod->k; i++)
         t2 += log(gsl_ran_gaussian_pdf(eta[i] - vget(var->lambda,i), sqrt(vget(var->nu,i))));
     return(t1-t2);
-}
-
-
-double sample_lhood(llna_var_param* var, doc* d, llna_model* mod)
-{
-    int nsamples, i, n;
-    double eta[mod->k];
-    double log_prob, sum = 0, v;
-    gsl_rng * r = gsl_rng_alloc(gsl_rng_taus);
-
-    gsl_rng_set(r, (long) 1115574245);
-    nsamples = 10000;
-
-    // for each sample
-    for (n = 0; n < nsamples; n++)
-    {
-        // sample eta from q(\eta)
-        for (i = 0; i < mod->k; i++)
-        {
-            v = gsl_ran_gaussian_ratio_method(r, sqrt(vget(var->nu,i)));
-            eta[i] = v + vget(var->lambda, i);
-        }
-        // compute p(w | \eta) - q(\eta)
-        log_prob = sample_term(var, d, mod, eta);
-        // update log sum
-        if (n == 0) sum = log_prob;
-        else sum = log_sum(sum, log_prob);
-        // Rprintf("%5.5f\n", (sum - log(n+1)));
-    }
-    sum = sum - log((double) nsamples);
-    return(sum);
-}
-
-
-/*
- * expected theta under a variational distribution
- *
- * (v is assumed allocated to the right length.)
- *
- */
-
-
-void expected_theta(llna_var_param *var, doc* d, llna_model *mod, gsl_vector* val)
-{
-    int nsamples, i, n;
-    double eta[mod->k];
-    double theta[mod->k];
-    double e_theta[mod->k];
-    double sum, w, v;
-    gsl_rng * r = gsl_rng_alloc(gsl_rng_taus);
-
-    gsl_rng_set(r, (long) 1115574245);
-    nsamples = 100;
-
-    // initialize e_theta
-    for (i = 0; i < mod->k; i++) e_theta[i] = -1;
-    // for each sample
-    for (n = 0; n < nsamples; n++)
-    {
-        // sample eta from q(\eta)
-        for (i = 0; i < mod->k; i++)
-        {
-            v = gsl_ran_gaussian_ratio_method(r, sqrt(vget(var->nu,i)));
-            eta[i] = v + vget(var->lambda, i);
-        }
-        // compute p(w | \eta) - q(\eta)
-        w = sample_term(var, d, mod, eta);
-        // compute theta
-        sum = 0;
-        for (i = 0; i < mod->k; i++)
-        {
-            theta[i] = exp(eta[i]);
-            sum += theta[i];
-        }
-        for (i = 0; i < mod->k; i++)
-            theta[i] = theta[i] / sum;
-        // update e_theta
-        for (i = 0; i < mod->k; i++)
-            e_theta[i] = log_sum(e_theta[i], w +  safe_log(theta[i]));
-    }
-    // normalize e_theta and set return vector
-    sum = -1;
-    for (i = 0; i < mod->k; i++)
-    {
-        e_theta[i] = e_theta[i] - log(nsamples);
-        sum = log_sum(sum, e_theta[i]);
-    }
-    for (i = 0; i < mod->k; i++)
-        vset(val, i, exp(e_theta[i] - sum));
 }
 
 /*

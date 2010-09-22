@@ -3,11 +3,11 @@
 
 #include <math.h>
 #include <float.h>
-#include <assert.h>
 #include <R.h>
 #include "lda.h"
 #include "utils.h"
 #include "common.h"
+// #include <assert.h>
 
 float VAR_CONVERGED;
 int VAR_MAX_ITER;

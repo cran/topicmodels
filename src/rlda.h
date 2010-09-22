@@ -6,7 +6,6 @@
 #include <math.h>
 #include <float.h>
 #include <string.h>
-#include <time.h>
 
 #include <R.h>
 #include <Rdefines.h>
@@ -24,6 +23,7 @@ int SAVE;
 double INITIAL_ALPHA;
 int LAG;
 int NTOPICS;
+int SEED;
 
 SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 	  SEXP control, SEXP k, SEXP prefix, SEXP init_model);

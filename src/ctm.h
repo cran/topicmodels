@@ -75,6 +75,7 @@ typedef struct llna_params
     int cov_estimate;
     int verbose;
     int save;
+    int seed;
 } llna_params;
 
 /*
@@ -111,8 +112,8 @@ typedef struct corpus {
 
 void write_llna_model(llna_model*, char*, int);
 llna_model* new_llna_model(int, int);
-llna_model* random_init(int, int, int);
-llna_model* corpus_init(int, corpus*, int);
+llna_model* random_init(int, int, int, int);
+llna_model* corpus_init(int, corpus*, int, int);
 llna_ss * new_llna_ss(llna_model*);
 void del_llna_ss(llna_ss*);
 void reset_llna_ss(llna_ss*);

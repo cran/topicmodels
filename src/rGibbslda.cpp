@@ -29,22 +29,24 @@
 #include "model.h"
 
 model lda(int *i, int *j, double *v, int length, 
-	  int niters, int verbose, int save, int K, int M, int V, double alpha, double beta,
-	  int model_status, string dir, double *init_phi) 
+	  int niters, int verbose, int save, int seed, int estimate_phi, int model_status, 
+	  int K, int M, int V, double alpha, double beta,
+	  string dir, double *init_phi) 
 {
   model lda;
   lda.niters = niters;
   lda.verbose = verbose;
   lda.save = save;
+  lda.estimate_phi = estimate_phi;
   lda.K = K;
   lda.M = M;
   lda.V = V;
   lda.alpha = alpha;
   lda.beta = beta;
-  lda.model_status = model_status;
   lda.dir = dir;
-  if (model_status == MODEL_STATUS_ESTC) lda.initc(i, j, v, length, init_phi); else lda.init(i, j, v, length);
+  if (model_status == 0) lda.initc(i, j, v, length, seed, init_phi); else lda.init(i, j, v, length, seed);
   lda.estimate();
+  lda.inference();
   return(lda);
 }
 
@@ -84,7 +86,7 @@ SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
   tp = PROTECT(allocMatrix(REALSXP, model->K, model->V));
   for (i = 0; i < model->K; i++)
     for (j = 0; j < model->V; j++)
-      REAL(tp)[i + model->K * j] = model->phi[i][j];
+      REAL(tp)[i + model->K * j] = log(model->phi[i][j]);
   SET_SLOT(ans, install("beta"), tp);
   UNPROTECT(1);
 
@@ -96,6 +98,11 @@ SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
   SET_SLOT(ans, install("gamma"), tp);
   UNPROTECT(1);
   
+  tp = PROTECT(allocVector(REALSXP, 1));
+  *REAL(tp) = model->loglikelihood;
+  SET_SLOT(ans, install("loglikelihood"), tp);
+  UNPROTECT(1);
+
   wordassign = PROTECT(allocVector(VECSXP, 6));
   total = 0;
   for (d = 0; d < model->M; d++) {
@@ -177,15 +184,10 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 {
   SEXP ans;
   double *init_phi;
-  int model_status;
 
-  if (strcmp(CHAR(asChar(initialize)), "model")==0) {
-    model_status = MODEL_STATUS_ESTC;
-    init_phi = REAL(GET_SLOT(init_model, install("beta")));
-  } else {
-    model_status = MODEL_STATUS_EST;
-    init_phi = NULL;
-  }
+  if (*INTEGER(initialize)==0) init_phi = REAL(GET_SLOT(init_model, install("beta")));
+  else init_phi = NULL;
+
   model model = lda(INTEGER(i),
 		    INTEGER(j),
 		    REAL(v),
@@ -193,12 +195,14 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 		    *INTEGER(GET_SLOT(control, install("iter"))),
 		    *INTEGER(GET_SLOT(control, install("verbose"))),
 		    *INTEGER(GET_SLOT(control, install("save"))),
-		    *INTEGER(AS_INTEGER(k)),
-		    *INTEGER(nrow),
+		    *INTEGER(GET_SLOT(control, install("seed"))),
+		    *LOGICAL(GET_SLOT(control, install("estimate.beta"))),
+		    *INTEGER(initialize),
+		    *INTEGER(k),
+		    *INTEGER(nrow), 
 		    *INTEGER(ncol),
 		    *REAL(GET_SLOT(control, install("alpha"))),
 		    *REAL(GET_SLOT(control, install("delta"))),
-		    model_status,
 		    CHAR(asChar(prefix)),
 		    init_phi);
   // construct return object

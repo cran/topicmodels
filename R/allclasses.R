@@ -11,12 +11,16 @@ setClass("OPTcontrol",
 
 setClass("TopicModelcontrol",
          representation(
+            seed       = "integer",
             verbose    = "integer",
             prefix     = "character",
             save       = "integer",
+            estimate.beta = "logical",
            "VIRTUAL"),
-         prototype(verbose = 0L,
-                   save = 0L))
+         prototype(seed = as.integer(Sys.time()),
+                   verbose = 0L,
+                   save = 0L,
+                   estimate.beta = TRUE))
 
 setMethod("initialize", "TopicModelcontrol", function(.Object, prefix, ...) {
   if (missing(prefix)) prefix <- tempfile()
@@ -30,8 +34,8 @@ setClass("VEMcontrol",
         em     = "OPTcontrol",
         initialize = "character",
         "VIRTUAL"),
-    prototype(var = new("OPTcontrol", iter.max = 500L, tol = 10^-5),
-              em = new("OPTcontrol", iter.max = 1000L, tol = 10^-3),
+    prototype(var = new("OPTcontrol", iter.max = 500L, tol = 10^-6),
+              em = new("OPTcontrol", iter.max = 1000L, tol = 10^-4),
               initialize = "random"))
 
 setMethod("initialize", "VEMcontrol", function(.Object, initialize = "random", ...) {
@@ -61,18 +65,28 @@ setMethod("initialize", "LDA_VEMcontrol", function(.Object, prefix, initialize =
 setClass("LDA_Gibbscontrol",
     representation(
         delta = "numeric",
-        iter = "integer"),
+        iter = "integer",
+        thin = "integer",
+        burnin = "integer",
+        best = "logical"),
     contains = "LDAcontrol", 
-    prototype(verbose = 0L,
-              iter = 2000L))
+    prototype(delta = 0.1,
+              verbose = 0L,
+              iter = 2000L,
+              burnin = 0L,
+              best = TRUE))
+
+setMethod("initialize", "LDA_Gibbscontrol", function(.Object, ...) {
+  .Object <- callNextMethod(.Object = .Object, ...)
+  if (length(.Object@thin) == 0) .Object@thin <- .Object@iter
+  invisible(.Object)
+})
 
 setClass("CTM_VEMcontrol",
     representation(
-                   cg = "OPTcontrol",
-                   shrinkage.covariance = "logical"),
+                   cg = "OPTcontrol"),
          contains = c("TopicModelcontrol", "VEMcontrol"),
          prototype(cg = new("OPTcontrol", iter.max = 500L, tol = 10^-5),
-                   verbose = 5L,
                    shrinkage.covariance = FALSE))
 
 setMethod("initialize", "CTM_VEMcontrol", function(.Object, prefix, initialize = "random", ...) {
@@ -94,11 +108,11 @@ setClass("TopicModel",
                   beta = "matrix",
                   gamma = "matrix",
                   wordassignments = "ANY",
+                  loglikelihood = "numeric",
                   "VIRTUAL"))
 
 setClass("VEM",
          representation(
-                        loglikelihood = "numeric",
                         "VIRTUAL"))
 
 setClass("LDA",
