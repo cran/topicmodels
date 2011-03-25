@@ -7,12 +7,14 @@
   of the terms for each topic for a fitted topic model.} 
 \usage{
 \S4method{posterior}{TopicModel,missing}(object, newdata, ...)
-\S4method{posterior}{TopicModel,ANY}(object, newdata, ...)
+\S4method{posterior}{TopicModel,ANY}(object, newdata, control = list(), ...)
 }
 \arguments{
   \item{object}{An object of class "TopicModel".}
   \item{newdata}{If missing the posteriors for the original observations
-    are returned.} 
+    are returned.}
+  \item{control}{A named list of the control parameters for estimation
+    or a suitable control object.}
   \item{\dots}{Currently not used.}
 }
 \author{Bettina Gruen}

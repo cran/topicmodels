@@ -125,12 +125,17 @@ double doc_e_step(document* doc, double* gamma, double** phi,
  */
 
 SEXP returnObjectLDA(SEXP ans, lda_model* model, corpus* corpus, double ***phi, 
-		     double **var_gamma, double *likelihood) {
+		     double **var_gamma, double *likelihood, int iter, double *logLiks, int keep_iter) {
   SEXP tp, I, J, V, wordassign, nms, dn;
   SEXP ROWNAMES, COLNAMES;
   document* doc;
   int i, j, d, total, n;
   double *m;
+
+  tp = PROTECT(allocVector(INTSXP, 1));
+  *INTEGER(tp) = iter;
+  SET_SLOT(ans, install("iter"), tp);
+  UNPROTECT(1);
 
   tp = PROTECT(allocVector(INTSXP, 1));
   *INTEGER(tp) = model->num_topics;
@@ -169,13 +174,21 @@ SEXP returnObjectLDA(SEXP ans, lda_model* model, corpus* corpus, double ***phi,
   SET_SLOT(ans, install("gamma"), tp);
   UNPROTECT(1);
    
+  if ((KEEP > 0) && (EM_MAX_ITER > 0)) {
+    tp = PROTECT(allocVector(REALSXP, keep_iter));
+    for (i = 0; i < keep_iter; i++) 
+      REAL(tp)[i] = logLiks[i];
+    SET_SLOT(ans, install("logLiks"), tp);
+    UNPROTECT(1);
+  }
+  
   wordassign = PROTECT(allocVector(VECSXP, 6));
   total = 0;
   for (d = 0; d < corpus->num_docs; d++) {
     doc = &(corpus->docs[d]);
     total += doc->length;
   }
-  
+
   I = PROTECT(allocVector(INTSXP, total));
   J = PROTECT(allocVector(INTSXP, total));
   V = PROTECT(allocVector(REALSXP, total));
@@ -285,9 +298,9 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   corpus* corpus;
   const char *start, *directory;
   SEXP ans; 
-  int l, d, n, max_length, verbose = 0;
+  int iter, keep_iter, d, n, max_length, verbose = 0;
   lda_model *model = NULL;
-  double **var_gamma, ***phi, *llh;
+  double **var_gamma, ***phi, *llh, *logLiks;
   document* doc;
   FILE* likelihood_file = NULL;
   char filename[100];
@@ -300,6 +313,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   EM_CONVERGED = *REAL(GET_SLOT(GET_SLOT(control, install("em")), install("tol")));
   LAG = *INTEGER(GET_SLOT(control, install("verbose")));
   SAVE = *INTEGER(GET_SLOT(control, install("save")));
+  KEEP = *INTEGER(GET_SLOT(control, install("keep")));
   ESTIMATE_ALPHA = *LOGICAL(GET_SLOT(control, install("estimate.alpha")));
   SEED = *INTEGER(GET_SLOT(control, install("seed")));
   seedMT(SEED);
@@ -323,6 +337,9 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   max_length = max_corpus_length(corpus);
   var_gamma = malloc(sizeof(double*)*(corpus->num_docs));
   phi = malloc(sizeof(double**)*(corpus->num_docs));
+  if ((KEEP > 0) && (EM_MAX_ITER > 0)) {
+    logLiks = malloc(sizeof(double*)*(ceil(EM_MAX_ITER/KEEP)));
+  }
   for (d = 0; d < corpus->num_docs; d++) {
     var_gamma[d] = malloc(sizeof(double) * NTOPICS);
     phi[d] = malloc(sizeof(double*)*max_length);
@@ -359,17 +376,19 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   
   // run expectation maximization
   
-  l = 0;
+  iter = 0;
+  keep_iter = 0;
+
   if (SAVE > 0) {
     sprintf(filename, "%s/likelihood.dat", directory);
     likelihood_file = fopen(filename, "w");
   }
   
-  while (((converged < 0) || (converged > EM_CONVERGED) || (l <= 2)) && (l < EM_MAX_ITER))
+  while (((converged < 0) || (converged > EM_CONVERGED) || (iter <= 2)) && (iter < EM_MAX_ITER))
     {
-      l++; 
-      verbose = (LAG > 0) && ((l % LAG) == 0);
-      if (verbose) Rprintf("**** em iteration %d ****\n", l);
+      iter++; 
+      verbose = (LAG > 0) && ((iter % LAG) == 0);
+      if (verbose) Rprintf("**** em iteration %d ****\n", iter);
       likelihood = 0;
       zero_initialize_ss(ss, model);
       
@@ -395,21 +414,30 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
       if (converged < 0) VAR_MAX_ITER = VAR_MAX_ITER * 2;
       likelihood_old = likelihood;
       
+      if ((KEEP > 0) && (EM_MAX_ITER > 0)) {
+	logLiks[keep_iter] = likelihood;
+	keep_iter++;
+      }
+		
       // output model and likelihood
       
       if (SAVE > 0) {
 	fprintf(likelihood_file, "%10.10f\t%5.5e\n", likelihood, converged);
 	fflush(likelihood_file);
-	if ((l % SAVE) == 0)
+	if ((iter % SAVE) == 0)
 	  {
-	    sprintf(filename,"%s/%03d",directory, l);
+	    sprintf(filename,"%s/%03d",directory, iter);
 	    save_lda_model(model, filename);
-	    sprintf(filename,"%s/%03d.gamma",directory, l);
+	    sprintf(filename,"%s/%03d.gamma",directory, iter);
 	    save_gamma(filename, var_gamma, corpus->num_docs, model->num_topics);
 	  }
       }
     }
-  
+
+  if (EM_MAX_ITER < 0) {
+    
+  }
+
   // output the word assignments (for visualization)
   
   for (d = 0; d < corpus->num_docs; d++) {
@@ -430,9 +458,13 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
     save_gamma(filename, var_gamma, corpus->num_docs, model->num_topics);
   }
   
+  if ((KEEP > 0) && (EM_MAX_ITER > 0)) {
+    logLiks = realloc(logLiks, sizeof(double*)*(keep_iter));
+  }
+
   // construct return object
-  ans = PROTECT(NEW_OBJECT(MAKE_CLASS("LDA_VEM")));
-  ans = returnObjectLDA(ans, model, corpus, phi, var_gamma, llh);
+  PROTECT(ans = NEW_OBJECT(MAKE_CLASS("LDA_VEM")));
+  ans = returnObjectLDA(ans, model, corpus, phi, var_gamma, llh, iter, logLiks, keep_iter);
 
   free(phi); free(var_gamma); free(llh);
   free(corpus); free_lda_model(model); 

@@ -29,7 +29,7 @@
 #include "model.h"
 
 model lda(int *i, int *j, double *v, int length, 
-	  int niters, int verbose, int save, int seed, int estimate_phi, int model_status, 
+	  int niters, int verbose, int save, int keep, int seed, int estimate_phi, int model_status, 
 	  int K, int M, int V, double alpha, double beta,
 	  string dir, double *init_phi) 
 {
@@ -37,6 +37,7 @@ model lda(int *i, int *j, double *v, int length,
   lda.niters = niters;
   lda.verbose = verbose;
   lda.save = save;
+  lda.keep = keep;
   lda.estimate_phi = estimate_phi;
   lda.K = K;
   lda.M = M;
@@ -61,6 +62,11 @@ SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
   int total, i, j, d;
   int *It, *Jt, *word_new;
   double *m, *Vt;
+
+  tp = PROTECT(allocVector(INTSXP, 1));
+  *INTEGER(tp) = model->niters;
+  SET_SLOT(ans, install("iter"), tp);
+  UNPROTECT(1);
 
   tp = PROTECT(allocVector(INTSXP, 1));
   *INTEGER(tp) = model->K;
@@ -102,6 +108,15 @@ SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
   *REAL(tp) = model->loglikelihood;
   SET_SLOT(ans, install("loglikelihood"), tp);
   UNPROTECT(1);
+
+  if (model->keep > 0) {
+    int keepiter = ceil(model->niters/model->keep);
+    tp = PROTECT(allocVector(REALSXP, keepiter));
+    for (i = 0; i < keepiter; i++) 
+      REAL(tp)[i] = model->logLiks[i];
+    SET_SLOT(ans, install("logLiks"), tp);
+    UNPROTECT(1);
+  }
 
   wordassign = PROTECT(allocVector(VECSXP, 6));
   total = 0;
@@ -195,6 +210,7 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 		    *INTEGER(GET_SLOT(control, install("iter"))),
 		    *INTEGER(GET_SLOT(control, install("verbose"))),
 		    *INTEGER(GET_SLOT(control, install("save"))),
+		    *INTEGER(GET_SLOT(control, install("keep"))),
 		    *INTEGER(GET_SLOT(control, install("seed"))),
 		    *LOGICAL(GET_SLOT(control, install("estimate.beta"))),
 		    *INTEGER(initialize),
@@ -206,7 +222,7 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 		    CHAR(asChar(prefix)),
 		    init_phi);
   // construct return object
-  ans = PROTECT(NEW_OBJECT(MAKE_CLASS("LDA_Gibbs")));
+  PROTECT(ans = NEW_OBJECT(MAKE_CLASS("LDA_Gibbs")));
   ans = returnObjectGibbsLDA(ans, &model);
   UNPROTECT(1);
   return(ans);

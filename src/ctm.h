@@ -76,6 +76,7 @@ typedef struct llna_params
     int verbose;
     int save;
     int seed;
+    int keep;
 } llna_params;
 
 /*

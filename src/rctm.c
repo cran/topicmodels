@@ -26,7 +26,7 @@
  */
 
 SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* corpus_lambda, gsl_matrix* corpus_nu,
-		     gsl_matrix* corpus_phi_sum, llna_var_param** var, gsl_vector* likelihood) 
+		     gsl_matrix* corpus_phi_sum, llna_var_param** var, gsl_vector* likelihood, int iter, double* logLiks, int keep_iter) 
 {
   SEXP tp, I, J, V, wordassign, nms, dn;
   SEXP ROWNAMES, COLNAMES;
@@ -34,6 +34,11 @@ SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* co
   int i, j, d, total, n;
   double *m;
   gsl_vector phi_row;
+
+  tp = PROTECT(allocVector(INTSXP, 1));
+  *INTEGER(tp) = iter;
+  SET_SLOT(ans, install("iter"), tp);
+  UNPROTECT(1);
 
   tp = PROTECT(allocVector(INTSXP, 1));
   *INTEGER(tp) = model->k;
@@ -89,6 +94,14 @@ SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* co
       m[i + corpus->ndocs * j] = gsl_matrix_get(corpus_lambda, i, j);
   SET_SLOT(ans, install("gamma"), tp);
   UNPROTECT(1);
+
+  if ((PARAMS.keep > 0) && (PARAMS.em_max_iter > 0)) {
+    tp = PROTECT(allocVector(REALSXP, keep_iter));
+    for (i = 0; i < keep_iter; i++) 
+      REAL(tp)[i] = logLiks[i];
+    SET_SLOT(ans, install("logLiks"), tp);
+    UNPROTECT(1);
+  }
 
   wordassign = PROTECT(allocVector(VECSXP, 6));
   total = 0;
@@ -162,6 +175,7 @@ llna_model* R2llna_model(SEXP init_model)
 
   nterms = INTEGER(GET_SLOT(init_model, install("Dim")))[1];
   ntopics = *INTEGER(GET_SLOT(init_model, install("k")));
+
 
   // allocate model
   model = new_llna_model(ntopics, nterms);
@@ -422,10 +436,11 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   time_t t1,t2;
   double avg_niter, converged_pct, old_conv = 0;
   gsl_vector *likelihood;
+  double *logLiks;
   gsl_matrix *corpus_lambda, *corpus_nu, *corpus_phi_sum;
   short reset_var = 1;
   const char *start, *dir;
-  int NTOPICS, d, iteration, verbose;
+  int NTOPICS, d, iteration, keep_iter, verbose;
   llna_var_param **var;
   SEXP ans;
      
@@ -438,6 +453,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   PARAMS.verbose = *INTEGER(GET_SLOT(control, install("verbose")));
   PARAMS.save = *INTEGER(GET_SLOT(control, install("save")));
   PARAMS.seed = *INTEGER(GET_SLOT(control, install("seed")));
+  PARAMS.keep = *INTEGER(GET_SLOT(control, install("keep")));
   /*   No shrinkage estimation is made because it is unclear what this option does. 
        The estimator based on a simple hierarchical model proposed in
        Daniels and Kass (2001) is used.  But sometimes rescaled eigenvalues
@@ -466,7 +482,10 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
     sprintf(string, "%s/likelihood.dat", dir);
     lhood_fptr = fopen(string, "w");
   }
-  
+  if ((PARAMS.keep > 0) && (PARAMS.em_max_iter > 0)) {
+    logLiks = malloc(sizeof(double*)*(ceil(PARAMS.em_max_iter/PARAMS.keep)));
+  }
+
   // run em
 
   model = em_initial_model(NTOPICS, corpus, start, init_model);
@@ -476,10 +495,11 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   corpus_phi_sum = gsl_matrix_alloc(corpus->ndocs, model->k);
   (void) time(&t1);
   init_temp_vectors(model->k-1); // !!! hacky
-  iteration = 0;
+  keep_iter = iteration = 0;
   sprintf(string, "%s/start", dir);
   if (PARAMS.save > 0) write_llna_model(model, string, PARAMS.verbose);
-  do
+  while ((iteration < PARAMS.em_max_iter) &&
+	 ((convergence > PARAMS.em_convergence) || (convergence < 0)))
     {
       verbose = PARAMS.verbose > 0 && (iteration % PARAMS.verbose) == 0;
       if (verbose) Rprintf("***** EM ITERATION %d *****\n", iteration+1);
@@ -490,6 +510,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 		  reset_var, &converged_pct, var,
 		  verbose);
       convergence = (lhood_old - lhood) / lhood_old;
+
       if (PARAMS.save > 0) {
 	(void) time(&t2);
 	fprintf(lhood_fptr, "%d %5.5e %5.5e %5.0f %5.5f %1.5f\n",
@@ -514,6 +535,10 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
         }
       else
         {
+	  if ((PARAMS.keep > 0) && (PARAMS.em_max_iter > 0)) {
+	    logLiks[keep_iter] = lhood;
+	    keep_iter++;
+	  }
 	  maximization(model, ss);
 	  lhood_old = lhood;
 	  reset_var = 1;
@@ -524,9 +549,16 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
       reset_llna_ss(ss);
       old_conv = convergence;
     }
-  while ((iteration < PARAMS.em_max_iter) &&
-	 ((convergence > PARAMS.em_convergence) || (convergence < 0)));
-  
+
+  if (PARAMS.em_max_iter < 0) {
+    expectation(corpus, model, ss, &avg_niter, &lhood,
+		likelihood, 
+		corpus_lambda, corpus_nu, corpus_phi_sum,
+		reset_var, &converged_pct, var,
+		verbose);
+  }
+
+
   if (PARAMS.save > 0) {
     sprintf(string, "%s/final", dir);
     write_llna_model(model, string, PARAMS.verbose);
@@ -537,10 +569,13 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
     fclose(lhood_fptr);
   }
   // END CODE FROM em (estimate.c)
+  if ((PARAMS.keep > 0) && (PARAMS.em_max_iter > 0)) {
+    logLiks = realloc(logLiks, sizeof(double*)*(keep_iter));
+  }
 
   // construct return object
-  ans = PROTECT(NEW_OBJECT(MAKE_CLASS("CTM_VEM")));
-  ans = returnObjectCTM(ans, model, corpus, corpus_lambda, corpus_nu, corpus_phi_sum, var, likelihood);
+  PROTECT(ans = NEW_OBJECT(MAKE_CLASS("CTM_VEM")));
+  ans = returnObjectCTM(ans, model, corpus, corpus_lambda, corpus_nu, corpus_phi_sum, var, likelihood, iteration, logLiks, keep_iter);
 
   for (d = 0; d < corpus->ndocs; d++) free_llna_var_param(var[d]);
   free(var); free(corpus); free(ss); free(model);

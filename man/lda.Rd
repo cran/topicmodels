@@ -5,11 +5,12 @@
   Estimate a LDA model using for example the VEM algorithm or Gibbs Sampling.
 }
 \usage{
-LDA(x, k, method = "VEM", control = NULL,
-    model = NULL, ...) 
+LDA(x, k, method = "VEM", control = NULL, model = NULL, ...) 
 }
 \arguments{
-  \item{x}{Object of class \code{"DocumentTermMatrix"}}
+  \item{x}{Object of class \code{"DocumentTermMatrix"} with
+    term-frequency weighting or an object coercible to a
+    \code{"simple_triplet_matrix"} with integer entries.}
   \item{k}{Integer; number of topics.}
   \item{method}{The method to be used for fitting; currently 
       \code{method = "VEM"} or \code{method= "Gibbs"} are

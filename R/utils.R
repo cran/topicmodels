@@ -5,13 +5,16 @@ function(object, newdata, ...) {
 })
 
 setMethod("posterior", signature(object = "TopicModel", newdata = "ANY"),
-function(object, newdata, ...) {
-  if (!is(newdata, "DocumentTermMatrix")) stop("newdata is of class ", dQuote(class(newdata)),
-                                               " but should be of class 'DocumentTermMatrix'")
+function(object, newdata, control = list(), ...) {
+  if (!is(newdata, "simple_triplet_matrix"))  {
+    newdata <- slam::as.simple_triplet_matrix(newdata)
+  }
   CLASS <- strsplit(class(object), "_")[[1]]
+  control <- as(control, paste(class(object), "control", sep = ""))
+  control@estimate.beta <- FALSE
   list(terms = exp(object@beta),
        topics = get(CLASS[1])(newdata, method = CLASS[2], 
-         model = object, control = list(estimate.beta = FALSE))@gamma)
+         model = object, control = control)@gamma)
 })
 
 setGeneric("terms")
@@ -72,6 +75,9 @@ function(object, ...) {
   val
 })
 
+setMethod("logLik", signature(object="Gibbs_list"),
+function(object, ...) sapply(object@fitted, logLik))
+
 distHellinger <- function(x, y, ...) UseMethod("distHellinger")
 
 distHellinger.default <- function(x, y, ...) 
@@ -114,3 +120,113 @@ distHellinger.simple_triplet_matrix <- function(x, y, ...)
 
 get_terms <- function(...) terms(...)
 get_topics <- function(...) topics(...)
+
+ldaformat2dtm <- function(documents, vocab) {
+  dtm <- list(i = rep(seq_along(documents), sapply(documents, ncol)),
+              j = as.integer(unlist(lapply(documents, "[", 1, TRUE)) + 1L),
+              v = as.integer(unlist(lapply(documents, "[", 2, TRUE))),        
+              nrow = length(documents),
+              ncol = length(vocab),
+              dimnames = list(names(documents),
+                vocab),
+              Weighting = c("term frequency", "tf"))
+  class(dtm) <- c("DocumentTermMatrix", "simple_triplet_matrix")
+  dtm
+}
+
+dtm2ldaformat <- function(x) {
+  split.matrix <- 
+    function (x, f, drop = FALSE, ...) 
+      lapply(split(seq_len(ncol(x)), f, drop = drop, ...),
+             function(ind) x[,ind, drop = FALSE])
+
+  documents <- split(rbind(as.vector(x$j) - 1L, as.vector(x$v)), x$i)
+  names(documents) <- rownames(x)
+  list(documents = documents,
+       vocab = colnames(x))
+}
+
+setOldClass("DocumentTermMatrix")
+setOldClass("simple_triplet_matrix")
+
+setGeneric("perplexity", function(object, newdata, ...) standardGeneric("perplexity"))
+
+setMethod("perplexity", signature(object = "VEM", newdata = "missing"), function(object, newdata, ...)  
+  exp(-as.numeric(logLik(object))/object@n))
+
+setMethod("perplexity", signature(object = "ANY", newdata = "matrix"), function(object, newdata, ...) 
+          perplexity(object, slam::as.simple_triplet_matrix(newdata), ...))
+
+setMethod("perplexity", signature(object = "ANY", newdata = "DocumentTermMatrix"), function(object, newdata, ...)  {
+  class(newdata) <- "simple_triplet_matrix"
+  perplexity(object, newdata, ...)
+})  
+
+setMethod("perplexity", signature(object = "VEM", newdata = "simple_triplet_matrix"), function(object, newdata, control, ...) {
+  CLASS <- strsplit(class(object), "_")[[1]]
+  if (missing(control)) {
+    control <- object@control
+  } else {
+    control <- as(control, paste(class(object), "control", sep = ""))
+  }
+  control@estimate.beta <- FALSE
+  control@nstart <- 1L
+  object_inf <- get(CLASS[1])(newdata, method = CLASS[2], model = object, control = control)
+  perplexity(object_inf, ...)
+})
+
+setMethod("perplexity", signature(object = "Gibbs", newdata = "simple_triplet_matrix"), function(object, newdata, control, use_theta = TRUE, estimate_theta = TRUE, ...) {
+  if (use_theta) {
+    if (estimate_theta) {
+      CLASS <- strsplit(class(object), "_")[[1]]
+      if (missing(control)) {
+        control <- object@control
+      } else {
+        control <- as(control, paste(class(object), "control", sep = ""))
+      }
+      control@estimate.beta <- FALSE
+      control@nstart <- 1L
+      object <- get(CLASS[1])(newdata, method = CLASS[2], model = object, control = control)
+    }
+    return(exp(-sum(log(colSums(exp(object@beta[,newdata$j]) * t(object@gamma)[,newdata$i])) * newdata$v)/sum(newdata$v)))
+  } else {
+    return(exp(-sum(log(colSums(exp(object@beta[,newdata$j])/object@k)) * newdata$v)/sum(newdata$v)))
+  }
+})
+
+setMethod("perplexity", signature(object = "Gibbs_list", newdata = "simple_triplet_matrix"), function(object, newdata, control, use_theta = TRUE, estimate_theta = TRUE, ...) {
+  if (use_theta) {
+    if (estimate_theta) {
+      CLASS <- strsplit(class(object@fitted[[1]]), "_")[[1]]
+      if (missing(control)) {
+        control <- lapply(object@fitted, slot, "control")
+      } else {
+        control <- rep(list(as(control, paste(class(object@fitted[[1]]), "control", sep = ""))), length(object@fitted))
+      }
+      object@fitted <- lapply(seq_along(object@fitted), function(i) {
+        control[[i]]@estimate.beta <- FALSE
+        control[[i]]@nstart <- 1L
+        control[[i]]@iter <- control[[i]]@thin
+        control[[i]]@best <- TRUE
+        get(CLASS[1])(newdata, method = CLASS[2], 
+                      model = object@fitted[[i]], control = control[[i]])
+      })
+    } else if (nrow(newdata) != nrow(object@fitted[[1]]@gamma)) stop("newdata needs to have the same number of documents")
+    logs <- sapply(object@fitted, function(z)
+                   log(colSums(exp(z@beta[,newdata$j]) * t(z@gamma)[,newdata$i])))
+  } else {
+    logs <- sapply(object@fitted, function(z)
+                   log(colSums(exp(z@beta[,newdata$j])/z@k)))
+  }
+  exp(-sum(log(rowMeans(exp(logs))) * newdata$v)/sum(newdata$v))
+})
+
+setMethod("perplexity", signature(object = "list", newdata = "missing"), function(object, newdata, ...) {
+  if (any(!sapply(object, inherits, "VEM"))) stop("if newdata is missing only VEM objects can be used")
+  exp(-mean(sapply(object, logLik))/object[[1]]@n)
+}) 
+
+setMethod("perplexity", signature(object = "list", newdata = "simple_triplet_matrix"), function(object, newdata, ...) {
+  perplexities <- sapply(object, perplexity, newdata = newdata, ...)
+  exp(mean(log(perplexities)))
+})

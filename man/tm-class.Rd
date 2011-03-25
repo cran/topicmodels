@@ -28,6 +28,13 @@
       parameters of the word distribution for each topic.}
     \item{\code{gamma}:}{Object of class \code{"matrix"}; parameters of
       the posterior topic distribution for each document.}
+    \item{\code{iter}:}{Object of class \code{"integer"}; the number of
+      iterations made.}
+    \item{\code{logLiks}:}{Object of class \code{"numeric"}; the vector
+      of kept intermediate log-likelihood values of the corpus. See
+      \code{loglikelihood} how the log-likelihood is determined.}
+    \item{\code{n}:}{Object of class \code{"integer"}; number of words
+      in the data used.}
     \item{\code{wordassignments}:}{Object of class
       \code{"simple_triplet_matrix"}; most probable topic for each
       observed word in each document.}
@@ -36,10 +43,10 @@
   Class \code{"VEM"} contains
   \describe{
     \item{\code{loglikelihood}:}{Object of class \code{"numeric"}; the
-      log likelihood of each document given the parameters for the topic
+      log-likelihood of each document given the parameters for the topic
       distribution and for the word distribution of each topic is
       approximated using the variational parameters and underestimates
-      the log likelihood by the Kullback-Leibler divergence between the
+      the log-likelihood by the Kullback-Leibler divergence between the
       variational posterior probability and the true posterior
       probability.}
   }
@@ -47,6 +54,9 @@
   Class \code{"LDA"} extends class \code{"TopicModel"} and has the additional
   slots
   \describe{
+    \item{\code{loglikelihood}:}{Object of class \code{"numeric"}; the
+      posterior likelihood of the corpus conditional on the topic
+      assignments is returned.}
     \item{\code{alpha}:}{Object of class \code{"numeric"}; parameter of
       the Dirichlet distribution for topics over documents.}
   }

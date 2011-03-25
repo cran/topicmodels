@@ -1,3 +1,28 @@
+Changes in topicmodels version 0.0-8
+
+  o A function perplexity() added for model validation and selection. 
+	
+  o The input data for LDA() and CTM() can now either be a
+    "DocumentTermMatrix" with term-frequency weighting or an object
+    coercible to a "simple_triplet_matrix" with integer entries.
+
+  o A bug in the C++ Gibbs sampling code fixed for the random number
+    generation. Thanks to Uwe Ligges for pointing the problem out
+    which he noted when checking the package for the Windows
+    platform.
+
+  o New control arguments added for keeping intermediate
+    log-likelihood values during estimation and running repeated runs
+    with random initilization.  In addition the number of iterations
+    made is now saved with the fitted model.
+
+  o Functions ldaformat2dtm() and dtm2ldaformat() added to transform data
+    from the lda package into a "DocumentTermMatrix" object and vice
+    versa.
+    
+  o Bug fixed in rctm.c where for estimate.beta = FALSE one EM step
+    was performed.
+
 Changes in topicmodels version 0.0-7
 
   o The control for topic models now also has a seed argument to
@@ -30,7 +55,7 @@ Changes in topicmodels version 0.0-6
 Changes in topicmodels version 0.0-5
 
   o Header files changed in utilities.cpp following an advice by
-    Prof. Brian Ripley.
+    Prof. Brian D. Ripley.
 
 Changes in topicmodels version 0.0-4
 

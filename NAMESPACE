@@ -9,7 +9,10 @@ export(LDA,
        distHellinger,
        get_terms,
        get_topics,
+       dtm2ldaformat,
+       ldaformat2dtm,
        build_graph,
+       perplexity,
        terms,
        topics)
 

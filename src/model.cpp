@@ -50,6 +50,11 @@ using namespace std;
 
 model::~model() {
   int m, k, w;
+
+    if (logLiks) {
+      delete[] logLiks;
+    }
+
     if (p) {
 	delete[] p;
     }
@@ -132,9 +137,11 @@ void model::set_default_values() {
     liter = 0;
     verbose = 200;    
     save = 0;
+    keep = 0;
     loglikelihood = 0;
     estimate_phi = 1;
     
+    logLiks = NULL;
     p = NULL;
     z = NULL;
     wordassign = NULL;
@@ -248,6 +255,10 @@ int model::init(int *i, int *j, double *v, int length, int seed) {
     
     if (verbose > 0) Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
     p = new double[K];
+    if (keep > 0) {
+      int keep_iter = ceil(niters/keep);
+      logLiks = new double[keep_iter];
+    }
 
     // + read training data
     ptrndata = new dataset(M, V);
@@ -290,10 +301,13 @@ int model::init(int *i, int *j, double *v, int length, int seed) {
 	int N = ptrndata->docs[m]->length;
 	z[m] = new int[N];
 	wordassign[m] = new int[N];
+    	for (w = 0; w < N; w++) {
+    	  wordassign[m][w] = 0;
+    	}
 	
         // initialize for z
         for (n = 0; n < N; n++) {
-    	    int topic = (int)(((double)random() / RAND_MAX) * K);
+	    int topic = (random() % K);
     	    z[m][n] = topic;
     	    // number of instances of word i assigned to topic j
     	    nw[ptrndata->docs[m]->words[n]][topic] += 1;
@@ -309,11 +323,17 @@ int model::init(int *i, int *j, double *v, int length, int seed) {
     theta = new double*[M];
     for (m = 0; m < M; m++) {
         theta[m] = new double[K];
+    	for (k = 0; k < K; k++) {
+    	  theta[m][k] = 0;
+    	}
     }
 	
     phi = new double*[K];
     for (k = 0; k < K; k++) {
         phi[k] = new double[V];
+    	for (w = 0; w < V; w++) {
+    	  phi[k][w] = 0;
+    	}
     }    
     if (estimate_phi == 1) compute_phi();
     return 0;
@@ -324,6 +344,10 @@ int model::initc(int *i, int *j, double *v, int length, int seed, double *Phi) {
     
     if (verbose > 0) Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
     p = new double[K];
+    if (keep > 0) {
+      int keep_iter = ceil(niters/keep);
+      logLiks = new double[keep_iter];
+    }
 
     // + read training data
     ptrndata = new dataset(M, V);
@@ -427,7 +451,8 @@ int model::get_z(int m, int n, double *Phi)
 
 void model::estimate() {
   if (verbose > 0) Rprintf("Sampling %d iterations!\n", niters);
-
+  
+    int keep_iter = 0;
     int last_iter = liter;
     for (liter = last_iter + 1; liter <= niters + last_iter; liter++) {
         // Rprintf("Iteration %d ...\n", liter);
@@ -448,6 +473,11 @@ void model::estimate() {
 	  save_model(utilities::generate_model_name(liter));
 	  
 	} else if ((verbose > 0) && (liter % verbose == 0)) Rprintf("Iteration %d ...\n", liter);
+	if ((keep > 0) && (liter % keep == 0)) {
+	  inference();
+	  logLiks[keep_iter] = loglikelihood;
+	  keep_iter++;
+	}
     }
     
     if (verbose > 0) Rprintf("Gibbs sampling completed!\n");
@@ -494,7 +524,8 @@ int model::sampling(int m, int n) {
     // scaled sample because of unnormalized p[]
     double u = ((double)random() / RAND_MAX) * p[K - 1];
     
-    for (topic = 0; topic < K; topic++) {
+    for (int k = 0; k < K; k++) {
+        topic = k;
 	if (p[topic] > u) {
 	    break;
 	}

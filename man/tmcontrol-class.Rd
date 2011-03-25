@@ -38,6 +38,13 @@
       fitting.}
     \item{\code{prefix}:}{Object of class \code{"character"}; path
       indicating where to save the intermediate results.}
+    \item{\code{nstart}:}{Object of class \code{"integer"}. Number of
+      repeated random starts.}
+    \item{\code{best}:}{Object of class \code{"logical"}; if \code{TRUE}
+      only the model with the maximum (posterior) likelihood is returned,
+      by default equals \code{TRUE}.}
+    \item{\code{keep}:}{Object of class \code{"integer"}; if a positive
+      integer, the log-likelihood is saved every \code{keep} iterations.}
     \item{\code{estimate.beta}:}{Object of class \code{"logical"};
       controls if beta, the term distribution of the topics, is fixed,
       by default equals \code{TRUE}.}
@@ -83,9 +90,6 @@
       omitted in-between Gibbs iterations, by default equals \code{iter}.}
     \item{\code{burnin}:}{Object of class \code{"integer"}; number of
       omitted Gibbs iterations at beginning, by default equals 0.}
-    \item{\code{best}:}{Object of class \code{"logical"}; if \code{TRUE}
-      only the model with the maximum posterior likelihood is returned,
-      by default equals \code{TRUE}.}
   }
   
   Class \code{"CTM_VEMcontrol"} extends classes

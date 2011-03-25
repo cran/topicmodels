@@ -13,12 +13,18 @@ LDA_registry <- list(LDA_VEM.fit = c("VEM", "LDA_VEM", "LDA_VEM.fit"),
 
 LDA <- function(x, k, method = "VEM", control = NULL, model = NULL, ...)
 {
-  if (!is(x, "DocumentTermMatrix")) stop("\nx is of class ", dQuote(class(x)))
-  if (!all(slam::row_sums(x) > 0)) stop("\nAll documents in the DocumentTermMatrix need to contain at least one term")
+  if (is(x, "DocumentTermMatrix")) {
+    if (!any(attr(x, "Weighting") %in% c("term frequency", "tf"))) {
+      stop("\nDocumentTermMatrix needs to have a term frequency weighting")
+    }
+  } else if (!is(x, "simple_triplet_matrix")) {
+    x <- slam::as.simple_triplet_matrix(x)
+  }
   if (!all.equal(x$v, as.integer(x$v)))
-    stop("\nDocumentTermMatrix needs to contain integer entries")
+    stop("\nInput matrix needs to contain integer entries")
+  if (!all(slam::row_sums(x) > 0)) stop("\nEach row of the input matrix needs to contain at least one non-zero entry")
   mycall <- match.call()
-  
+
   if (!is.null(model)) {
     x <- match_terms(x, model)
     k <- model@k
@@ -26,8 +32,8 @@ LDA <- function(x, k, method = "VEM", control = NULL, model = NULL, ...)
 
   if (as.integer(k) != k || as.integer(k) < 2) stop("\nk needs to be an integer of at least 2")
 
-  if(is.null(method))
-    method <- if (!missing(model)) paste(class(model), "fit", sep = ".") else LDA_VEM.fit
+  if(missing(method) && !missing(model))
+    method <- paste(class(model), "fit", sep = ".")
   if(!is.function(method)) {
     MATCH <- which(sapply(LDA_registry, function(x) length(grep(tolower(method), tolower(x)))) > 0)
     if (!length(MATCH) == 1)
@@ -40,97 +46,119 @@ LDA <- function(x, k, method = "VEM", control = NULL, model = NULL, ...)
 
 LDA_VEM.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
   control <- as(control, "LDA_VEMcontrol")
+  if (length(control@seed) != control@nstart)
+    stop(paste("\nneed ", control@nstart, " seeds", sep = ""))
   if (length(control@alpha) == 0)  {
     control@alpha <- if (!is.null(model)) model@alpha else 50/k
   }
   if (is.null(model)) {
     if (control@initialize == "model")
-      stop(paste("\nNeed a model of class 'LDA_VEM' for initialization", sep = ""))
+      stop("\nNeed a model of class 'LDA_VEM' for initialization")
   }
   else control@initialize <- "model"
   if (!control@estimate.beta) control@em@iter.max <- -1L
   result_dir <- path.expand(paste(control@prefix, "-lda", sep = ""))
+
   if (control@save) dir.create(result_dir, showWarnings = FALSE)
-  obj <- .Call("rlda", 
-               ## simple_triplet_matrix
-               as.integer(x$i),
-               as.integer(x$j),
-               as.numeric(x$v),
-               as.integer(x$nrow),
-               as.integer(x$ncol),                 
-               ## LDAcontrol
-               control,
-               ## number of topics
-               as.integer(k),
-               ## directory for output files
-               result_dir, 
-               ## initial model
-               model,
-               PACKAGE = "topicmodels")
-  obj@gamma <- obj@gamma/rowSums(obj@gamma)
-  new(class(obj), obj, call = call, control = control,
-      documents = x$dimnames[[1]], terms = x$dimnames[[2]])
+
+  obj <- vector("list", control@nstart)
+  for (i in seq_len(control@nstart)) {
+    control_i <- control
+    control_i@seed <- control@seed[i]
+    obj[[i]] <- .Call("rlda", 
+                      ## simple_triplet_matrix
+                      as.integer(x$i),
+                      as.integer(x$j),
+                      as.numeric(x$v),
+                      as.integer(x$nrow),
+                      as.integer(x$ncol),                 
+                      ## LDAcontrol
+                      control_i,
+                      ## number of topics
+                      as.integer(k),
+                      ## directory for output files
+                      result_dir, 
+                      ## initial model
+                      model,
+                      PACKAGE = "topicmodels")
+    obj[[i]]@gamma <- obj[[i]]@gamma/rowSums(obj[[i]]@gamma)
+    obj[[i]] <- new(class(obj[[i]]), obj[[i]], call = call, control = control_i,
+                    documents = x$dimnames[[1]], terms = x$dimnames[[2]], n = as.integer(sum(x$v)))
+  }
+  if (control@best) obj <- obj[[which.max(sapply(obj, logLik))]]
+  obj
 }
 
 LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
-  if (!is.null(model) && !"delta" %in% names(control)) control <- c(control, delta = model@delta)
+  if (!is.null(model) && is(control, "list") && !"delta" %in% names(control)) control <- c(control, delta = model@delta)
   control <- as(control, "LDA_Gibbscontrol")
+  if (length(control@seed) != control@nstart)
+    stop(paste("\nneed ", control@nstart, " seeds", sep = ""))
   if (length(control@alpha) == 0)  {
     control@alpha <- if (!is.null(model)) model@alpha else 50/k
   }
   
   result_dir <- path.expand(paste(control@prefix, "-lda", sep = ""))
   if (control@save) dir.create(result_dir, showWarnings = FALSE)
-  CONTROL <- control
-  CONTROL@iter <- control@burnin + control@thin
-  obj <- .Call("rGibbslda", 
-               ## simple_triplet_matrix
-               as.integer(x$i),
-               as.integer(x$j),
-               as.numeric(x$v),
-               as.integer(x$nrow),
-               as.integer(x$ncol),                 
-               ## LDAcontrol
-               CONTROL,
-               ## initialize
-               is.null(model),
-               ## number of topics
-               as.integer(k),
-               ## directory for output files
-               dir,
-               ## initial model
-               model,
-               PACKAGE = "topicmodels")
-  obj <- new(class(obj), obj, call = call, control = CONTROL,
-             documents = x$dimnames[[1]], terms = x$dimnames[[2]])
-  iterations <- unique(c(seq(CONTROL@iter, control@burnin + control@iter, by = control@thin),
-                         control@burnin + control@iter))
-  if (length(iterations) > 1) {
-    obj <- list(obj)
-    for (i in seq_along(iterations)[-1]) {
-      CONTROL@iter <- diff(iterations)[i-1]
-      obj[[i]] <- .Call("rGibbslda", 
-                        ## simple_triplet_matrix
-                        as.integer(x$i),
-                        as.integer(x$j),
-                        as.numeric(x$v),
-                        as.integer(x$nrow),
-                        as.integer(x$ncol),                 
-                        ## LDAcontrol
-                        CONTROL,
-                        ## initialize
-                        FALSE,
-                        ## number of topics
-                        as.integer(k),
-                        ## directory for output files
-                        result_dir, 
-                        ## initial model
-                        obj[[i-1]],
-                        PACKAGE = "topicmodels")
-      obj[[i]] <- new(class(obj[[i]]), obj[[i]], call = call, control = CONTROL,
-                      documents = x$dimnames[[1]], terms = x$dimnames[[2]])
-    }
-    if (control@best) obj <- obj[[which.max(sapply(obj, logLik))]]
+  CONTROL_i <- control
+  CONTROL_i@iter <- control@burnin + control@thin
+  obj <- vector("list", control@nstart)
+  for (i in seq_len(control@nstart)) {
+    CONTROL_i@seed <- CONTROL_i@seed[i]
+    obj[[i]] <- list(.Call("rGibbslda", 
+                           ## simple_triplet_matrix
+                           as.integer(x$i),
+                           as.integer(x$j),
+                           as.numeric(x$v),
+                           as.integer(x$nrow),
+                           as.integer(x$ncol),                 
+                           ## LDAcontrol
+                           CONTROL_i,
+                           ## initialize
+                           is.null(model),
+                           ## number of topics
+                           as.integer(k),
+                           ## directory for output files
+                           dir,
+                           ## initial model
+                           model,
+                           PACKAGE = "topicmodels"))
+    obj[[i]][[1]] <- new(class(obj[[i]][[1]]), obj[[i]][[1]], call = call, control = CONTROL_i,
+                         documents = x$dimnames[[1]], terms = x$dimnames[[2]], n = as.integer(sum(x$v)))
+    iterations <- unique(c(seq(CONTROL_i@iter, control@burnin + control@iter, by = control@thin),
+                           control@burnin + control@iter))
+    if (length(iterations) > 1) {
+      for (j in seq_along(iterations)[-1]) {
+        CONTROL_i@iter <- diff(iterations)[j-1]
+        obj[[i]][[j]] <- .Call("rGibbslda", 
+                               ## simple_triplet_matrix
+                               as.integer(x$i),
+                               as.integer(x$j),
+                               as.numeric(x$v),
+                               as.integer(x$nrow),
+                               as.integer(x$ncol),                 
+                               ## LDAcontrol
+                               CONTROL_i,
+                               ## initialize
+                               FALSE,
+                               ## number of topics
+                               as.integer(k),
+                               ## directory for output files
+                               result_dir, 
+                               ## initial model
+                               obj[[i]][[j-1]],
+                               PACKAGE = "topicmodels")
+        obj[[i]][[j]] <- new(class(obj[[i]][[j]]), obj[[i]][[j]], call = call, control = CONTROL_i,
+                             documents = x$dimnames[[1]], terms = x$dimnames[[2]], n = as.integer(sum(x$v)))
+      }
+      if (control@best) obj[[i]] <- obj[[i]][[which.max(sapply(obj[[i]], logLik))]]
+    } else if (control@best) obj[[i]] <- obj[[i]][[1]]
+  }    
+  if (control@best) {
+    obj <- obj[[which.max(sapply(obj, logLik))]]
+  } else {
+    obj <- lapply(obj, function(x) new("Gibbs_list", fitted = x))
+    if (control@nstart == 1) obj <- obj[[1]]
   }
   obj
 }

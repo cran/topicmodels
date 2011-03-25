@@ -57,7 +57,8 @@ public:
     string dir;			// model directory
     string model_name;		// model name
     int save;                   // save results into files
-    dataset * ptrndata;	// pointer to training dataset object
+    int keep;                   // keep every keep log-likelihood value
+    dataset * ptrndata;	        // pointer to training dataset object
 
     // --- model parameters and variables ---    
     int M; // dataset size (i.e., number of docs)
@@ -70,6 +71,7 @@ public:
     int estimate_phi; // topic distribution estimated or fixed
 
     double loglikelihood; // log P (w | z)
+    double * logLiks; // vector of intermediate log-likelihood values
     double * p; // temp variable for sampling
     int ** z; // topic assignments for words, size M x doc.size()
     int ** wordassign; // most probable topic assignments for words, size M x doc.size()
