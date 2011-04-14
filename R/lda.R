@@ -1,10 +1,12 @@
 match_terms <- function(x, model) {
-  x <- x[,which(colnames(x) %in% model@terms)]
-  x <- x[,order(match(colnames(x), model@terms))]
-  js <- match(colnames(x), model@terms)
-  x$j <- js[x$j]
-  x$ncol <- model@Dim[2]
-  dimnames(x)[[2]] <- model@terms
+  if (!(is.null(model@terms) | is.null(colnames(x)))) {
+    x <- x[,which(colnames(x) %in% model@terms)]
+    x <- x[,order(match(colnames(x), model@terms))]
+    js <- match(colnames(x), model@terms)
+    x$j <- js[x$j]
+    x$ncol <- model@Dim[2]
+    dimnames(x)[[2]] <- model@terms
+  } else if (ncol(x) != model@Dim[2]) stop("the number of terms in the input matrix and the fitted model need to match")
   x
 }
 

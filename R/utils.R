@@ -122,16 +122,13 @@ get_terms <- function(...) terms(...)
 get_topics <- function(...) topics(...)
 
 ldaformat2dtm <- function(documents, vocab) {
-  dtm <- list(i = rep(seq_along(documents), sapply(documents, ncol)),
-              j = as.integer(unlist(lapply(documents, "[", 1, TRUE)) + 1L),
-              v = as.integer(unlist(lapply(documents, "[", 2, TRUE))),        
-              nrow = length(documents),
-              ncol = length(vocab),
-              dimnames = list(names(documents),
-                vocab),
-              Weighting = c("term frequency", "tf"))
-  class(dtm) <- c("DocumentTermMatrix", "simple_triplet_matrix")
-  dtm
+  stm <- simple_triplet_matrix(i = rep(seq_along(documents), sapply(documents, ncol)),
+                               j = as.integer(unlist(lapply(documents, "[", 1, TRUE)) + 1L),
+                               v = as.integer(unlist(lapply(documents, "[", 2, TRUE))),
+                               nrow = length(documents),
+                               ncol = length(vocab),
+                               dimnames = list(names(documents), vocab))
+  as.DocumentTermMatrix(stm, weightTf)
 }
 
 dtm2ldaformat <- function(x) {
