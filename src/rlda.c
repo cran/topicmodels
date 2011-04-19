@@ -301,7 +301,6 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   int iter, keep_iter, d, n, max_length, verbose = 0;
   lda_model *model = NULL;
   double **var_gamma, ***phi, *llh, *logLiks;
-  document* doc;
   FILE* likelihood_file = NULL;
   char filename[100];
   lda_suffstats* ss = NULL;
@@ -338,7 +337,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   var_gamma = malloc(sizeof(double*)*(corpus->num_docs));
   phi = malloc(sizeof(double**)*(corpus->num_docs));
   if ((KEEP > 0) && (EM_MAX_ITER > 0)) {
-    logLiks = malloc(sizeof(double*)*(ceil(EM_MAX_ITER/KEEP)));
+    logLiks = malloc(sizeof(double*)*(ceil((double)EM_MAX_ITER/KEEP)));
   }
   for (d = 0; d < corpus->num_docs; d++) {
     var_gamma[d] = malloc(sizeof(double) * NTOPICS);
@@ -441,7 +440,6 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   // output the word assignments (for visualization)
   
   for (d = 0; d < corpus->num_docs; d++) {
-      doc = &(corpus->docs[d]);
       if (verbose && ((d % 100) == 0) && (d>0)) Rprintf("final e step document %d\n",d);
       llh[d] = lda_inference(&(corpus->docs[d]), model, var_gamma[d], phi[d]);
       likelihood += llh[d];

@@ -255,7 +255,7 @@ int opt_lambda(llna_var_param * var, doc * doc, llna_model * mod)
     bundle b;
     int iter = 0, i, j;
     int status;
-    double f_old, converged;
+    double f_old;
 
     b.var = var;
     b.doc = doc;
@@ -295,15 +295,11 @@ int opt_lambda(llna_var_param * var, doc * doc, llna_model * mod)
         iter++;
         f_old = s->f;
         status = gsl_multimin_fdfminimizer_iterate (s);
-        converged = fabs((f_old - s->f) / f_old);
-        // Rprintf("f(lambda) = %5.17e ; conv = %5.17e\n", s->f, converged);
         if (status) break;
         status = gsl_multimin_test_gradient (s->gradient, PARAMS.cg_convergence);
     }
     while ((status == GSL_CONTINUE) &&
            ((PARAMS.cg_max_iter < 0) || (iter < PARAMS.cg_max_iter)));
-    // while ((converged > PARAMS.cg_convergence) &&
-    // ((PARAMS.cg_max_iter < 0) || (iter < PARAMS.cg_max_iter)));
     if (iter == PARAMS.cg_max_iter)
         Rprintf("warning: cg didn't converge (lambda) \n");
 

@@ -188,12 +188,11 @@ void sym_eigen(gsl_matrix* m, gsl_vector* vals, gsl_matrix* vects)
 {
     gsl_eigen_symmv_workspace* wk;
     gsl_matrix* mcpy;
-    int r;
 
     mcpy = gsl_matrix_alloc(m->size1, m->size2);
     wk = gsl_eigen_symmv_alloc(m->size1);
     gsl_matrix_memcpy(mcpy, m);
-    r = gsl_eigen_symmv(mcpy, vals, vects, wk);
+    gsl_eigen_symmv(mcpy, vals, vects, wk);
     gsl_eigen_symmv_free(wk);
     gsl_matrix_free(mcpy);
 }

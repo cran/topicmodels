@@ -42,7 +42,7 @@ double d2_alhood(double a, int D, int K)
 double opt_alpha(double ss, int D, int K)
 {
     double a, log_a, init_a = 100;
-    double f, df, d2f;
+    double df, d2f;
     int iter = 0;
 
     log_a = log(init_a);
@@ -57,7 +57,6 @@ double opt_alpha(double ss, int D, int K)
             a = init_a;
             log_a = log(a);
         }
-        f = alhood(a, ss, D, K);
         df = d_alhood(a, ss, D, K);
         d2f = d2_alhood(a, D, K);
         log_a = log_a - df/(d2f * a + df);

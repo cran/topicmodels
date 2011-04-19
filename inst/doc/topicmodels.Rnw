@@ -74,17 +74,17 @@ lattice.options(default.theme=ltheme)
 
 In machine learning and natural language processing topic models are
 generative models which provide a probabilistic framework for the term
-frequency occurrences for documents in a given corpus. Using only the
+frequency occurrences in documents in a given corpus. Using only the
 term frequencies assumes that the information in which order the words
 occur in a document is negligible. This assumption is also referred to
 as the \emph{exchangeability} assumption for the words in a document
-and this assumption leads to bag-of-word models.
+and this assumption leads to bag-of-words models.
 
 Topic models extend and build on classical methods in natural language
 processing such as the unigram model and the mixture of unigram models
 \citep{topicmodels:Nigam+McCallum+Thrun:2000} as well as Latent
 Semantic Analysis
-\citep[LSA;][]{topicmodels:Deerwester+Dumais+Furnas+Landauer+Harshman:1990}.
+\citep[LSA;][]{topicmodels:Deerwester+Dumais+Furnas:1990}.
 Topic models differ from the unigram or the mixture of unigram models
 because they are mixed-membership models \citep[see for
 example][]{topicmodels:Airoldi+Blei+Fienberg:2008}. In the unigram
@@ -155,17 +155,17 @@ available from the first author's web
 page\footnote{\url{http://www.ics.uci.edu/~iporteou/fastlda/}}.
 
 \proglang{CRAN} (\url{http://CRAN.R-project.org}) features two
-packages for fitting topic models: \pkg{topicmodel} and \pkg{lda}. The
+packages for fitting topic models: \pkg{topicmodels} and \pkg{lda}. The
 \proglang{R} package \pkg{lda} \citep{topicmodels:Chang:2010} provides
-collapsed Gibbs sampling methods for LDA and related topic model variants,
-with the Gibbs sampler implemented in \proglang{C}. All models in
-package \pkg{lda} are fitted using Gibbs sampling for determining the
-posterior probability of the latent variables. Wrappers for the
-expectation-maximization (EM) algorithm are provided which build on
-this functionality for the E-step. Note that this implementation
-therefore differs in general from the proposed estimation technique in
-the original papers introducing these model variants, where the VEM
-algorithm is usually applied.
+collapsed Gibbs sampling methods for LDA and related topic model
+variants, with the Gibbs sampler implemented in \proglang{C}. All
+models in package \pkg{lda} are fitted using Gibbs sampling for
+determining the posterior probability of the latent
+variables. Wrappers for the expectation-maximization (EM) algorithm
+are provided which build on this functionality for the E-step. Note
+that this implementation therefore differs in general from the
+estimation technique proposed in the original papers introducing these
+model variants, where the VEM algorithm is usually applied.
 
 The \proglang{R} package \pkg{topicmodels} currently provides an
 interface to the code for fitting an LDA model and a CTM with the VEM
@@ -267,10 +267,11 @@ For CTM Step~\ref{item:theta} is modified to
 For maximum likelihood (ML) estimation of the LDA model the
 log-likelihood of the data, i.e., the sum over the log-likelihoods of
 all documents, is maximized with respect to the model parameters
-$\alpha$ and $\beta$. For the CTM model the log-likelihood of the data
-is maximized with respect to the model parameters $\mu$, $\Sigma$ and
-$\beta$. For VEM estimation the log-likelihood for one document $w \in
-D$ is for LDA given by
+$\alpha$ and $\beta$. In this setting $\beta$ and not $\delta$ is in
+general the parameter of interest. For the CTM model the
+log-likelihood of the data is maximized with respect to the model
+parameters $\mu$, $\Sigma$ and $\beta$. For VEM estimation the
+log-likelihood for one document $w \in D$ is for LDA given by
 \begin{align*}
   \ell(\alpha, \beta) & = \log \left(p(w | \alpha, \beta)\right)\\
   &= \log \int \left\{\sum_z \left[\prod_{i=1}^N p(w_i | z_i, \beta) p(z_i |
@@ -384,10 +385,10 @@ the lower bound of the log-likelihood.
 \item[E-step:] For each document find the optimal values of the
   variational parameters $\{\gamma,\phi\}$ for the LDA model
   and $\{\lambda, \nu, \phi\}$ for the CTM.
-\item[M-step:] Maximize the resulting lower bound on the log
-  likelihood with respect to the model parameters $\alpha$ and
-  $\beta$ for the LDA model and $\mu$, $\Sigma$ and
-  $\beta$ for the CTM.
+\item[M-step:] Maximize the resulting lower bound on the
+  log-likelihood with respect to the model parameters $\alpha$ and
+  $\beta$ for the LDA model and $\mu$, $\Sigma$ and $\beta$ for the
+  CTM.
 \end{description}
 
 For inference the latent variables $\theta$ and $z$ are often of
@@ -438,7 +439,7 @@ Typically, the vocabulary will not be given a-priori, but determined
 using the available data. The mapping from the document to the term
 frequency vector involves tokenizing the document and then processing
 the tokens for example by converting them to lower-case, removing
-punctuation characters, removing numbers, stemming, removing stopwords
+punctuation characters, removing numbers, stemming, removing stop words
 and omitting terms with a length below a certain minimum. In addition
 the final document-term matrix can be reduced by selecting only the
 terms which occur in a minimum number of documents \citep[see][who use
@@ -471,10 +472,10 @@ is given by
 \end{align*}
 
 The perplexity is often used to evaluate the models on held-out data
-and is equivalent to the geometric mean per-word likelihood
+and is equivalent to the geometric mean per-word likelihood.
 \begin{align*}
   \textrm{Perplexity}(w) &= \exp\left\{-
-    \frac{\log(p(w))}{\sum_{d=1}^D \sum_{j=1}^V n^{(jd)}}\right\}.
+    \frac{\log(p(w))}{\sum_{d=1}^D \sum_{j=1}^V n^{(jd)}}\right\}
 \end{align*}
 $n^{(jd)}$ denotes how often the $j$th term occurred in the $d$th
 document. If the model is fitted using Gibbs sampling the likelihood
@@ -530,15 +531,18 @@ about non-zero entries $x_{ij}$ in the form of $(i, j, x_{ij})$
 triplets).  \code{x} can be any object coercible to such simple
 triplet matrices (with count entries), in particular objects obtained
 from readers for commonly employed document-term matrix storage
-formats.  \code{k} is an integer (larger than 1) specifying the number
-of topics.  \code{method} determines the estimation method used and
-currently can be either \code{"VEM"} or \code{"Gibbs"} for
-\code{LDA()} and only \code{"VEM"} for \code{CTM()}. Users can provide
-their own fit functions to use a different estimation technique or fit
-a slightly different model variant and specify them to be called
-within \code{LDA()} and \code{CTM()} via the \code{method}
-argument. Argument \code{model} allows to provide an already fitted
-topic model which is used to initialize the estimation.
+formats.  For example the reader \code{read_dtm_Blei_et_al()}
+available in package \pkg{tm} allows to read in data provided in the
+format used for the code by Blei and co-authors. \code{k} is an
+integer (larger than 1) specifying the number of topics.
+\code{method} determines the estimation method used and currently can
+be either \code{"VEM"} or \code{"Gibbs"} for \code{LDA()} and only
+\code{"VEM"} for \code{CTM()}. Users can provide their own fit
+functions to use a different estimation technique or fit a slightly
+different model variant and specify them to be called within
+\code{LDA()} and \code{CTM()} via the \code{method} argument. Argument
+\code{model} allows to provide an already fitted topic model which is
+used to initialize the estimation.
 
 Argument \code{control} can be either specified as a named list or
 as a suitable \proglang{S4} object where the class depends on the
@@ -639,7 +643,7 @@ described below in detail.
   iteration is returned for \code{iter} iterations.
 \item[\normalfont \code{best}:] All draws are returned if
   \code{best=FALSE}, otherwise only the draw with the highest
-  posterior likelihood is returned.
+  posterior likelihood over all runs is returned.
 \end{description}
 
 For the CTM model using the VEM algorithm the following arguments can be
@@ -672,32 +676,32 @@ only additional argument is \code{cg}.
 
 \code{LDA()} and \code{CTM()} return \proglang{S4} objects of a class
 which inherits from \code{"TopicModel"} (or a list of objects
-inheriting from class \code{"TopicModel"} in the case of Gibbs
-sampling and \code{best=FALSE}). Because of certain differences in the
-fitted objects there are sub-classes with respect to the model fitted
-(LDA or CTM) and the estimation method used (VEM or Gibbs
-sampling). The class \code{"TopicModel"} contains the call, the
-dimension of the document-term matrix, the number of words in the
-document-term matrix, the control object, the number of topics and the
-terms and document names and the number of iterations made. The
-estimates for the topic distributions for the documents are included
-which are the estimates of the corresponding variational parameters
-for the VEM algorithm and the parameters of the predictive
-distributions for Gibbs sampling. The term distribution of the topics
-are also contained which are the ML estimates for the VEM algorithm
-and the parameters of the predictive distributions for Gibbs
-sampling. In additional slots the objects contain the assignment of
-terms to the most likely topic and the log-likelihood which is $\log
-p(w | \alpha, \beta)$ for LDA with VEM estimation, $\log p(w | z)$ for
-LDA using Gibbs sampling and $\log p(w | \mu, \Sigma, \beta)$ for CTM
-with VEM estimation. For VEM estimation the log-likelihood is returned
-separately for each document. If a positive \code{keep} control
-argument was given, the log-likelihood values of every \code{keep}
-iteration is contained.  The extending class \code{"LDA"} has an
-additional slot for $\alpha$, \code{"CTM"} additional slots for $\mu$
-and $\Sigma$. \code{"LDA_Gibbs"} which extends class \code{"LDA"} has
-a slot for $\delta$ and \code{"CTM_VEM"} which extends \code{"CTM"}
-has an additional slot for $\nu^2$.
+inheriting from class \code{"TopicModel"} if
+\code{best=FALSE}). Because of certain differences in the fitted
+objects there are sub-classes with respect to the model fitted (LDA or
+CTM) and the estimation method used (VEM or Gibbs sampling). The class
+\code{"TopicModel"} contains the call, the dimension of the
+document-term matrix, the number of words in the document-term matrix,
+the control object, the number of topics and the terms and document
+names and the number of iterations made. The estimates for the topic
+distributions for the documents are included which are the estimates
+of the corresponding variational parameters for the VEM algorithm and
+the parameters of the predictive distributions for Gibbs sampling. The
+term distribution of the topics are also contained which are the ML
+estimates for the VEM algorithm and the parameters of the predictive
+distributions for Gibbs sampling. In additional slots the objects
+contain the assignment of terms to the most likely topic and the
+log-likelihood which is $\log p(w | \alpha, \beta)$ for LDA with VEM
+estimation, $\log p(w | z)$ for LDA using Gibbs sampling and $\log p(w
+| \mu, \Sigma, \beta)$ for CTM with VEM estimation. For VEM estimation
+the log-likelihood is returned separately for each document. If a
+positive \code{keep} control argument was given, the log-likelihood
+values of every \code{keep} iteration is contained.  The extending
+class \code{"LDA"} has an additional slot for $\alpha$, \code{"CTM"}
+additional slots for $\mu$ and $\Sigma$. \code{"LDA_Gibbs"} which
+extends class \code{"LDA"} has a slot for $\delta$ and
+\code{"CTM_VEM"} which extends \code{"CTM"} has an additional slot for
+$\nu^2$.
 
 Helper functions to analyze the fitted models are
 available. \code{logLik()} obtains the log-likelihood of the fitted
@@ -802,7 +806,7 @@ corpus <- Corpus(VectorSource(sapply(JSS_papers[, "description"],
 
 The corpus is exported to a document-term matrix using function
 \code{DocumentTermMatrix()} from package \pkg{tm}. The terms are
-stemmed and the stopwords, punctuation, numbers and terms of length
+stemmed and the stop words, punctuation, numbers and terms of length
 less than 3 are removed using the \code{control} argument.  (We use a
 \proglang{C} locale for reproducibility.)
 
@@ -928,7 +932,7 @@ We see that if $\alpha$ is estimated it is set to a value much smaller
 than the default. This indicates that in this case the Dirichlet
 distribution has more mass at the corners and hence, documents consist
 only of few topics. The influence of $\alpha$ on the estimated topic
-distribution for documents is illustrated in
+distributions for documents is illustrated in
 Figure~\ref{fig:topicdist} where the probabilities of the assignment
 to the most likely topic for all documents are given. The lower
 $\alpha$ the higher is the percentage of documents which are assigned
@@ -1036,7 +1040,7 @@ different model variants is easily possible via the \code{method}
 argument.
 
 Packages \pkg{Snowball} \citep{topicmodels:Hornik:2009} and \pkg{tm}
-provide stemmers and stopword lists not only for English, but also for
+provide stemmers and stop word lists not only for English, but also for
 other languages. To the authors' knowledge topic models have so far
 only been used for corpora in English. The availability of all these
 tools in \proglang{R} hopefully does not only lead to an increased use
@@ -1067,6 +1071,7 @@ processors are used in the E-step such that each processor calculates
 only the sufficient statistics for a subset of the data. We intend to
 look into the potential of leveraging the existing infrastructure for
 large data sets along the lines proposed in
+\cite{topicmodels:Nallapati+Cohen+Lafferty:2007} and
 \cite{topicmodels:Newman+Asuncion+Smyth:2009}.
 
 The package allows us to fit topic models to different corpora which

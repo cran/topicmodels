@@ -1,3 +1,7 @@
+Changes in topicmodels version 0.0-10
+
+  o C code changed to avoid warnings of unused variables.
+
 Changes in topicmodels version 0.0-9
 
   o The slots for documents and terms names are not restricted to be

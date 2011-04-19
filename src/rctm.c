@@ -256,7 +256,7 @@ void expectation(corpus* corpus, llna_model* model, llna_ss* ss,
 void cov_shrinkage(gsl_matrix* mle, int n, gsl_matrix* result)
 {
     int p = mle->size1, i;
-    double temp = 0, alpha = 0, tau = 0, log_lambda_s = 0;
+    double alpha = 0, tau = 0, log_lambda_s = 0;
     gsl_vector
         *lambda_star = gsl_vector_calloc(p),
         t, u,
@@ -276,7 +276,6 @@ void cov_shrinkage(gsl_matrix* mle, int n, gsl_matrix* result)
 
         // compute shrunken eigenvalues
 
-        temp = 0;
         alpha = 1.0/(n+p+1-2*i);
         vset(lambda_star, i, n * alpha * vget(eigen_vals, i));
     }
@@ -434,7 +433,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   char string[100];
   double convergence = 1, lhood = 0, lhood_old = 0;
   time_t t1,t2;
-  double avg_niter, converged_pct, old_conv = 0;
+  double avg_niter, converged_pct;
   gsl_vector *likelihood;
   double *logLiks;
   gsl_matrix *corpus_lambda, *corpus_nu, *corpus_phi_sum;
@@ -483,7 +482,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
     lhood_fptr = fopen(string, "w");
   }
   if ((PARAMS.keep > 0) && (PARAMS.em_max_iter > 0)) {
-    logLiks = malloc(sizeof(double*)*(ceil(PARAMS.em_max_iter/PARAMS.keep)));
+    logLiks = malloc(sizeof(double*)*(ceil((double)PARAMS.em_max_iter/PARAMS.keep)));
   }
 
   // run em
@@ -547,7 +546,6 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
       
       if (PARAMS.save > 0) fflush(lhood_fptr);
       reset_llna_ss(ss);
-      old_conv = convergence;
     }
 
   if (PARAMS.em_max_iter < 0) {
