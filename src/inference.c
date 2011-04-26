@@ -255,7 +255,6 @@ int opt_lambda(llna_var_param * var, doc * doc, llna_model * mod)
     bundle b;
     int iter = 0, i, j;
     int status;
-    double f_old;
 
     b.var = var;
     b.doc = doc;
@@ -293,7 +292,6 @@ int opt_lambda(llna_var_param * var, doc * doc, llna_model * mod)
     do
     {
         iter++;
-        f_old = s->f;
         status = gsl_multimin_fdfminimizer_iterate (s);
         if (status) break;
         status = gsl_multimin_test_gradient (s->gradient, PARAMS.cg_convergence);

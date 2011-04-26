@@ -87,7 +87,12 @@ LDA_VEM.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
     obj[[i]] <- new(class(obj[[i]]), obj[[i]], call = call, control = control_i,
                     documents = x$dimnames[[1]], terms = x$dimnames[[2]], n = as.integer(sum(x$v)))
   }
-  if (control@best) obj <- obj[[which.max(sapply(obj, logLik))]]
+  if (control@best) {
+    MAX <- which.max(sapply(obj, logLik))
+    if (length(MAX)) {
+      obj <- obj[[MAX]]
+    } else warning("problem selecting best fitting model")
+  }
   obj
 }
 
@@ -157,7 +162,10 @@ LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
     } else if (control@best) obj[[i]] <- obj[[i]][[1]]
   }    
   if (control@best) {
-    obj <- obj[[which.max(sapply(obj, logLik))]]
+    MAX <- which.max(sapply(obj, logLik))
+    if (length(MAX)) {
+      obj <- obj[[MAX]]
+    } else warning("no finite likelihood")
   } else {
     obj <- lapply(obj, function(x) new("Gibbs_list", fitted = x))
     if (control@nstart == 1) obj <- obj[[1]]

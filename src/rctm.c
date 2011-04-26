@@ -482,7 +482,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
     lhood_fptr = fopen(string, "w");
   }
   if ((PARAMS.keep > 0) && (PARAMS.em_max_iter > 0)) {
-    logLiks = malloc(sizeof(double*)*(ceil((double)PARAMS.em_max_iter/PARAMS.keep)));
+    logLiks = malloc(sizeof(double*)*(ceil((double)(PARAMS.em_max_iter/PARAMS.keep))));
   }
 
   // run em

@@ -46,16 +46,16 @@ public:
 	length = 0;	
     }
     
-    document(int length) {
-	this->length = length;
-	words = new int[length];	
+    document(int nlength) {
+	this->length = nlength;
+	this->words = new int[nlength];	
     }
     
-    document(int length, int * words) {
-	this->length = length;
-	this->words = new int[length];
-	for (int i = 0; i < length; i++) {
-	    this->words[i] = words[i];
+    document(int nlength, int * nwords) {
+	this->length = nlength;
+	this->words = new int[nlength];
+	for (int i = 0; i < nlength; i++) {
+	    this->words[i] = nwords[i];
 	}
     }
 
@@ -86,10 +86,10 @@ public:
 	V = 0;
     }
     
-    dataset(int M, int V) {
-	this->M = M;
-	this->V = V;
-	docs = new document*[M];	
+    dataset(int nM, int nV) {
+	this->M = nM;
+	this->V = nV;
+	docs = new document*[nM];	
     }   
     
     ~dataset() {

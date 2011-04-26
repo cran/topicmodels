@@ -103,7 +103,7 @@ public:
     // model_name.theta: document-topic distributions
     // model_name.phi: topic-word distributions
     // model_name.others: containing other parameters of the model (alpha, beta, M, V, K)
-    int save_model(string model_name);
+    int save_model(string new_model_name);
     int save_model_tassign(string filename);
     int save_model_theta(string filename);
     int save_model_phi(string filename);

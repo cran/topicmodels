@@ -153,20 +153,20 @@ void model::set_default_values() {
     phi = NULL;
 }
 
-int model::save_model(string model_name) {
-    if (save_model_tassign(dir + "/" + model_name + tassign_suffix)) {
+int model::save_model(string new_model_name) {
+  if (save_model_tassign(dir + "/" + new_model_name + tassign_suffix)) {
 	return 1;
     }
     
-    if (save_model_others(dir + "/" + model_name+ others_suffix)) {
+    if (save_model_others(dir + "/" + new_model_name + others_suffix)) {
 	return 1;
     }
     
-    if (save_model_theta(dir + "/" + model_name+ theta_suffix)) {
+    if (save_model_theta(dir + "/" + new_model_name + theta_suffix)) {
 	return 1;
     }
     
-    if (save_model_phi(dir + "/" + model_name+ phi_suffix)) {
+    if (save_model_phi(dir + "/" + new_model_name + phi_suffix)) {
 	return 1;
     }
     
@@ -256,7 +256,7 @@ int model::init(int *i, int *j, double *v, int length, int seed) {
     if (verbose > 0) Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
     p = new double[K];
     if (keep > 0) {
-      int keep_iter = ceil(niters/keep);
+      int keep_iter = ceil((double)niters/keep);
       logLiks = new double[keep_iter];
     }
 
@@ -345,7 +345,7 @@ int model::initc(int *i, int *j, double *v, int length, int seed, double *Phi) {
     if (verbose > 0) Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
     p = new double[K];
     if (keep > 0) {
-      int keep_iter = ceil(niters/keep);
+      int keep_iter = ceil((double)niters/keep);
       logLiks = new double[keep_iter];
     }
 

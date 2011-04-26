@@ -110,7 +110,7 @@ SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
   UNPROTECT(1);
 
   if (model->keep > 0) {
-    int keepiter = ceil(model->niters/model->keep);
+    int keepiter = ceil((double)(model->niters/model->keep));
     tp = PROTECT(allocVector(REALSXP, keepiter));
     for (i = 0; i < keepiter; i++) 
       REAL(tp)[i] = model->logLiks[i];

@@ -1,20 +1,20 @@
 Package: topicmodels
 Type: Package
 Title: Topic models
-Version: 0.0-10
-Date: 2011-04-19
+Version: 0.0-11
+Date: 2011-04-26
 Author: Bettina Gruen and Kurt Hornik
 Maintainer: Bettina Gruen <Bettina.Gruen@jku.at>
 Description: Provides an interface to the C code for Latent Dirichlet
         Allocation (LDA) models and Correlated Topics Models (CTM) by
         David M. Blei and co-authors and the C++ code for fitting LDA
         models using Gibbs sampling by Xuan-Hieu Phan and co-authors.
-Depends: stats4, methods, modeltools, slam, tm (>= 0.5-6)
+Depends: R (>= 2.10), stats4, methods, modeltools, slam, tm (>= 0.5-6)
 Suggests: lasso2, lattice, lda, OAIHarvester, XML
 SystemRequirements: GNU Scientific Library version >= 1.8
 License: GPL-2
 Encoding: UTF-8
 LazyLoad: yes
-Packaged: 2011-04-19 07:31:36 UTC; gruen
+Packaged: 2011-04-26 16:48:58 UTC; gruen
 Repository: CRAN
-Date/Publication: 2011-04-24 06:58:31
+Date/Publication: 2011-04-27 16:12:52
