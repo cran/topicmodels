@@ -1,3 +1,10 @@
+Changes in topicmodels version 0.1-0
+
+  o The package vignette has been published in the Journal of
+    Statistical Software, Volume @, Issue @ (www.jstatsoft.org), and
+    the paper should be used as citation for the package, run
+    citation("topicmodels") for details.
+
 Changes in topicmodels version 0.0-11
 
   o C code changed to allow the package to compile on Solaris

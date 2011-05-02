@@ -1,10 +1,7 @@
-%% \documentclass{jss}
 \documentclass[nojss]{jss}
 
-%% \newcommand{\JSS}[1]{#1}
-\newcommand{\JSS}[1]{}
-\usepackage{amsmath,amsfonts,enumerate}
 %% \usepackage{Sweave}
+\usepackage{amsmath,amsfonts,enumerate}
 
 \author{Bettina Gr\"un\\
   Johannes Kepler Universit{\"at} Linz \And
@@ -20,7 +17,13 @@
 \Plainkeywords{Gibbs sampling, R, text analysis, topic model,
   variational EM}
 
-\Abstract{ Topic models allow the probabilistic modeling of term
+\Abstract{ 
+  
+  This article is a (slightly) modified and shortened version of
+  \cite{topicmodels:Gruen+Hornik:2011}, published in the \emph{Journal
+    of Statistical Software}.
+  
+  Topic models allow the probabilistic modeling of term
   frequency occurrences in documents. The fitted model can be used to
   estimate the similarity between documents as well as between a set
   of specified keywords using an additional layer of latent variables
@@ -113,59 +116,58 @@ retrieval \citep{topicmodels:Li+Wang+Xie:2008} and the analysis of the
 development of ideas over time in the field of computational linguistics
 \citep{topicmodels:Hall+Jurafsky+Manning:2008}.
 
-\proglang{C} code for fitting the LDA
-model\footnote{\url{http://www.cs.princeton.edu/~blei/lda-c/}} and the
-CTM\footnote{\url{http://www.cs.princeton.edu/~blei/ctm-c/}} is
-available under the GPL from David M.~Blei and co-authors, who
-introduced these models in their papers. The method used for fitting
-the models is the variational expectation-maximization (VEM)
-algorithm. Other implementations for fitting topic models---especially
-of the LDA model---are available. The standalone program
-\proglang{lda}\footnote{\url{http://chasen.org/~daiti-m/dist/lda/}}
-\citep{topicmodels:Mochihashi:2004} provides standard VEM
-estimation. An implementation in \proglang{Python} of an online
-version of LDA using VEM estimation as described in
-\cite{topicmodels:Hoffman+Blei+Bach:2010} is available under the GPL
-from the first author's web
-page\footnote{\url{http://www.cs.princeton.edu/~mdhoffma/}}. For
-Bayesian estimation using Gibbs sampling several implementations are
-available. \proglang{GibbsLDA++}\footnote{\url{http://gibbslda.sourceforge.net/}}
+\proglang{C} code for fitting the LDA model
+(\url{http://www.cs.princeton.edu/~blei/lda-c/}) and the CTM
+(\url{http://www.cs.princeton.edu/~blei/ctm-c/}) is available under
+the GPL from David M.~Blei and co-authors, who introduced these models
+in their papers. The method used for fitting the models is the
+variational expectation-maximization (VEM) algorithm. Other
+implementations for fitting topic models---especially of the LDA
+model---are available. The standalone program \proglang{lda}
+\citep{topicmodels:Mochihashi:2004, topicmodels:Mochihashi:2004a}
+provides standard VEM estimation. An implementation in
+\proglang{Python} of an online version of LDA using VEM estimation as
+described in \cite{topicmodels:Hoffman+Blei+Bach:2010} is available
+under the GPL from the first author's web page
+(\url{http://www.cs.princeton.edu/~mdhoffma/}). For Bayesian
+estimation using Gibbs sampling several implementations are
+available. \proglang{GibbsLDA++}
 \citep{topicmodels:Phan+Nguyen+Horiguchi:2008} is available under the
-GPL. The \proglang{Matlab Topic Modeling Toolbox
-  1.3.2}\footnote{\url{http://psiexp.ss.uci.edu/research/programs_data/toolbox.htm}}
-\citep{topicmodels:Griffiths+Steyvers:2004} is free for scientific
-use. A license must be obtained from the authors to use it for
-commercial
-purposes. \proglang{MALLET}\footnote{\url{http://mallet.cs.umass.edu}}
-\citep{topicmodels:McCallum:2002} is released under the CPL and is a
-\proglang{Java}-based package which is more general in allowing for
-statistical natural language processing, document classification,
-clustering, topic modeling using LDA, information extraction, and
-other machine learning applications to text. A general toolkit for
-implementing hierarchical Bayesian models is provided by the
-Hierarchical Bayes Compiler
-\proglang{HBC}\footnote{\url{http://www.cs.utah.edu/~hal/HBC/}}, which
-also allows to fit the LDA model. Another general framework for
-running Bayesian inference in graphical models which allows to fit the
-LDA model is available through
-\proglang{Infer.NET}\footnote{\url{http://research.microsoft.com/en-us/um/cambridge/projects/infernet/}}.
-The fast collapsed Gibbs sampling method is described in
+GPL from \url{http://gibbslda.sourceforge.net/}. The \proglang{Matlab
+  Topic Modeling Toolbox 1.3.2}
+\citep{topicmodels:Griffiths+Steyvers:2004,
+  topicmodels:Steyvers+Griffiths:2011} is free for scientific use. A
+license must be obtained from the authors to use it for commercial
+purposes. \proglang{MALLET} \citep{topicmodels:McCallum:2002} is
+released under the CPL and is a \proglang{Java}-based package which is
+more general in allowing for statistical natural language processing,
+document classification, clustering, topic modeling using LDA,
+information extraction, and other machine learning applications to
+text. A general toolkit for implementing hierarchical Bayesian models
+is provided by the Hierarchical Bayes Compiler \proglang{HBC}
+\citep{topicmodels:Daume:2008}, which also allows to fit the LDA
+model. Another general framework for running Bayesian inference in
+graphical models which allows to fit the LDA model is available
+through \proglang{Infer.NET} \citep{topicmodels:Microsoft:2010} The
+fast collapsed Gibbs sampling method is described in
 \cite{topicmodels:Porteous+Asuncion+Newman:2008} and code is also
 available from the first author's web
-page\footnote{\url{http://www.ics.uci.edu/~iporteou/fastlda/}}.
+page (\url{http://www.ics.uci.edu/~iporteou/fastlda/}).
 
-\proglang{CRAN} (\url{http://CRAN.R-project.org}) features two
-packages for fitting topic models: \pkg{topicmodels} and \pkg{lda}. The
-\proglang{R} package \pkg{lda} \citep{topicmodels:Chang:2010} provides
-collapsed Gibbs sampling methods for LDA and related topic model
-variants, with the Gibbs sampler implemented in \proglang{C}. All
-models in package \pkg{lda} are fitted using Gibbs sampling for
-determining the posterior probability of the latent
-variables. Wrappers for the expectation-maximization (EM) algorithm
-are provided which build on this functionality for the E-step. Note
-that this implementation therefore differs in general from the
-estimation technique proposed in the original papers introducing these
-model variants, where the VEM algorithm is usually applied.
+For \proglang{R}, an environment for statistical computing and
+graphics \citep{topicmodels:Team:2011}, \proglang{CRAN}
+(\url{http://CRAN.R-project.org}) features two packages for fitting
+topic models: \pkg{topicmodels} and \pkg{lda}. The \proglang{R}
+package \pkg{lda} \citep{topicmodels:Chang:2010} provides collapsed
+Gibbs sampling methods for LDA and related topic model variants, with
+the Gibbs sampler implemented in \proglang{C}. All models in package
+\pkg{lda} are fitted using Gibbs sampling for determining the
+posterior probability of the latent variables. Wrappers for the
+expectation-maximization (EM) algorithm are provided which build on
+this functionality for the E-step. Note that this implementation
+therefore differs in general from the estimation technique proposed in
+the original papers introducing these model variants, where the VEM
+algorithm is usually applied.
 
 The \proglang{R} package \pkg{topicmodels} currently provides an
 interface to the code for fitting an LDA model and a CTM with the VEM
@@ -201,17 +203,7 @@ functions for analyzing a fitted model are presented in
 Section~\ref{sec:appl-main-funct}. An illustrative example for using
 the package is given in Section~\ref{sec:illustr-exampl-abstr} where
 topic models are fitted to the corpus of abstracts in the
-\emph{Journal of Statistical Software}. \JSS{A further example is
-  presented in Section~\ref{sec:assoc-press-data} using a subset of
-  the Associated Press data set, a larger subset of which was also
-  analyzed in 
-  \cite{topicmodels:Blei+Ng+Jordan:2003}. This data set consists of
-  documents which focus on different content areas and while still
-  being rather small has similar characteristics as other corpora
-  used in the topic models literature. Finally, extending the package to
-  new estimation methods is described in
-  Section~\ref{sec:extending-new-fit} using package \pkg{rjags}
-  \citep{topicmodels:Plummer:2011}.}
+\emph{Journal of Statistical Software}. 
 %%------------------------------------------------------------------------
 %%------------------------------------------------------------------------
 \section{Topic model specification and estimation}\label{sec:topic-model-spec}
@@ -721,19 +713,6 @@ the probability is above the specified \code{threshold}.
 %%------------------------------------------------------------------------
 \section{Illustrative example: Abstracts of JSS papers}\label{sec:illustr-exampl-abstr}
 
-<<OAIHarvester, eval=false, echo=false>>=
-library("OAIHarvester")
-x <- oaih_list_records("http://www.jstatsoft.org/oai")
-JSS_papers <- oaih_transform(x[, "metadata"])
-JSS_papers <- JSS_papers[order(as.Date(unlist(JSS_papers[, "date"]))), ]
-JSS_papers <- JSS_papers[grep("Abstract:", JSS_papers[, "description"]), ]
-JSS_papers[, "description"] <- sub(".*\nAbstract:\n", "", 
-  unlist(JSS_papers[, "description"]))
-@ 
-
-<<corpus, eval=false, echo=false>>=
-data("JSS_papers", package = "corpus.JSS.papers")
-@ 
 <<echo=false, results=hide, eval=true>>=
 options(useFancyQuotes = FALSE)
 if (!("corpus.JSS.papers" %in% installed.packages()[,"Package"])) {
@@ -741,30 +720,28 @@ if (!("corpus.JSS.papers" %in% installed.packages()[,"Package"])) {
                        repos = "http://datacube.wu.ac.at/", type = "source"))
 }
 if (!("corpus.JSS.papers" %in% installed.packages()[,"Package"])) {
-<<OAIHarvester>>
+  library("OAIHarvester")
+  x <- oaih_list_records("http://www.jstatsoft.org/oai")
+  JSS_papers <- oaih_transform(x[, "metadata"])
+  JSS_papers <- JSS_papers[order(as.Date(unlist(JSS_papers[, "date"]))), ]
+  JSS_papers <- JSS_papers[grep("Abstract:", JSS_papers[, "description"]), ]
+  JSS_papers[, "description"] <- sub(".*\nAbstract:\n", "", 
+                                     unlist(JSS_papers[, "description"]))
 } else {
-<<corpus>>
+  data("JSS_papers", package = "corpus.JSS.papers")
 }  
 @ 
 
 The application of the package \pkg{topicmodels} is demonstrated on
 the collection of abstracts of the \emph{Journal of Statistical
-Software} (JSS) (up to
-\Sexpr{JSS_papers[nrow(JSS_papers),][["date"]]}).  \JSS{This
-illustrative application has the advantage that the analysis can be
-reproduced in an interactive way and each of the commands can easily
-be tried out. By contrast re-estimating the models of the application
-in Section~\ref{sec:assoc-press-data} using the Associated Press data
-would take too long for such a purpose. But
-Section~\ref{sec:assoc-press-data} provides a rather genuine
-medium-to-large scale application.}
+Software} (JSS) (up to 2010-08-05).  
 
 The JSS data is available as a list matrix in the package
 \pkg{corpus.JSS.papers} which can be installed and loaded by
 <<eval=false>>=
 install.packages("corpus.JSS.papers", 
   repos = "http://datacube.wu.ac.at/", type = "source")
-<<corpus>>
+data("JSS_papers", package = "corpus.JSS.papers")
 @ 
 
 Alternatively, one can harvest JSS publication Dublin Core
@@ -774,7 +751,13 @@ Archives Initiative Protocol for Metadata Harvesting (OAI-PMH), for
 which package \pkg{OAIHarvester} \citep{topicmodels:Hornik:2011}
 provides an \proglang{R} client.
 <<eval=false>>=
-<<OAIHarvester>>
+library("OAIHarvester")
+x <- oaih_list_records("http://www.jstatsoft.org/oai")
+JSS_papers <- oaih_transform(x[, "metadata"])
+JSS_papers <- JSS_papers[order(as.Date(unlist(JSS_papers[, "date"]))), ]
+JSS_papers <- JSS_papers[grep("Abstract:", JSS_papers[, "description"]), ]
+JSS_papers[, "description"] <- sub(".*\nAbstract:\n", "", 
+                                   unlist(JSS_papers[, "description"]))
 @ 
 
 For reproducibility of results we use only abstracts published up to
@@ -1016,10 +999,6 @@ detecting the similarity between papers in the same special issue
 without using this information.
 %%------------------------------------------------------------------------
 %%------------------------------------------------------------------------
-\JSS{\input{AssociatedPress}}
-\JSS{\input{Extending}}
-%%------------------------------------------------------------------------
-%%------------------------------------------------------------------------
 \section{Summary}\label{sec:summary}
 
 Package \pkg{topicmodels} provides functionality for fitting the
@@ -1111,9 +1090,6 @@ We would like to thank two anonymous reviewers for their valuable
 comments which led to several improvements. This research was
 supported by the the Austrian Science Fund (FWF) under Hertha-Firnberg
 grant T351-N18 and under Elise-Richter grant V170-N18.
-%%------------------------------------------------------------------------
-%%------------------------------------------------------------------------
-\JSS{\input{AssociatedPress-appendix}}
 %%------------------------------------------------------------------------
 %%------------------------------------------------------------------------
 \bibliography{topicmodels}
