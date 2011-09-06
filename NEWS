@@ -1,7 +1,12 @@
+Changes in topicmodels version 0.1-1
+
+  o Makevars.win changed due to changes on CRAN for making libgsl for
+    Windows. Thanks to Prof. Brian D. Ripley for pointing that out.
+
 Changes in topicmodels version 0.1-0
 
   o The package vignette has been published in the Journal of
-    Statistical Software, Volume @, Issue @ (www.jstatsoft.org), and
+    Statistical Software, Volume 40, Issue 13 (www.jstatsoft.org), and
     the paper should be used as citation for the package, run
     citation("topicmodels") for details.
 

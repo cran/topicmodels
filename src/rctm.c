@@ -413,7 +413,7 @@ corpus* DocumentTermMatrix2Corpus(int *i, int *j, double *v, int nrow, int ncol,
 llna_model* em_initial_model(int k, corpus* corpus, const char* start, SEXP init_model)
 {
     llna_model* model;
-    if (PARAMS.verbose > 0) printf("starting from %s\n", start);
+    if (PARAMS.verbose > 0) Rprintf("starting from %s\n", start);
     if (strcmp(start, "rand")==0)
       model = random_init(k, corpus->nterms, PARAMS.verbose, PARAMS.seed);
     else if (strcmp(start, "seed")==0)
@@ -435,11 +435,11 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   time_t t1,t2;
   double avg_niter, converged_pct;
   gsl_vector *likelihood;
-  double *logLiks;
+  double *logLiks = NULL;
   gsl_matrix *corpus_lambda, *corpus_nu, *corpus_phi_sum;
   short reset_var = 1;
   const char *start, *dir;
-  int NTOPICS, d, iteration, keep_iter, verbose;
+  int NTOPICS, d, iteration, keep_iter, verbose = 0;
   llna_var_param **var;
   SEXP ans;
      

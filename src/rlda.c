@@ -300,7 +300,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   SEXP ans; 
   int iter, keep_iter, d, n, max_length, verbose = 0;
   lda_model *model = NULL;
-  double **var_gamma, ***phi, *llh, *logLiks;
+  double **var_gamma, ***phi, *llh, *logLiks = NULL;
   FILE* likelihood_file = NULL;
   char filename[100];
   lda_suffstats* ss = NULL;

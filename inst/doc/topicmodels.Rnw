@@ -300,11 +300,11 @@ To facilitate the E-step the posterior distribution $p(\theta, z | w,
 \alpha, \beta)$ is replaced by a variational distribution $q(\theta, z | 
 \gamma, \phi)$. This implies that in the E-step instead of
 \begin{align*}
-  \E_p[\log p(\theta, z | w , \alpha, \beta)]
+  \E_p[\log p(\theta, z | w, \alpha, \beta)]
 \end{align*}
 the following is determined
 \begin{align*}
-  \E_q[\log p(\theta, z | w , \alpha, \beta)].
+  \E_q[\log p(\theta, z | w, \alpha, \beta)].
 \end{align*}
 The parameters for the variational distributions are document specific
 and hence are allowed to vary over documents which is not the case for
@@ -1088,7 +1088,7 @@ allocation.
 
 We would like to thank two anonymous reviewers for their valuable
 comments which led to several improvements. This research was
-supported by the the Austrian Science Fund (FWF) under Hertha-Firnberg
+supported by the Austrian Science Fund (FWF) under Hertha-Firnberg
 grant T351-N18 and under Elise-Richter grant V170-N18.
 %%------------------------------------------------------------------------
 %%------------------------------------------------------------------------
