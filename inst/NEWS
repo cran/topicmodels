@@ -1,3 +1,9 @@
+Changes in topicmodels version 0.1-2
+
+  o A small bug fixed when saving interim results for fitting a LDA
+    model using Gibbs sampling. Thanks to Nicholas Switanek for
+    pointing the problem out.
+
 Changes in topicmodels version 0.1-1
 
   o Makevars.win changed due to changes on CRAN for making libgsl for

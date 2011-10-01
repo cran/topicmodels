@@ -126,7 +126,7 @@ LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
                            ## number of topics
                            as.integer(k),
                            ## directory for output files
-                           dir,
+                           result_dir,
                            ## initial model
                            model,
                            PACKAGE = "topicmodels"))
