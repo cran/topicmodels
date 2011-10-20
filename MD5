@@ -1,6 +1,6 @@
-a701b7c75b3fe0a04e3879ecb0c1d420 *DESCRIPTION
+bd95b045cea72f77c47f8812faf0f18a *DESCRIPTION
 efe0c440fb0db2c03a9f372b46f413df *NAMESPACE
-5462a2c44b51a9068e2aa6a12dd9e64a *NEWS
+88c3703ba3b009158a67a74248e8f7d3 *NEWS
 de30acd5ddfd481b8807923d2bb62518 *R/allclasses.R
 f9b2d37d93dfe0a39ebeb5d633420f2d *R/build_graph.R
 7ab7150ad20300929cf977cf1a6ae61b *R/control.R
@@ -9,15 +9,15 @@ fd23ce5f294c2ef08d79ac61a76261c9 *R/lda.R
 35ff9012299ea18581b34e9f9976d12d *R/utils.R
 0e64c7d596c2184065a94abf14f5cf94 *data/AssociatedPress.rda
 581deffb64d0c6c4deb2bf15dac7bcbc *inst/CITATION
-5462a2c44b51a9068e2aa6a12dd9e64a *inst/NEWS
+88c3703ba3b009158a67a74248e8f7d3 *inst/NEWS
 f8785e367d4c5db30bdf8346077bac20 *inst/doc/topicmodels.Rnw
 8d87fe9183524d3f7c513e652f60fe5e *inst/doc/topicmodels.bib
-97715af4829c1543ad3309d7898a4d0e *inst/doc/topicmodels.pdf
+ad9306d55696f13ba0fbf960d39a759e *inst/doc/topicmodels.pdf
 abd1144d49abc17b22ed403b481ff573 *man/associatedpress.Rd
 4ed9a4763b98c7aad179682b41b111ee *man/build_graph.Rd
 19b8648a5988807493705ce13926670a *man/ctm.Rd
 464ed18b383f2f25d4a0317ba47d7313 *man/distHellinger.Rd
-e1cc1fa2020cb0a81b6387ec10324b02 *man/get.Rd
+0f633f6b4e662bfc5079ce5045153c9e *man/get.Rd
 6954834d87dea008d3e64579de31c573 *man/lda.Rd
 f4f12902e6b8dac5c52e16f50ad3a434 *man/ldaformat2dtm.Rd
 b523937a7692058c44c361855ea6065e *man/logLik-methods.Rd

@@ -1,4 +1,4 @@
-\name{terms/topics}
+\name{terms_and_topics}
 \docType{methods}
 \alias{topics}
 \alias{topics,TopicModel-method}
