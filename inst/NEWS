@@ -1,3 +1,8 @@
+Changes in topicmodels version 0.1-4.
+
+  o Missing 'Suggests' entires added in the DESCRIPTION file. Thanks
+    to Prof. Brian D. Ripley for pointing the problem out.
+
 Changes in topicmodels version 0.1-3
 
   o Name tags for Rd files changed to not contain slashes. Thanks to
