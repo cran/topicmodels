@@ -1,6 +1,21 @@
+Changes in topicmodels version 0.1-5.
+
+  o Vignettes moved from /inst/doc to /vignettes.
+
+  o The source code for fitting the model using Gibbs sampling was
+    modified because the code did not compile on Solaris. Thanks to
+    Prof. Brian D. Ripley for pointing the problem out.
+
+  o dtm2ldaformat() was modified to ensure that the resulting matrices
+    for the documents contain integers. In addition dtm2ldaformat()
+    and ldaformat2dtm() were changed to also work for document-term
+    matrices containing empty documents and an argument was introduced
+    to indicate if empty documents should be removed. Thanks to Eu Jin
+    Lok for pointing the problems out.
+
 Changes in topicmodels version 0.1-4.
 
-  o Missing 'Suggests' entires added in the DESCRIPTION file. Thanks
+  o Missing 'Suggests' entries added in the DESCRIPTION file. Thanks
     to Prof. Brian D. Ripley for pointing the problem out.
 
 Changes in topicmodels version 0.1-3

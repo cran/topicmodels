@@ -116,7 +116,7 @@ LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
                            ## simple_triplet_matrix
                            as.integer(x$i),
                            as.integer(x$j),
-                           as.numeric(x$v),
+                           as.integer(x$v),
                            as.integer(x$nrow),
                            as.integer(x$ncol),                 
                            ## LDAcontrol
@@ -141,7 +141,7 @@ LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
                                ## simple_triplet_matrix
                                as.integer(x$i),
                                as.integer(x$j),
-                               as.numeric(x$v),
+                               as.integer(x$v),
                                as.integer(x$nrow),
                                as.integer(x$ncol),                 
                                ## LDAcontrol

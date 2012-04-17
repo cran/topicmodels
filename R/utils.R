@@ -121,24 +121,32 @@ distHellinger.simple_triplet_matrix <- function(x, y, ...)
 get_terms <- function(...) terms(...)
 get_topics <- function(...) topics(...)
 
-ldaformat2dtm <- function(documents, vocab) {
+ldaformat2dtm <- function(documents, vocab, omit_empty = TRUE) {
   stm <- simple_triplet_matrix(i = rep(seq_along(documents), sapply(documents, ncol)),
-                               j = as.integer(unlist(lapply(documents, "[", 1, TRUE)) + 1L),
-                               v = as.integer(unlist(lapply(documents, "[", 2, TRUE))),
+                               j = as.integer(unlist(lapply(documents, "[", 1, )) + 1L),
+                               v = as.integer(unlist(lapply(documents, "[", 2, ))),
                                nrow = length(documents),
                                ncol = length(vocab),
                                dimnames = list(names(documents), vocab))
-  as.DocumentTermMatrix(stm, weightTf)
+  dtm <- as.DocumentTermMatrix(stm, weightTf)
+  if (omit_empty)
+    dtm <- dtm[row_sums(dtm) > 0,]
+  dtm
 }
 
-dtm2ldaformat <- function(x) {
+dtm2ldaformat <- function(x, omit_empty = TRUE) {
   split.matrix <- 
     function (x, f, drop = FALSE, ...) 
       lapply(split(seq_len(ncol(x)), f, drop = drop, ...),
              function(ind) x[,ind, drop = FALSE])
 
-  documents <- split(rbind(as.vector(x$j) - 1L, as.vector(x$v)), x$i)
+  documents <- vector(mode = "list", length = nrow(x))
   names(documents) <- rownames(x)
+  documents[row_sums(x) > 0] <- split(rbind(as.integer(x$j) - 1L, as.integer(x$v)), as.integer(x$i))
+  if (omit_empty)
+    documents[row_sums(x) == 0] <- NULL
+  else 
+    documents[row_sums(x) == 0] <- rep(list(matrix(integer(), ncol = 0, nrow = 2)), sum(row_sums(x) == 0))
   list(documents = documents,
        vocab = colnames(x))
 }

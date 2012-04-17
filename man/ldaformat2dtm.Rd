@@ -11,8 +11,8 @@
   format used by package \pkg{lda}.
 }
 \usage{
-ldaformat2dtm(documents, vocab)
-dtm2ldaformat(x)
+ldaformat2dtm(documents, vocab, omit_empty = TRUE)
+dtm2ldaformat(x, omit_empty = TRUE)
 }
 \arguments{
 
@@ -26,6 +26,9 @@ dtm2ldaformat(x)
     vocabulary.}
   \item{x}{An object of class \code{"DocumentTermMatrix"} as defined in
     package \pkg{tm}.}
+  \item{omit_empty}{A logical indicating if empty documents should be
+    removed when converting the objects. By default empty documents are
+    removed.}
 }
 \value{
   An object of class \code{"DocumentTermMatrix"} is returned by

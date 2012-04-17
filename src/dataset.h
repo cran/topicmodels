@@ -61,8 +61,8 @@ public:
 
     document(vector<int> & doc) {
 	this->length = doc.size();
-	this->words = new int[length];
-	for (int i = 0; i < length; i++) {
+	this->words = new int[this->length];
+	for (int i = 0; i < this->length; i++) {
 	    this->words[i] = doc[i];
 	}
     }
@@ -117,7 +117,7 @@ public:
 	}
     }   
 
-    int readDocumentTermMatrix(int *i, int *j, double *v, int length);
+    int readDocumentTermMatrix(int *i, int *j, int *v, int total);
 };
 
 #endif

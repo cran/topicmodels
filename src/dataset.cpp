@@ -33,33 +33,37 @@
 
 using namespace std;
 
-int dataset::readDocumentTermMatrix(int *i, int *j, double *v, int length) {
+int dataset::readDocumentTermMatrix(int *i, int *j, int *v, int total) {
 
-  int k, l, m;
-  int *words, *lengths;
+  int k, l, m, ni, nj, w;
+  int *ws, *lengths;
   document **documents;
 
-  words = new int[M];
+  ws = new int[M];
   lengths = new int[M];
   documents = new document*[M];
   // initialize lengths
   for (l = 0; l < M; l++) {
     lengths[l] = 0;
-    words[l] = 0;
+    ws[l] = 0;
   }
   // determine total number of words in each document
-  for (k = 0; k < length; k++) {
-    lengths[i[k]-1] += v[k];
+  for (k = 0; k < total; k++) {
+    ni = i[k] - 1;
+    lengths[ni] += v[k];
   } 
   // allocate words
   for (l = 0; l < M; l++) {
     documents[l] = new document(lengths[l]);
   } 
   // assign words in documents
-  for (k = 0; k < length; k++) {
+  for (k = 0; k < total; k++) {
     for (m = 0; m < v[k]; m++) {
-      documents[i[k]-1]->words[words[i[k]-1]] = j[k] - 1;
-      words[i[k]-1] += 1;
+      ni = i[k] - 1;
+      nj = j[k] - 1;
+      w = ws[ni];
+      documents[ni]->words[w] = nj;
+      ws[ni] += 1;
     }
   }
   for (l = 0; l < M; l++) {

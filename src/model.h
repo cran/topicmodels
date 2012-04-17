@@ -94,8 +94,8 @@ public:
     void set_default_values();   
 
     // initialize the model
-    int init(int *i, int *j, double *v, int length, int seed);
-    int initc(int *i, int *j, double *v, int length, int seed, double *Phi);
+    int init(int *i, int *j, int *v, int total, int seed);
+    int initc(int *i, int *j, int *v, int total, int seed, double *Phi);
     int get_z(int m, int n, double *Phi);
     
     // save LDA model to files

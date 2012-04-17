@@ -250,7 +250,7 @@ int model::save_model_others(string filename) {
     return 0;
 }
 
-int model::init(int *i, int *j, double *v, int length, int seed) {
+int model::init(int *i, int *j, int *v, int total, int seed) {
     int m, n, w, k;
     
     if (verbose > 0) Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
@@ -262,7 +262,7 @@ int model::init(int *i, int *j, double *v, int length, int seed) {
 
     // + read training data
     ptrndata = new dataset(M, V);
-    ptrndata->readDocumentTermMatrix(i, j, v, length);
+    ptrndata->readDocumentTermMatrix(i, j, v, total);
 		
     // + allocate memory and assign values for variables
     // K: from command line or default value
@@ -339,7 +339,7 @@ int model::init(int *i, int *j, double *v, int length, int seed) {
     return 0;
 }
 
-int model::initc(int *i, int *j, double *v, int length, int seed, double *Phi) {
+int model::initc(int *i, int *j, int *v, int total, int seed, double *Phi) {
     int m, n, w, k;
     
     if (verbose > 0) Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
@@ -351,7 +351,7 @@ int model::initc(int *i, int *j, double *v, int length, int seed, double *Phi) {
 
     // + read training data
     ptrndata = new dataset(M, V);
-    ptrndata->readDocumentTermMatrix(i, j, v, length);
+    ptrndata->readDocumentTermMatrix(i, j, v, total);
 		
     // + allocate memory and assign values for variables
     // K: from command line or default value

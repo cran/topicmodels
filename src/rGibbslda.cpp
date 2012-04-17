@@ -28,7 +28,7 @@
  */
 #include "model.h"
 
-model lda(int *i, int *j, double *v, int length, 
+model lda(int *i, int *j, int *v, int total, 
 	  int niters, int verbose, int save, int keep, int seed, int estimate_phi, int model_status, 
 	  int K, int M, int V, double alpha, double beta,
 	  string dir, double *init_phi) 
@@ -45,7 +45,7 @@ model lda(int *i, int *j, double *v, int length,
   lda.alpha = alpha;
   lda.beta = beta;
   lda.dir = dir;
-  if (model_status == 0) lda.initc(i, j, v, length, seed, init_phi); else lda.init(i, j, v, length, seed);
+  if (model_status == 0) lda.initc(i, j, v, total, seed, init_phi); else lda.init(i, j, v, total, seed);
   lda.estimate();
   lda.inference();
   return(lda);
@@ -205,7 +205,7 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 
   model model = lda(INTEGER(i),
 		    INTEGER(j),
-		    REAL(v),
+		    INTEGER(v),
 		    LENGTH(v),
 		    *INTEGER(GET_SLOT(control, install("iter"))),
 		    *INTEGER(GET_SLOT(control, install("verbose"))),
