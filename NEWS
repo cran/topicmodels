@@ -1,3 +1,9 @@
+Changes in topicmodels version 0.1-6.
+
+  o The included dataset AssociatedPress had row names which were of
+    type integer and not of type character. The object was re-saved
+    omitting the row names.
+
 Changes in topicmodels version 0.1-5.
 
   o Vignettes moved from /inst/doc to /vignettes.

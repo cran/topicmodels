@@ -1,8 +1,8 @@
 Package: topicmodels
 Type: Package
 Title: Topic models
-Version: 0.1-5
-Date: 2012-04-17
+Version: 0.1-6
+Date: 2012-06-15
 Author: Bettina Grün and Kurt Hornik
 Maintainer: Bettina Grün <Bettina.Gruen@jku.at>
 Description: Provides an interface to the C code for Latent Dirichlet
@@ -16,6 +16,6 @@ SystemRequirements: GNU Scientific Library version >= 1.8
 License: GPL-2
 Encoding: UTF-8
 LazyLoad: yes
-Packaged: 2012-04-17 07:37:27 UTC; gruen
+Packaged: 2012-06-15 12:43:10 UTC; gruen
 Repository: CRAN
-Date/Publication: 2012-04-17 17:48:41
+Date/Publication: 2012-06-15 15:34:03
