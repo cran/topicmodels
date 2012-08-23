@@ -1,3 +1,8 @@
+Changes in topicmodels version 0.1-7.
+
+  o A memory leak in the code of the fit function for LDA with method
+    "VEM" was corrected. Thanks to Ramis Yamilov for pointing the problem out.
+
 Changes in topicmodels version 0.1-6.
 
   o The included dataset AssociatedPress had row names which were of

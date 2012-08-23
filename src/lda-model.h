@@ -15,6 +15,7 @@
 void free_lda_model(lda_model*);
 void save_lda_model(lda_model*, char*);
 lda_model* new_lda_model(int, int);
+void free_lda_suffstats(lda_suffstats* ss, int num_topics, int num_terms);
 lda_suffstats* new_lda_suffstats(lda_model* model);
 void corpus_initialize_ss(lda_suffstats* ss, lda_model* model, corpus* c);
 void random_initialize_ss(lda_suffstats* ss, lda_model* model);

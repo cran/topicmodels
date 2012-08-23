@@ -288,6 +288,7 @@ corpus* DocumentTermMatrix2corpus(int *i, int *j, double *v, int nrow, int ncol,
     c->docs[i[k]-1].total += v[k];
     words[i[k]-1] += 1;
   }
+  free(words);
   return(c);
 }
 
@@ -433,10 +434,6 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
       }
     }
 
-  if (EM_MAX_ITER < 0) {
-    
-  }
-
   // output the word assignments (for visualization)
   
   for (d = 0; d < corpus->num_docs; d++) {
@@ -464,8 +461,15 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   PROTECT(ans = NEW_OBJECT(MAKE_CLASS("LDA_VEM")));
   ans = returnObjectLDA(ans, model, corpus, phi, var_gamma, llh, iter, logLiks, keep_iter);
 
-  free(phi); free(var_gamma); free(llh);
-  free(corpus); free_lda_model(model); 
+  for (d = 0; d < corpus->num_docs; d++) {
+    free(var_gamma[d]);
+    for (n = 0; n < max_length; n++) {
+      free(phi[d][n]);
+    }
+    free(phi[d]);
+  }
+  free(phi); free(var_gamma); free(llh); free(logLiks);
+  free(corpus); free_lda_suffstats(ss, model->num_topics, model->num_terms); free_lda_model(model); 
   UNPROTECT(1);
   return(ans);
 }
