@@ -1,7 +1,11 @@
 setMethod("posterior", signature(object = "TopicModel", newdata = "missing"),
 function(object, newdata, ...) {
-  list(terms = exp(object@beta),
-       topics = object@gamma)
+  terms <- exp(object@beta)
+  dimnames(terms) <- list(seq_len(object@k), object@terms)
+  topics <- object@gamma
+  dimnames(topics) <- list(object@documents, seq_len(object@k))
+  list(terms = terms,
+       topics = topics)
 })
 
 setMethod("posterior", signature(object = "TopicModel", newdata = "ANY"),
@@ -12,9 +16,13 @@ function(object, newdata, control = list(), ...) {
   CLASS <- strsplit(class(object), "_")[[1]]
   control <- as(control, paste(class(object), "control", sep = ""))
   control@estimate.beta <- FALSE
-  list(terms = exp(object@beta),
-       topics = get(CLASS[1])(newdata, method = CLASS[2], 
-         model = object, control = control)@gamma)
+  terms <- exp(object@beta)
+  dimnames(terms) <- list(seq_len(object@k), object@terms)
+  topics <- get(CLASS[1])(newdata, method = CLASS[2], 
+         model = object, control = control)@gamma
+  dimnames(topics) <- list(object@documents, seq_len(object@k))
+  list(terms = terms,
+       topics = topics)
 })
 
 setGeneric("terms")

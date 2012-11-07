@@ -779,10 +779,11 @@ subscripting, etc., is removed using package \pkg{XML}
 library("topicmodels")
 library("XML")
 remove_HTML_markup <-
-function(s) {
-    doc <- htmlTreeParse(s, asText = TRUE, trim = FALSE)
+function(s) tryCatch({
+    doc <- htmlTreeParse(paste("<!DOCTYPE html>", s),
+                         asText = TRUE, trim = FALSE)
     xmlValue(xmlRoot(doc))
-}
+}, error = function(s) s)
 corpus <- Corpus(VectorSource(sapply(JSS_papers[, "description"],
                                      remove_HTML_markup)))
 @ 
