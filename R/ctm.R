@@ -6,7 +6,7 @@ CTM <- function(x, k, method = "VEM", control = NULL, model = NULL, ...) {
       stop("\nDocumentTermMatrix needs to have a term frequency weighting")
     }
   } else if (!is(x, "simple_triplet_matrix")) {
-    x <- slam::as.simple_triplet_matrix(x)
+    x <- as.simple_triplet_matrix(x)
   }
   if (!all.equal(x$v, as.integer(x$v)))
     stop("\nInput matrix needs to contain integer entries")

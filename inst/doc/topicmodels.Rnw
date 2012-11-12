@@ -776,7 +776,7 @@ subscripting, etc., is removed using package \pkg{XML}
 \citep{topicmodels:Temple-Lang:2010}.
 
 <<>>=
-library("topicmodels")
+library("tm")
 library("XML")
 remove_HTML_markup <-
 function(s) tryCatch({
@@ -810,6 +810,7 @@ value of at least 0.1 which is a bit less than the median and ensures
 that the very frequent terms are omitted.
 
 <<>>=
+library("slam")
 summary(col_sums(JSS_dtm))
 term_tfidf <- 
   tapply(JSS_dtm$v/row_sums(JSS_dtm)[JSS_dtm$i], JSS_dtm$j, mean) *
@@ -848,6 +849,7 @@ the corpus is rather small containing less than 500 documents and (2)
 the corpus consists only of text documents on statistical software.
 
 <<>>=
+library("topicmodels")
 k <- 30
 SEED <- 2010
 jss_TM <- 
@@ -861,49 +863,6 @@ jss_TM <-
          control = list(seed = SEED, 
            var = list(tol = 10^-4), em = list(tol = 10^-3))))
 @ 
-
-% The four fitted models are compared by investigating the similarity
-% between the topics. The distance measure used between the term
-% distributions for each topic is the Hellinger distance, which measures
-% the dissimilarity between two probability distributions and is given
-% by
-% \begin{align*}
-%   d(x, y) &= \sqrt{\frac{1}{2} \sum_{i=1}^V (\sqrt{x_i} - \sqrt{y_i})^2}.
-% \end{align*}
-% $x = (x_1, \ldots, x_V)$ and $y = (y_1, \ldots, y_V)$ are vectors of
-% probability distributions which have non-negative entries and sum to
-% one.  Package \pkg{topicmodels} provides the function
-% \code{distHellinger()} for computing this distance.
-
-% To compare the similarity between the different solutions the topics
-% of the different fitted models are matched using the solver for the
-% linear sum assignment problem provided in package \pkg{clue}
-% \citep{topicmodels:Hornik:2005, topicmodels:Hornik:2010}. The average
-% distance between the best-matched topics are determined for the
-% different topic model solutions.
-
-% <<>>=
-% library("clue")
-% methods <- c("VEM", "VEM_fixed", "Gibbs", "CTM")
-% d <- matrix(0, nrow = 4, ncol = 4,
-%             dimnames = rep(list(methods), 2))
-% for (i in 1:3) {
-%   for (j in (i+1):4) {
-%     dist_models <- 
-%       distHellinger(posterior(jss_TM[[methods[i]]])$terms, 
-%                     posterior(jss_TM[[methods[j]]])$terms)
-%     matching <- solve_LSAP(dist_models)
-%     d[i,j] <- d[j,i] <- mean(diag(dist_models[,matching]))
-%   }
-% }
-% d
-% @ 
-
-% The two solutions from the VEM algorithm are closer to each other than
-% to the Gibbs sampling or the CTM solution by only having half the
-% average distance. However the discrepancy between the solutions is
-% still rather large. In general Gibbs sampling and CTM have about the
-% same dissimilarity to any of the other solutions. 
 
 To compare the fitted models we first investigate the $\alpha$ values
 of the models fitted with VEM and $\alpha$ estimated and with VEM and

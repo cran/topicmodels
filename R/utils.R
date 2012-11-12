@@ -11,7 +11,7 @@ function(object, newdata, ...) {
 setMethod("posterior", signature(object = "TopicModel", newdata = "ANY"),
 function(object, newdata, control = list(), ...) {
   if (!is(newdata, "simple_triplet_matrix"))  {
-    newdata <- slam::as.simple_triplet_matrix(newdata)
+    newdata <- as.simple_triplet_matrix(newdata)
   }
   CLASS <- strsplit(class(object), "_")[[1]]
   control <- as(control, paste(class(object), "control", sep = ""))
@@ -20,7 +20,7 @@ function(object, newdata, control = list(), ...) {
   dimnames(terms) <- list(seq_len(object@k), object@terms)
   topics <- get(CLASS[1])(newdata, method = CLASS[2], 
          model = object, control = control)@gamma
-  dimnames(topics) <- list(object@documents, seq_len(object@k))
+  dimnames(topics) <- list(rownames(newdata), seq_len(object@k))
   list(terms = terms,
        topics = topics)
 })
@@ -168,7 +168,7 @@ setMethod("perplexity", signature(object = "VEM", newdata = "missing"), function
   exp(-as.numeric(logLik(object))/object@n))
 
 setMethod("perplexity", signature(object = "ANY", newdata = "matrix"), function(object, newdata, ...) 
-          perplexity(object, slam::as.simple_triplet_matrix(newdata), ...))
+          perplexity(object, as.simple_triplet_matrix(newdata), ...))
 
 setMethod("perplexity", signature(object = "ANY", newdata = "DocumentTermMatrix"), function(object, newdata, ...)  {
   class(newdata) <- "simple_triplet_matrix"

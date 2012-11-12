@@ -20,11 +20,11 @@ LDA <- function(x, k, method = "VEM", control = NULL, model = NULL, ...)
       stop("\nDocumentTermMatrix needs to have a term frequency weighting")
     }
   } else if (!is(x, "simple_triplet_matrix")) {
-    x <- slam::as.simple_triplet_matrix(x)
+    x <- as.simple_triplet_matrix(x)
   }
   if (!all.equal(x$v, as.integer(x$v)))
     stop("\nInput matrix needs to contain integer entries")
-  if (!all(slam::row_sums(x) > 0)) stop("\nEach row of the input matrix needs to contain at least one non-zero entry")
+  if (!all(row_sums(x) > 0)) stop("\nEach row of the input matrix needs to contain at least one non-zero entry")
   mycall <- match.call()
 
   if (!is.null(model)) {

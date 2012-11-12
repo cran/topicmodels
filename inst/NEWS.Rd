@@ -1,6 +1,17 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.1-9}{
+  \itemize{
+    \item A bug in function \code{posterior} was fixed where the
+    rownames of the wrong object were used. Thanks to Benjamin S. Porter
+    for pointing the problem out.
+    \item Dependency structure changed such that some packages are now
+    only imported.
+    \item The information printed during the VEM algorithm when
+    \code{verbose} is larger than 0 was improved.
+  }
+}
 \section{Changes in topicmodels version 0.1-8}{
   \itemize{
     \item The code in the vignette for removing HTML markup was modified

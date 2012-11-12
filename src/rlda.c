@@ -396,7 +396,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
       
       for (d = 0; d < corpus->num_docs; d++)
         {
-	  if (verbose && ((d % 1000) == 0) && (d>0)) Rprintf("document %d\n",d);
+	  if (verbose && ((d % (corpus->num_docs-1)) == 0) && (d>0)) Rprintf("document %d\n", d+1);
 	  likelihood += doc_e_step(&(corpus->docs[d]),
 				   var_gamma[d],
 				   phi[d],
@@ -437,7 +437,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   // output the word assignments (for visualization)
   
   for (d = 0; d < corpus->num_docs; d++) {
-      if (verbose && ((d % 100) == 0) && (d>0)) Rprintf("final e step document %d\n",d);
+    if ((LAG > 0) && ((d % (corpus->num_docs-1)) == 0) && (d>0)) Rprintf("final e step document %d\n",d+1);
       llh[d] = lda_inference(&(corpus->docs[d]), model, var_gamma[d], phi[d]);
       likelihood += llh[d];
     }

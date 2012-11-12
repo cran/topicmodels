@@ -218,7 +218,7 @@ void expectation(corpus* corpus, llna_model* model, llna_ss* ss,
     total = 0;
     for (i = 0; i < corpus->ndocs; i++)
     {
-      if ((verbose > 0) && ((i % (corpus->ndocs-1)) == 0) && (i>0)) Rprintf("doc %5d   ", i);
+      if ((verbose > 0) && ((i % (corpus->ndocs-1)) == 0) && (i>0)) Rprintf("doc %5d   ", i+1);
         doc = corpus->docs[i];
         var[i] = new_llna_var_param(doc.nterms, model->k);
         if (reset_var)
@@ -500,7 +500,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   while ((iteration < PARAMS.em_max_iter) &&
 	 ((convergence > PARAMS.em_convergence) || (convergence < 0)))
     {
-      verbose = PARAMS.verbose > 0 && (iteration % PARAMS.verbose) == 0;
+      verbose = PARAMS.verbose > 0 && (iteration % PARAMS.verbose) == 0 && (iteration > 0);
       if (verbose) Rprintf("***** EM ITERATION %d *****\n", iteration+1);
       
       expectation(corpus, model, ss, &avg_niter, &lhood,
@@ -553,7 +553,9 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 		likelihood, 
 		corpus_lambda, corpus_nu, corpus_phi_sum,
 		reset_var, &converged_pct, var,
-		verbose);
+		PARAMS.verbose);
+  } else {
+    if (PARAMS.verbose > 0) Rprintf("***** CONVERGED: EM ITERATION %d *****\n", iteration+1);
   }
 
 
