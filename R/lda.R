@@ -17,14 +17,15 @@ LDA <- function(x, k, method = "VEM", control = NULL, model = NULL, ...)
 {
   if (is(x, "DocumentTermMatrix")) {
     if (!any(attr(x, "Weighting") %in% c("term frequency", "tf"))) {
-      stop("\nDocumentTermMatrix needs to have a term frequency weighting")
+      stop("The DocumentTermMatrix needs to have a term frequency weighting")
     }
   } else if (!is(x, "simple_triplet_matrix")) {
     x <- as.simple_triplet_matrix(x)
   }
   if (!all.equal(x$v, as.integer(x$v)))
-    stop("\nInput matrix needs to contain integer entries")
-  if (!all(row_sums(x) > 0)) stop("\nEach row of the input matrix needs to contain at least one non-zero entry")
+    stop("Input matrix needs to contain integer entries")
+  if (!all(row_sums(x) > 0))
+    stop("Each row of the input matrix needs to contain at least one non-zero entry")
   mycall <- match.call()
 
   if (!is.null(model)) {
@@ -32,14 +33,14 @@ LDA <- function(x, k, method = "VEM", control = NULL, model = NULL, ...)
     k <- model@k
   }
 
-  if (as.integer(k) != k || as.integer(k) < 2) stop("\nk needs to be an integer of at least 2")
+  if (as.integer(k) != k || as.integer(k) < 2) stop("'k' needs to be an integer of at least 2")
 
   if(missing(method) && !missing(model))
     method <- paste(class(model), "fit", sep = ".")
   if(!is.function(method)) {
     MATCH <- which(sapply(LDA_registry, function(x) length(grep(tolower(method), tolower(x)))) > 0)
     if (!length(MATCH) == 1)
-      stop("\nMethod not specified correctly")
+      stop("'method' not specified correctly")
     method <- get(names(LDA_registry)[MATCH])
   }
 
@@ -49,13 +50,13 @@ LDA <- function(x, k, method = "VEM", control = NULL, model = NULL, ...)
 LDA_VEM.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
   control <- as(control, "LDA_VEMcontrol")
   if (length(control@seed) != control@nstart)
-    stop(paste("\nneed ", control@nstart, " seeds", sep = ""))
+    stop(paste("Need ", control@nstart, " seeds", sep = ""))
   if (length(control@alpha) == 0)  {
     control@alpha <- if (!is.null(model)) model@alpha else 50/k
   }
   if (is.null(model)) {
     if (control@initialize == "model")
-      stop("\nNeed a model of class 'LDA_VEM' for initialization")
+      stop("Need a model of class 'LDA_VEM' for initialization")
   }
   else control@initialize <- "model"
   if (!control@estimate.beta) control@em@iter.max <- -1L
@@ -100,7 +101,7 @@ LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
   if (!is.null(model) && is(control, "list") && !"delta" %in% names(control)) control <- c(control, delta = model@delta)
   control <- as(control, "LDA_Gibbscontrol")
   if (length(control@seed) != control@nstart)
-    stop(paste("\nneed ", control@nstart, " seeds", sep = ""))
+    stop(paste("Need ", control@nstart, " seeds", sep = ""))
   if (length(control@alpha) == 0)  {
     control@alpha <- if (!is.null(model)) model@alpha else 50/k
   }

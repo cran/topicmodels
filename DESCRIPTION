@@ -1,8 +1,7 @@
 Package: topicmodels
 Type: Package
 Title: Topic models
-Version: 0.1-9
-Date: 2012-11-12
+Version: 0.1-11
 Author: Bettina Grün and Kurt Hornik
 Maintainer: Bettina Grün <Bettina.Gruen@jku.at>
 Description: Provides an interface to the C code for Latent Dirichlet
@@ -10,12 +9,13 @@ Description: Provides an interface to the C code for Latent Dirichlet
         David M. Blei and co-authors and the C++ code for fitting LDA
         models using Gibbs sampling by Xuan-Hieu Phan and co-authors.
 Depends: R (>= 2.15.0)
-Imports: stats4, methods, modeltools, slam, tm (>= 0.5-6)
-Suggests: lasso2, lattice, lda, OAIHarvester, Snowball, XML
+Imports: stats4, methods, modeltools, slam, tm (>= 0.5-8.5)
+Suggests: lasso2, lattice, lda, OAIHarvester, SnowballC, XML
 SystemRequirements: GNU Scientific Library version >= 1.8
 License: GPL-2
 Encoding: UTF-8
 LazyLoad: yes
-Packaged: 2012-12-17 12:12:49 UTC; gruen
+Packaged: 2013-06-18 09:36:54 UTC; hornik
+NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2012-12-17 13:27:03
+Date/Publication: 2013-06-18 12:14:32

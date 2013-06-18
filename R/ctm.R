@@ -3,13 +3,15 @@ CTM_registry <- list(CTM_VEM.fit = c("VEM", "CTM_VEM", "CTM_VEM.fit"))
 CTM <- function(x, k, method = "VEM", control = NULL, model = NULL, ...) {
   if (is(x, "DocumentTermMatrix")) {
     if (!any(attr(x, "Weighting") %in% c("term frequency", "tf"))) {
-      stop("\nDocumentTermMatrix needs to have a term frequency weighting")
+      stop("The DocumentTermMatrix needs to have a term frequency weighting")
     }
   } else if (!is(x, "simple_triplet_matrix")) {
     x <- as.simple_triplet_matrix(x)
   }
   if (!all.equal(x$v, as.integer(x$v)))
-    stop("\nInput matrix needs to contain integer entries")
+    stop("Input matrix needs to contain integer entries")
+  if (!all(row_sums(x) > 0))
+    stop("Each row of the input matrix needs to contain at least one non-zero entry")
   mycall <- match.call()
   
   if (!is.null(model)) {
@@ -17,14 +19,14 @@ CTM <- function(x, k, method = "VEM", control = NULL, model = NULL, ...) {
     k <- model@k
   }
 
-  if (as.integer(k) != k || as.integer(k) < 2) stop("k needs to be an integer of at least 2")  
+  if (as.integer(k) != k || as.integer(k) < 2) stop("'k' needs to be an integer of at least 2")  
 
   if(missing(method) && !missing(model))
     method <- paste(class(model), "fit", sep = ".")
   if(!is.function(method)) {
     MATCH <- which(sapply(CTM_registry, function(x) length(grep(tolower(method), tolower(x)))) > 0)
     if (!length(MATCH) == 1)
-      stop("\nMethod not specified correctly")
+      stop("'method' not specified correctly")
     method <- get(names(CTM_registry)[MATCH])
   }
 
@@ -34,11 +36,11 @@ CTM <- function(x, k, method = "VEM", control = NULL, model = NULL, ...) {
 CTM_VEM.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
   control <- as(control, "CTM_VEMcontrol")
   if (length(control@seed) != control@nstart)
-    stop(paste("\nneed ", control@nstart, " seeds", sep = ""))
+    stop(paste("Need ", control@nstart, " seeds", sep = ""))
   if (control@initialize == "random") control@initialize <- "rand"
   else if (control@initialize == "seeded") control@initialize <- "seed" 
   else if (control@initialize == "model") {
-    if (!is(model, "CTM")) stop("need a model of class 'CTM' for initialization")
+    if (!is(model, "CTM")) stop("Need a model of class 'CTM' for initialization")
   }
   if (is(model, "CTM")) control@initialize <- "model"
   result_dir <- path.expand(paste(control@prefix, "-ctm", sep = ""))

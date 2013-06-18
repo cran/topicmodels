@@ -23,7 +23,7 @@ setAs("list", "OPTcontrol", function(from, to) .list2control(from, to))
   s = slotNames(to)
   p = pmatch(n, s)
   if(any(is.na(p)))
-    stop(paste("\nInvalid slot name(s) for class",
+    stop(paste("Invalid slot name(s) for class",
                to, ":", paste(n[is.na(p)], collapse=" ")))
 
   prototype <- new(to)

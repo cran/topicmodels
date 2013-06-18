@@ -1,6 +1,21 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.1-11}{
+  \itemize{
+    \item Package \pkg{SnowballC} is now suggested instead of
+    \pkg{Snowball}.
+  }
+}
+\section{Changes in topicmodels version 0.1-10}{
+  \itemize{
+    \item A check was added to ensure that no empty documents are in the
+    data. Thanks to Terry Therneau for pointing the problem out.
+    \item The first argument in the functions printf_vector and
+    printf_matrix defined in the C code for the CTM was corrected to be
+    const char *. Thanks to Murray Stokely for providing the patch.
+  }
+}
 \section{Changes in topicmodels version 0.1-9}{
   \itemize{
     \item A bug in function \code{posterior} was fixed where the

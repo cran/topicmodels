@@ -127,7 +127,7 @@ void scanf_matrix(char* filename, gsl_matrix * m)
     fclose(fileptr);
 }
 
-void printf_vector(char* filename, gsl_vector* v)
+void printf_vector(const char* filename, gsl_vector* v)
 {
     FILE* fileptr;
     fileptr = fopen(filename, "w");
@@ -136,7 +136,7 @@ void printf_vector(char* filename, gsl_vector* v)
 }
 
 
-void printf_matrix(char* filename, gsl_matrix * m)
+void printf_matrix(const char* filename, gsl_matrix * m)
 {
     FILE* fileptr;
     fileptr = fopen(filename, "w");
