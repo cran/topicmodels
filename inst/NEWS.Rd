@@ -1,6 +1,12 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.1-12}{
+  \itemize{
+    \item Packag \pkg{topicmodels} now depends on package \pkg{methods}
+    instead of importing it. 
+  }
+}
 \section{Changes in topicmodels version 0.1-11}{
   \itemize{
     \item Package \pkg{SnowballC} is now suggested instead of

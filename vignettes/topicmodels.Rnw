@@ -597,7 +597,7 @@ The arguments are described in detail below.
   optimized. This is useful if the variational parameters should be
   determined for new documents.  The default values for the
   convergence checks are chosen similar to those suggested in the code
-  available from Blei's webpage as additional material to
+  available from Blei's web page as additional material to
   \cite{topicmodels:Blei+Ng+Jordan:2003} and
   \cite{topicmodels:Blei+Lafferty:2007}.
 \item[\normalfont \code{initialize}:] This parameter determines how the topics are
@@ -806,7 +806,7 @@ The mean term frequency-inverse document frequency (tf-idf) over
 documents containing this term is used to select the vocabulary. This
 measure allows to omit terms which have low frequency as well as those
 occurring in many documents. We only include terms which have a tf-idf
-value of at least 0.1 which is a bit less than the median and ensures
+value of at least 0.1 which is a bit more than the median and ensures
 that the very frequent terms are omitted.
 
 <<>>=
@@ -933,7 +933,7 @@ Terms <- terms(jss_TM[["VEM"]], 5)
 Terms[,1:5]
 @ 
 
-If any category labellings of the documents were available, these
+If any category labelings of the documents were available, these
 could be used to validate the fitted model. Some JSS papers should
 have similar content because they appeared in the same special
 volume. The most likely topic of the papers which appeared in Volume

@@ -1,5 +1,6 @@
 useDynLib("topicmodels")
 
+import("methods")
 importFrom("modeltools", "posterior")
 importFrom("stats", "terms")
 importFrom("stats4", "logLik")
