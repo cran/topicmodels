@@ -80,17 +80,20 @@ setClass("LDA_Gibbscontrol",
     representation(delta  = "numeric",
                    iter   = "integer",
                    thin   = "integer",
-                   burnin = "integer"),
+                   burnin = "integer",
+                   initialize = "character"),
          contains = "LDAcontrol", 
          prototype(delta   = 0.1,
                    verbose = 0L,
                    iter    = 2000L,
                    burnin  = 0L,
                    nstart  = 1L,
-                   best    = TRUE))
+                   best    = TRUE,
+                   initialize = "random"))
 
-setMethod("initialize", "LDA_Gibbscontrol", function(.Object, ...) {
-  .Object <- callNextMethod(.Object = .Object, ...)
+setMethod("initialize", "LDA_Gibbscontrol", function(.Object, initialize = "random", seed = as.integer(NA), ...) {
+  initialize <- match.arg(initialize, c("random", "beta", "z"))
+  .Object <- callNextMethod(.Object = .Object, initialize = initialize, seed = seed, ...)
   if (length(.Object@thin) == 0) .Object@thin <- .Object@iter
   invisible(.Object)
 })
@@ -144,7 +147,8 @@ setClass("Gibbs",
          representation("VIRTUAL"))
 
 setClass("LDA_Gibbs",
-         representation(delta = "numeric"),
+         representation(seedwords = "ANY",
+                        z = "integer"),
          contains = c("LDA", "Gibbs"),
          prototype(control = new("LDA_Gibbscontrol")))
 

@@ -64,8 +64,12 @@
   Class \code{"LDA_Gibbs"} extends class \code{"LDA"} and has
   the additional slots
   \describe{
-    \item{\code{delta}:}{Object of class \code{"numeric"}; parameter for
-      the prior distribution of the word distribution for topics.}
+    \item{\code{seed}:}{Either \code{NULL} or object of class
+      \code{"simple_triplet_matrix"}; parameter for the prior
+      distribution of the word distribution for topics if seeded.}
+    \item{\code{z}:}{Object of class \code{"integer"}; topic assignments
+      of words ordered by terms with suitable repetition within
+      documents.}  
   }
   
   Class \code{"CTM"} extends class \code{"TopicModel"} and has the additional

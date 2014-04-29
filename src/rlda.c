@@ -126,8 +126,7 @@ double doc_e_step(document* doc, double* gamma, double** phi,
 
 SEXP returnObjectLDA(SEXP ans, lda_model* model, corpus* corpus, double ***phi, 
 		     double **var_gamma, double *likelihood, int iter, double *logLiks, int keep_iter) {
-  SEXP tp, I, J, V, wordassign, nms, dn;
-  SEXP ROWNAMES, COLNAMES;
+  SEXP tp, I, J, V, wordassign, nms;
   document* doc;
   int i, j, d, total, n;
   double *m;
@@ -182,7 +181,7 @@ SEXP returnObjectLDA(SEXP ans, lda_model* model, corpus* corpus, double ***phi,
     UNPROTECT(1);
   }
   
-  wordassign = PROTECT(allocVector(VECSXP, 6));
+  wordassign = PROTECT(allocVector(VECSXP, 5));
   total = 0;
   for (d = 0; d < corpus->num_docs; d++) {
     doc = &(corpus->docs[d]);
@@ -216,27 +215,13 @@ SEXP returnObjectLDA(SEXP ans, lda_model* model, corpus* corpus, double ***phi,
   INTEGER(tp)[0] = corpus->num_terms;
   SET_VECTOR_ELT(wordassign, 4, tp);
   UNPROTECT(1);
-
-  dn = PROTECT(allocVector(VECSXP, 2));
-  ROWNAMES = PROTECT(allocVector(INTSXP, corpus->num_docs));
-  COLNAMES = PROTECT(allocVector(INTSXP, corpus->num_terms));
-  for (d = 0; d < corpus->num_docs; d++) INTEGER(ROWNAMES)[d] = d+1;
-  for (d = 0; d < corpus->num_terms; d++) INTEGER(COLNAMES)[d] = d+1;
-  SET_VECTOR_ELT(dn, 0, AS_CHARACTER(ROWNAMES));
-  SET_VECTOR_ELT(dn, 1, AS_CHARACTER(COLNAMES));
-  setAttrib(dn, R_NamesSymbol, nms = allocVector(STRSXP, 2));
-  SET_STRING_ELT(nms, 0, mkChar("Docs"));
-  SET_STRING_ELT(nms, 1, mkChar("Terms"));
-  SET_VECTOR_ELT(wordassign, 5, dn);
-  UNPROTECT(3);
   
-  setAttrib(wordassign, R_NamesSymbol, nms = allocVector(STRSXP, 6));
+  setAttrib(wordassign, R_NamesSymbol, nms = allocVector(STRSXP, 5));
   SET_STRING_ELT(nms, 0, mkChar("i"));
   SET_STRING_ELT(nms, 1, mkChar("j"));
   SET_STRING_ELT(nms, 2, mkChar("v"));
   SET_STRING_ELT(nms, 3, mkChar("nrow"));
   SET_STRING_ELT(nms, 4, mkChar("ncol"));
-  SET_STRING_ELT(nms, 5, mkChar("dimnames"));
   setAttrib(wordassign, R_ClassSymbol, mkString("simple_triplet_matrix"));
   SET_SLOT(ans, install("wordassignments"), wordassign);
   UNPROTECT(1);

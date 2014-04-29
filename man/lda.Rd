@@ -18,13 +18,20 @@ LDA(x, k, method = "VEM", control = NULL, model = NULL, ...)
   \item{control}{A named list of the control parameters for estimation
     or an object of class \code{"LDAcontrol"}.}
   \item{model}{Object of class \code{"LDA"} for initialization.}
-  \item{\dots}{Optional arguments. Currently not used.}
+  \item{\dots}{Optional arguments. For \code{method = "Gibbs"} an
+    additional argument \code{seedwords} can be specified as a matrix or
+    an object of class \code{"simple_triplet_matrix"}; the default is
+    \code{NULL}.}
 }
 \details{
   The C code for LDA from David M. Blei and co-authors is used to
   estimate and fit a latent dirichlet allocation model with the VEM
   algorithm. For Gibbs Sampling the C++ code from Xuan-Hieu Phan and
   co-authors is used.
+
+  When Gibbs sampling is used for fitting the model, seed words with
+  their additional weights for the prior parameters can be specified in
+  order to be able to fit seeded topic models.
 }
 \value{
   \code{LDA()} returns an object of class \code{"\linkS4class{LDA}"}. 
@@ -39,6 +46,11 @@ LDA(x, k, method = "VEM", control = NULL, model = NULL, ...)
   from Large-scale Data Collections.
   In Proceedings of the 17th International World Wide Web Conference
   (WWW 2008), pages 91--100, Beijing, China.
+
+  Lu, B., Ott, M., Cardie, C., Tsou, B.K. (2011).
+  Multi-aspect Sentiment Analysis with Topic Models.
+  In Proceedings of the 2011 IEEE 11th International Conference on Data
+  Mining Workshops, pages 81--88.
 }
 \author{Bettina Gruen}
 \seealso{\code{"\linkS4class{LDAcontrol}"}}

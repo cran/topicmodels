@@ -29,9 +29,9 @@
 #include "model.h"
 
 model lda(int *i, int *j, int *v, int total, 
-	  int niters, int verbose, int save, int keep, int seed, int estimate_phi, int model_status, 
-	  int K, int M, int V, double alpha, double beta,
-	  string dir, double *init_phi) 
+	  int niters, int verbose, int save, int keep, int estimate_phi, int model_status, int seeded,
+	  int K, int M, int V, double alpha, double *beta,
+	  string dir, double *init_phi, int *z) 
 {
   model lda;
   lda.niters = niters;
@@ -39,13 +39,13 @@ model lda(int *i, int *j, int *v, int total,
   lda.save = save;
   lda.keep = keep;
   lda.estimate_phi = estimate_phi;
+  lda.seeded = seeded;
   lda.K = K;
   lda.M = M;
   lda.V = V;
   lda.alpha = alpha;
-  lda.beta = beta;
   lda.dir = dir;
-  if (model_status == 0) lda.initc(i, j, v, total, seed, init_phi); else lda.init(i, j, v, total, seed);
+  lda.init(i, j, v, total, beta, z, init_phi, model_status);
   lda.estimate();
   lda.inference();
   return(lda);
@@ -57,8 +57,7 @@ extern "C" {
 #include <Rdefines.h>
 
 SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
-  SEXP tp, I, J, V, wordassign, nms, dn;
-  SEXP ROWNAMES, COLNAMES;
+  SEXP tp, I, J, V, wordassign, nms, z;
   int total, i, j, d;
   int *It, *Jt, *word_new;
   double *m, *Vt;
@@ -78,11 +77,6 @@ SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
   SET_SLOT(ans, install("alpha"), tp);
   UNPROTECT(1);
   
-  tp = PROTECT(allocVector(REALSXP, 1));
-  REAL(tp)[0] = model->beta;
-  SET_SLOT(ans, install("delta"), tp);
-  UNPROTECT(1);
-
   tp = PROTECT(allocVector(INTSXP, 2));
   INTEGER(tp)[0] = model->M;
   INTEGER(tp)[1] = model->V;
@@ -118,7 +112,7 @@ SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
     UNPROTECT(1);
   }
 
-  wordassign = PROTECT(allocVector(VECSXP, 6));
+  wordassign = PROTECT(allocVector(VECSXP, 5));
   total = 0;
   for (d = 0; d < model->M; d++) {
     total += model->ptrndata->docs[d]->length;
@@ -166,43 +160,54 @@ SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
   SET_VECTOR_ELT(wordassign, 4, tp);
   UNPROTECT(1);
 
-  dn = PROTECT(allocVector(VECSXP, 2));
-  ROWNAMES = PROTECT(allocVector(INTSXP, model->M));
-  COLNAMES = PROTECT(allocVector(INTSXP, model->V));
-  for (d = 0; d < model->M; d++) INTEGER(ROWNAMES)[d] = d+1;
-  for (d = 0; d < model->V; d++) INTEGER(COLNAMES)[d] = d+1;
-  SET_VECTOR_ELT(dn, 0, AS_CHARACTER(ROWNAMES));
-  SET_VECTOR_ELT(dn, 1, AS_CHARACTER(COLNAMES));
-  setAttrib(dn, R_NamesSymbol, nms = allocVector(STRSXP, 2));
-  SET_STRING_ELT(nms, 0, mkChar("Docs"));
-  SET_STRING_ELT(nms, 1, mkChar("Terms"));
-  SET_VECTOR_ELT(wordassign, 5, dn);
-  UNPROTECT(3);
-  
-  setAttrib(wordassign, R_NamesSymbol, nms = allocVector(STRSXP, 6));
+  setAttrib(wordassign, R_NamesSymbol, nms = allocVector(STRSXP, 5));
   SET_STRING_ELT(nms, 0, mkChar("i"));
   SET_STRING_ELT(nms, 1, mkChar("j"));
   SET_STRING_ELT(nms, 2, mkChar("v"));
   SET_STRING_ELT(nms, 3, mkChar("nrow"));
   SET_STRING_ELT(nms, 4, mkChar("ncol"));
-  SET_STRING_ELT(nms, 5, mkChar("dimnames"));
   setAttrib(wordassign, R_ClassSymbol, mkString("simple_triplet_matrix"));
   SET_SLOT(ans, install("wordassignments"), wordassign);
   UNPROTECT(1);
   free(It); free(Jt); free(Vt);
+
+  z = PROTECT(allocVector(INTSXP, total));
+  i = 0;
+  for (d = 0; d < model->M; d++) {    
+    for (j = 0; j < model->ptrndata->docs[d]->length; j++) {
+      INTEGER(z)[i] = model->z[d][j] + 1;
+      i++;
+    }
+  }
+  SET_SLOT(ans, install("z"), z);
+  UNPROTECT(1);
   return(ans);
 }
 
 SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
-	       SEXP control, SEXP initialize, 
-	       SEXP k, SEXP prefix, SEXP init_model) 
+	       SEXP control, SEXP initialize, SEXP seeded, SEXP seed, 
+	       SEXP k, SEXP prefix, SEXP phi, SEXP z) 
 {
   SEXP ans;
-  double *init_phi;
+  double *init_phi, *delta;
+  int *init_z;
 
-  if (*INTEGER(initialize)==0) init_phi = REAL(GET_SLOT(init_model, install("beta")));
-  else init_phi = NULL;
+  init_z = NULL; 
+  init_phi = NULL;
 
+  if (*INTEGER(initialize) == 1 || *INTEGER(GET_SLOT(control, install("estimate.beta"))) == 0) {
+    init_phi = REAL(phi);
+  } 
+  if (*INTEGER(initialize) == 2) {
+    init_z = INTEGER(z);
+  }
+  if (*LOGICAL(seeded) == 1){
+    delta = REAL(seed);
+  } else {
+    delta = REAL(GET_SLOT(control, install("delta")));
+  }
+
+  GetRNGstate();
   model model = lda(INTEGER(i),
 		    INTEGER(j),
 		    INTEGER(v),
@@ -211,19 +216,21 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 		    *INTEGER(GET_SLOT(control, install("verbose"))),
 		    *INTEGER(GET_SLOT(control, install("save"))),
 		    *INTEGER(GET_SLOT(control, install("keep"))),
-		    *INTEGER(GET_SLOT(control, install("seed"))),
 		    *LOGICAL(GET_SLOT(control, install("estimate.beta"))),
 		    *INTEGER(initialize),
+		    *LOGICAL(seeded),
 		    *INTEGER(k),
 		    *INTEGER(nrow), 
 		    *INTEGER(ncol),
 		    *REAL(GET_SLOT(control, install("alpha"))),
-		    *REAL(GET_SLOT(control, install("delta"))),
+		    delta,
 		    CHAR(asChar(prefix)),
-		    init_phi);
+		    init_phi,
+		    init_z);
   // construct return object
   PROTECT(ans = NEW_OBJECT(MAKE_CLASS("LDA_Gibbs")));
   ans = returnObjectGibbsLDA(ans, &model);
+  PutRNGstate();
   UNPROTECT(1);
   return(ans);
 }

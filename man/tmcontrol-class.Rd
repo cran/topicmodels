@@ -27,7 +27,10 @@
   Class \code{"TopicModelcontrol"} contains
   \describe{
     \item{\code{seed}:}{Object of class \code{"integer"}; used to set
-      the seed in the external code.}
+      the seed in the external code for VEM estimation and to call
+      \code{set.seed} for Gibbs sampling. For Gibbs sampling it can also
+      be set to \code{NA} (default) to avoid changing the seed of the
+      random number generator in the model fitting call.}
     \item{\code{verbose}:}{Object of class \code{"integer"}. If a
       positive integer, then the progress is reported every
       \code{verbose} iterations. If 0 (default), no output is generated
@@ -90,6 +93,11 @@
       omitted in-between Gibbs iterations, by default equals \code{iter}.}
     \item{\code{burnin}:}{Object of class \code{"integer"}; number of
       omitted Gibbs iterations at beginning, by default equals 0.}
+    \item{\code{burnin}:}{Object of class \code{"integer"}; number of
+      omitted Gibbs iterations at beginning, by default equals 0.}
+    \item{\code{initialize}:}{Object of class \code{"character"};
+      one of \code{"random"}, \code{"beta"} and \code{"z"}, by
+      default equals \code{"random"}.}
   }
   
   Class \code{"CTM_VEMcontrol"} extends classes

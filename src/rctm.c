@@ -28,8 +28,7 @@
 SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* corpus_lambda, gsl_matrix* corpus_nu,
 		     gsl_matrix* corpus_phi_sum, llna_var_param** var, gsl_vector* likelihood, int iter, double* logLiks, int keep_iter) 
 {
-  SEXP tp, I, J, V, wordassign, nms, dn;
-  SEXP ROWNAMES, COLNAMES;
+  SEXP tp, I, J, V, wordassign, nms;
   doc* doc;
   int i, j, d, total, n;
   double *m;
@@ -103,7 +102,7 @@ SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* co
     UNPROTECT(1);
   }
 
-  wordassign = PROTECT(allocVector(VECSXP, 6));
+  wordassign = PROTECT(allocVector(VECSXP, 5));
   total = 0;
   for (d = 0; d < corpus->ndocs; d++) {
     doc = &(corpus->docs[d]);
@@ -141,26 +140,12 @@ SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* co
   SET_VECTOR_ELT(wordassign, 4, tp);
   UNPROTECT(1);
 
-  dn = PROTECT(allocVector(VECSXP, 2));
-  ROWNAMES = PROTECT(allocVector(INTSXP, corpus->ndocs));
-  COLNAMES = PROTECT(allocVector(INTSXP, corpus->nterms));
-  for (d = 0; d < corpus->ndocs; d++) INTEGER(ROWNAMES)[d] = d+1;
-  for (d = 0; d < corpus->nterms; d++) INTEGER(COLNAMES)[d] = d+1;
-  SET_VECTOR_ELT(dn, 0, AS_CHARACTER(ROWNAMES));
-  SET_VECTOR_ELT(dn, 1, AS_CHARACTER(COLNAMES));
-  setAttrib(dn, R_NamesSymbol, nms = allocVector(STRSXP, 2));
-  SET_STRING_ELT(nms, 0, mkChar("Docs"));
-  SET_STRING_ELT(nms, 1, mkChar("Terms"));
-  SET_VECTOR_ELT(wordassign, 5, dn);
-  UNPROTECT(3);
-  
-  setAttrib(wordassign, R_NamesSymbol, nms = allocVector(STRSXP, 6));
+  setAttrib(wordassign, R_NamesSymbol, nms = allocVector(STRSXP, 5));
   SET_STRING_ELT(nms, 0, mkChar("i"));
   SET_STRING_ELT(nms, 1, mkChar("j"));
   SET_STRING_ELT(nms, 2, mkChar("v"));
   SET_STRING_ELT(nms, 3, mkChar("nrow"));
   SET_STRING_ELT(nms, 4, mkChar("ncol"));
-  SET_STRING_ELT(nms, 5, mkChar("dimnames"));
   setAttrib(wordassign, R_ClassSymbol, mkString("simple_triplet_matrix"));
   
   SET_SLOT(ans, install("wordassignments"), wordassign);

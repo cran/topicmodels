@@ -28,13 +28,12 @@ build_graph <- function(x, lambda, and = TRUE) {
   if (!is(x, "CTM")) stop("x needs to be a fitted CTM object")
   gamma <- posterior(x)$topics
   x <- log(sweep(gamma, 1, gamma[,ncol(gamma)], "/"))
-  require("lasso2")
   x <- (x - rowMeans(x))/apply(x, 1, sd)
   p <- ncol(x)
   Ihat <- Shat <- matrix(FALSE, p, p)
   for (j in 1:p) {
     DATA <- data.frame(y = x[,j], x[,-j])
-    out <- l1ce(y ~ ., data = DATA,
+    out <- lasso2::l1ce(y ~ ., data = DATA,
                 sweep.out = ~1, bound = lambda)
     indices <- (1:p)[-j]
     beta <- coef(out)[-1] # skipping the intercept

@@ -64,11 +64,14 @@ public:
     int M; // dataset size (i.e., number of docs)
     int V; // vocabulary size
     int K; // number of topics
-    double alpha, beta; // LDA hyperparameters 
+    double alpha, beta1;  // LDA hyperparameters 
+    double ** beta; // LDA hyperparameter
+    double * Vbeta; // LDA hyperparameter
     int niters; // number of Gibbs sampling iterations
     int liter; // the iteration at which the model was saved
     int verbose; // saving period
     int estimate_phi; // topic distribution estimated or fixed
+    int seeded; // is the LDA hyperparameter beta a matrix or a scalar
 
     double loglikelihood; // log P (w | z)
     double * logLiks; // vector of intermediate log-likelihood values
@@ -94,9 +97,8 @@ public:
     void set_default_values();   
 
     // initialize the model
-    int init(int *i, int *j, int *v, int total, int seed);
-    int initc(int *i, int *j, int *v, int total, int seed, double *Phi);
-    int get_z(int m, int n, double *Phi);
+    int init(int *i, int *j, int *v, int total, double *delta, int *Z, double *Phi, int init);
+    int get_z(int m, int n, double *Phi, int *Z, int index, int init);
     
     // save LDA model to files
     // model_name.tassign: topic assignments for words in docs

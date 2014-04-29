@@ -1,9 +1,30 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-0}{
+  \itemize{
+    \item The specification of a seed for Gibbs sampling now leads to a
+    call to \code{set.seed} and the external code used for fitting
+    accesses the state of the R random number generator. The seed can
+    also be set to \code{NA} (default) in order to not change the seed
+    of the R random number generator when fitting the model. 
+    \item The Gibbs sampling method for fitting the LDA model now also
+    returns the current topic assignments for all words which allows to
+    initialize Gibbs sampling either using the current term distribution
+    of topics or these assignments.
+    \item The Gibbs sampling method for fitting the LDA model now allows
+    to specify seed words, i.e., assign higher a-priori weights to some
+    words for some topics.
+    \item The word assignment matrix contained in the fitted models now
+    does not have any dimnames any more. 
+    \item Package \pkg{corpus.JSS.papers} is now listed in the
+    DESCRIPTION file together with the information that is available
+    from the additional repository \url{http://datacube.wu.ac.at}.
+  }
+}
 \section{Changes in topicmodels version 0.1-12}{
   \itemize{
-    \item Packag \pkg{topicmodels} now depends on package \pkg{methods}
+    \item Package \pkg{topicmodels} now depends on package \pkg{methods}
     instead of importing it. 
   }
 }

@@ -6,7 +6,7 @@ match_terms <- function(x, model) {
     x$j <- js[x$j]
     x$ncol <- model@Dim[2]
     dimnames(x)[[2]] <- model@terms
-  } else if (ncol(x) != model@Dim[2]) stop("the number of terms in the input matrix and the fitted model need to match")
+  } else if (ncol(x) != model@Dim[2]) stop("The number of terms in the input matrix and the fitted model need to match")
   x
 }
 
@@ -97,22 +97,43 @@ LDA_VEM.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
   obj
 }
 
-LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
-  if (!is.null(model) && is(control, "list") && !"delta" %in% names(control)) control <- c(control, delta = model@delta)
+LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, seedwords = NULL, ...) {
+  if (!is.null(model) && is(control, "list") && !"delta" %in% names(control)) control <- c(control, delta = model@control@delta)
+  if (!is.null(model) && is.null(seedwords)) seedwords <- model@seedwords
+  if (!is.null(model) && is(control, "list") && !"initialize" %in% names(control)) control <- c(control, initialize = "beta")
   control <- as(control, "LDA_Gibbscontrol")
   if (length(control@seed) != control@nstart)
     stop(paste("Need ", control@nstart, " seeds", sep = ""))
   if (length(control@alpha) == 0)  {
     control@alpha <- if (!is.null(model)) model@alpha else 50/k
   }
+
+  if(control@initialize == "z") {
+      if (k != max(model@z)) {
+          k <- max(model@z)
+          warning("'k' set to ", k)
+      }
+      if (sum(x$v) != length(model@z))
+          stop("Dimension of data and fitted model need to match for initialization")
+  }
+  if(control@initialize == "beta") {
+      if (k != nrow(model@beta)) {
+          k <- nrow(model@beta)
+          warning("'k' set to ", k)
+      }
+      if (ncol(x) != ncol(model@beta))
+          stop("Dimension of data and fitted model need to match for initialization")
+  }
   
   result_dir <- path.expand(paste(control@prefix, "-lda", sep = ""))
   if (control@save) dir.create(result_dir, showWarnings = FALSE)
+  seedwords_matrix <- if (is.null(seedwords)) NULL else control@delta + as.matrix(seedwords)
+  if (!is.null(seedwords)) seedwords <- slam::as.simple_triplet_matrix(seedwords)
   CONTROL_i <- control
   CONTROL_i@iter <- control@burnin + control@thin
   obj <- vector("list", control@nstart)
   for (i in seq_len(control@nstart)) {
-    CONTROL_i@seed <- CONTROL_i@seed[i]
+    if (!is.na(CONTROL_i@seed[i])) set.seed(CONTROL_i@seed[i])
     obj[[i]] <- list(.Call("rGibbslda", 
                            ## simple_triplet_matrix
                            as.integer(x$i),
@@ -123,15 +144,18 @@ LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
                            ## LDAcontrol
                            CONTROL_i,
                            ## initialize
-                           is.null(model),
+                           switch(control@initialize, beta = 1L, z = 2L, 0L),
+                           !is.null(seedwords),
+                           seedwords_matrix,
                            ## number of topics
                            as.integer(k),
                            ## directory for output files
                            result_dir,
                            ## initial model
-                           model,
+                           if (is.null(model)) NULL else model@beta,
+                           if (is.null(model)) NULL else model@z,
                            PACKAGE = "topicmodels"))
-    obj[[i]][[1]] <- new(class(obj[[i]][[1]]), obj[[i]][[1]], call = call, control = CONTROL_i,
+    obj[[i]][[1]] <- new(class(obj[[i]][[1]]), obj[[i]][[1]], call = call, control = CONTROL_i, seedwords = seedwords, 
                          documents = x$dimnames[[1]], terms = x$dimnames[[2]], n = as.integer(sum(x$v)))
     iterations <- unique(c(seq(CONTROL_i@iter, control@burnin + control@iter, by = control@thin),
                            control@burnin + control@iter))
@@ -148,15 +172,18 @@ LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
                                ## LDAcontrol
                                CONTROL_i,
                                ## initialize
-                               FALSE,
+                               2L,
+                               !is.null(seedwords),
+                               seedwords_matrix,
                                ## number of topics
                                as.integer(k),
                                ## directory for output files
                                result_dir, 
                                ## initial model
-                               obj[[i]][[j-1]],
+                               obj[[i]][[j-1]]@beta,
+                               obj[[i]][[j-1]]@z,
                                PACKAGE = "topicmodels")
-        obj[[i]][[j]] <- new(class(obj[[i]][[j]]), obj[[i]][[j]], call = call, control = CONTROL_i,
+        obj[[i]][[j]] <- new(class(obj[[i]][[j]]), obj[[i]][[j]], call = call, control = CONTROL_i, seedwords = seedwords,
                              documents = x$dimnames[[1]], terms = x$dimnames[[2]], n = as.integer(sum(x$v)))
       }
       if (control@best) obj[[i]] <- obj[[i]][[which.max(sapply(obj[[i]], logLik))]]

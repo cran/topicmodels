@@ -43,9 +43,6 @@
 #include "dataset.h"
 #include "model.h"
 
-#define random rand
-#define srandom srand 
-
 using namespace std;
 
 model::~model() {
@@ -77,6 +74,13 @@ model::~model() {
 	    }
 	}
     }
+    if (beta) {
+      for (w = 0; w < V; w++) {
+	if (beta[w]) {
+	  delete[] beta[w];
+	}
+      }
+    }
 
     if (nw) {
       for (w = 0; w < V; w++) {
@@ -93,6 +97,10 @@ model::~model() {
 	    }
 	}
     } 
+    
+    if (Vbeta) {
+      delete[] Vbeta;
+    }
     
     if (nwsum) {
 	delete[] nwsum;
@@ -132,7 +140,7 @@ void model::set_default_values() {
     V = 0;
     K = 100;
     alpha = 50.0 / K;
-    beta = 0.1;
+    beta1 = 0.1;
     niters = 2000;
     liter = 0;
     verbose = 200;    
@@ -140,7 +148,8 @@ void model::set_default_values() {
     keep = 0;
     loglikelihood = 0;
     estimate_phi = 1;
-    
+
+    beta = NULL;
     logLiks = NULL;
     p = NULL;
     z = NULL;
@@ -149,6 +158,7 @@ void model::set_default_values() {
     nd = NULL;
     nwsum = NULL;
     ndsum = NULL;
+    Vbeta = NULL;
     theta = NULL;
     phi = NULL;
 }
@@ -239,7 +249,6 @@ int model::save_model_others(string filename) {
     }
 
     fprintf(fout, "alpha=%f\n", alpha);
-    fprintf(fout, "beta=%f\n", beta);
     fprintf(fout, "ntopics=%d\n", K);
     fprintf(fout, "ndocs=%d\n", M);
     fprintf(fout, "nwords=%d\n", V);
@@ -250,10 +259,11 @@ int model::save_model_others(string filename) {
     return 0;
 }
 
-int model::init(int *i, int *j, int *v, int total, int seed) {
+int model::init(int *i, int *j, int *v, int total, double *delta, int *Z, double *Phi, int init) {
     int m, n, w, k;
     
-    if (verbose > 0) Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
+    if (verbose > 0) Rprintf("K = %d; V = %d; M = %d\n", K, V, M);
+
     p = new double[K];
     if (keep > 0) {
       int keep_iter = ceil((double)niters/keep);
@@ -294,20 +304,39 @@ int model::init(int *i, int *j, int *v, int total, int seed) {
     	    nw[w][k] = 0;
         }
     }
-    srandom(seed); // initialize for random number generation
+
+    if (seeded == 1) {
+      beta = new double*[V];
+      for (w = 0; w < V; w++) {
+        beta[w] = new double[K];
+        for (k = 0; k < K; k++) {
+	  beta[w][k] = delta[k + K * w];
+        }
+      }
+      
+      Vbeta = new double[K];
+      for (int k = 0; k < K; k++) {
+	Vbeta[k] = 0.0;
+	for (w = 0; w < V; w++) {
+	  Vbeta[k] += beta[w][k];
+	}
+      }
+    } else {
+      beta1 = delta[0]; 
+    }
+
     z = new int*[M];
     wordassign = new int*[M];
+    k = 0;
     for (m = 0; m < ptrndata->M; m++) {
 	int N = ptrndata->docs[m]->length;
 	z[m] = new int[N];
 	wordassign[m] = new int[N];
-    	for (w = 0; w < N; w++) {
-    	  wordassign[m][w] = 0;
-    	}
 	
         // initialize for z
         for (n = 0; n < N; n++) {
-	    int topic = (random() % K);
+	  int topic = get_z(m, n, Phi, Z, k, init);
+	  k++;
     	    z[m][n] = topic;
     	    // number of instances of word i assigned to topic j
     	    nw[ptrndata->docs[m]->words[n]][topic] += 1;
@@ -323,97 +352,11 @@ int model::init(int *i, int *j, int *v, int total, int seed) {
     theta = new double*[M];
     for (m = 0; m < M; m++) {
         theta[m] = new double[K];
-    	for (k = 0; k < K; k++) {
-    	  theta[m][k] = 0;
-    	}
     }
-	
+
     phi = new double*[K];
     for (k = 0; k < K; k++) {
         phi[k] = new double[V];
-    	for (w = 0; w < V; w++) {
-    	  phi[k][w] = 0;
-    	}
-    }    
-    if (estimate_phi == 1) compute_phi();
-    return 0;
-}
-
-int model::initc(int *i, int *j, int *v, int total, int seed, double *Phi) {
-    int m, n, w, k;
-    
-    if (verbose > 0) Rprintf("K= %d; V = %d; M = %d\n", K, V, M);
-    p = new double[K];
-    if (keep > 0) {
-      int keep_iter = ceil((double)niters/keep);
-      logLiks = new double[keep_iter];
-    }
-
-    // + read training data
-    ptrndata = new dataset(M, V);
-    ptrndata->readDocumentTermMatrix(i, j, v, total);
-		
-    // + allocate memory and assign values for variables
-    // K: from command line or default value
-    // alpha, beta: from command line or default values
-    // niters, verbose: from command line or default values
-
-    nwsum = new int[K];
-    for (k = 0; k < K; k++) {
-	nwsum[k] = 0;
-    }
-    
-    ndsum = new int[M];
-    for (m = 0; m < M; m++) {
-	ndsum[m] = 0;
-    }
-
-    nd = new int*[M];
-    for (m = 0; m < M; m++) {
-        nd[m] = new int[K];
-        for (k = 0; k < K; k++) {
-    	    nd[m][k] = 0;
-        }
-    }
-
-    nw = new int*[V];
-    for (w = 0; w < V; w++) {
-        nw[w] = new int[K];
-        for (k = 0; k < K; k++) {
-    	    nw[w][k] = 0;
-        }
-    }
-    srandom(seed); // initialize for random number generation
-    z = new int*[M];
-    wordassign = new int*[M];
-    for (m = 0; m < ptrndata->M; m++) {
-	int N = ptrndata->docs[m]->length;
-	z[m] = new int[N];
-	wordassign[m] = new int[N];
-	
-        // initialize for z
-        for (n = 0; n < N; n++) {
-	  int topic = get_z(m, n, Phi);
-  	    z[m][n] = topic;
-    	    // number of instances of word i assigned to topic j
-    	    nw[ptrndata->docs[m]->words[n]][topic] += 1;
-    	    // number of words in document i assigned to topic j
-    	    nd[m][topic] += 1;
-    	    // total number of words assigned to topic j
-    	    nwsum[topic] += 1;
-        } 
-        // total number of words in document i
-        ndsum[m] = N;      
-    }
-    
-    theta = new double*[M];
-    for (m = 0; m < M; m++) {
-        theta[m] = new double[K];
-    }
-	
-    phi = new double*[K];
-    for (k = 0; k < K; k++) {
-      phi[k] = new double[V];
     }    
     if (estimate_phi == 0) {
       for (int k = 0; k < K; k++) {
@@ -422,41 +365,47 @@ int model::initc(int *i, int *j, int *v, int total, int seed, double *Phi) {
 	}
       }
     }
-
     return 0;
 }
 
-int model::get_z(int m, int n, double *Phi) 
+int model::get_z(int m, int n, double *Phi, int *Z, int index, int init) 
 {
   int topic = 0;
-  int w = ptrndata->docs[m]->words[n];
-  for (int k = 0; k < K; k++) {
-    p[k] = exp(Phi[k + K * w]);
+  if (init == 0) {
+    topic = (int)(K * unif_rand());
   }
-  // cumulate multinomial parameters
-  for (int k = 1; k < K; k++) {
-    p[k] += p[k - 1];
-  }
-  // scaled sample because of unnormalized p[]
-  double u = ((double)random() / RAND_MAX) * p[K - 1];
-  
-  for (int k = 0; k < K; k++) {
-    topic = k;
-    if (p[k] > u) {
-      break;
+  if (init == 1) {
+    int w = ptrndata->docs[m]->words[n];
+    for (int k = 0; k < K; k++) {
+      p[k] = exp(Phi[k + K * w]);
     }
+    // cumulate multinomial parameters
+    for (int k = 1; k < K; k++) {
+      p[k] += p[k - 1];
+    }
+    // scaled sample because of unnormalized p[]
+    double u = (unif_rand()) * p[K - 1];
+    
+    for (int k = 0; k < K; k++) {
+      topic = k;
+      if (p[k] > u) {
+	break;
+      }
+    }
+  }
+  if (init == 2) {
+    topic = Z[index] - 1;
   }
   return topic;
 }
 
 void model::estimate() {
   if (verbose > 0) Rprintf("Sampling %d iterations!\n", niters);
-  
+ 
     int keep_iter = 0;
     int last_iter = liter;
+
     for (liter = last_iter + 1; liter <= niters + last_iter; liter++) {
-        // Rprintf("Iteration %d ...\n", liter);
-	
 	// for all z_i
 	for (int m = 0; m < M; m++) {
 	    for (int n = 0; n < ptrndata->docs[m]->length; n++) {
@@ -502,14 +451,21 @@ int model::sampling(int m, int n) {
     nwsum[topic] -= 1;
     ndsum[m] -= 1;
 
-    double Vbeta = V * beta;
+    double Vbeta1 = V * beta1;
     double Kalpha = K * alpha;    
 
     if (estimate_phi == 1) {
       // do multinomial sampling via cumulative method
-      for (int k = 0; k < K; k++) {
-	p[k] = (nw[w][k] + beta) / (nwsum[k] + Vbeta) *
-	  (nd[m][k] + alpha) / (ndsum[m] + Kalpha);
+      if (seeded == 1) {
+	for (int k = 0; k < K; k++) {
+	  p[k] = (nw[w][k] + beta[w][k]) / (nwsum[k] + Vbeta[k]) *
+	    (nd[m][k] + alpha) / (ndsum[m] + Kalpha);
+	}
+      } else {
+	for (int k = 0; k < K; k++) {
+	  p[k] = (nw[w][k] + beta1) / (nwsum[k] + Vbeta1) *
+	    (nd[m][k] + alpha) / (ndsum[m] + Kalpha);
+	}
       }
     } else {
       for (int k = 0; k < K; k++) {
@@ -522,7 +478,7 @@ int model::sampling(int m, int n) {
 	p[k] += p[k - 1];
     }
     // scaled sample because of unnormalized p[]
-    double u = ((double)random() / RAND_MAX) * p[K - 1];
+    double u = unif_rand() * p[K - 1];
     
     for (int k = 0; k < K; k++) {
         topic = k;
@@ -542,18 +498,17 @@ int model::sampling(int m, int n) {
 
 int model::get_wordassign(int m, int n) {
     int topic = 0;
-    int w;
+    int k, w;
 
     w = ptrndata->docs[m]->words[n];
-    double Vbeta = V * beta;
     double Kalpha = K * alpha;    
 
-    for (int k = 0; k < K; k++) {
-	p[k] = (nw[w][k] + beta) / (nwsum[k] + Vbeta) *
-		    (nd[m][k] + alpha) / (ndsum[m] + Kalpha);
+    for (k = 0; k < K; k++) {
+      p[k] = phi[k][w] *
+	(nd[m][k] + alpha) / (ndsum[m] + Kalpha);
     }
     double pmax = 0.0;
-    for (int k = 0; k < K; k++) {
+    for (k = 0; k < K; k++) {
         if (p[k] > pmax) {
 	  pmax = p[k];
 	  topic = k;
@@ -571,20 +526,41 @@ void model::compute_theta() {
 }
 
 void model::compute_phi() {
+  if (seeded == 1) {
     for (int k = 0; k < K; k++) {
-	for (int w = 0; w < V; w++) {
-	    phi[k][w] = (nw[w][k] + beta) / (nwsum[k] + V * beta);
-	}
+      for (int w = 0; w < V; w++) {
+	phi[k][w] = (nw[w][k] + beta[w][k]) / (nwsum[k] + Vbeta[k]);
+      }
     }
+  } else {
+    double Vbeta1 = V * beta1;
+    for (int k = 0; k < K; k++) {
+      for (int w = 0; w < V; w++) {
+	phi[k][w] = (nw[w][k] + beta1) / (nwsum[k] + Vbeta1);
+      }
+    }
+  }
 }
 
 void model::inference() {
-  double Vbeta = V * beta;
-  loglikelihood = K * (lgamma(Vbeta) - V * lgamma(beta));
-  for (int k = 0; k < K; k++) {
-    for (int w = 0; w < V; w++) {
-      loglikelihood += lgamma(nw[w][k] + beta);
+  if (seeded == 1) {
+    loglikelihood = 0;
+    for (int k = 0; k < K; k++) {
+      loglikelihood += lgamma(Vbeta[k]);
+      for (int w = 0; w < V; w++) {
+	loglikelihood -= lgamma(beta[w][k]);
+	loglikelihood += lgamma(nw[w][k] + beta[w][k]);
+      }
+      loglikelihood -= lgamma(nwsum[k] + Vbeta[k]);
     }
-    loglikelihood -= lgamma(nwsum[k] + Vbeta);
+  } else {
+    double Vbeta1 = V * beta1;
+    loglikelihood = K * (lgamma(Vbeta1) - V * lgamma(beta1));
+    for (int k = 0; k < K; k++) {
+      for (int w = 0; w < V; w++) {
+	loglikelihood += lgamma(nw[w][k] + beta1);
+      }
+      loglikelihood -= lgamma(nwsum[k] + Vbeta1);
+    }
   }
 }

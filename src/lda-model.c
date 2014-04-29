@@ -85,7 +85,7 @@ lda_suffstats* new_lda_suffstats(lda_model* model)
 
 void free_lda_suffstats(lda_suffstats* ss, int num_topics, int num_terms)
 {
-    int i, j;
+    int i;
 
     free(ss->class_total);
     for (i = 0; i < num_topics; i++)
@@ -231,36 +231,3 @@ void save_lda_model(lda_model* model, char* model_root)
     fclose(fileptr);
 }
 
-
-lda_model* load_lda_model(char* model_root)
-{
-    char filename[100];
-    FILE* fileptr;
-    int i, j, num_terms, num_topics;
-    float x, alpha;
-
-    sprintf(filename, "%s.other", model_root);
-    Rprintf("loading %s\n", filename);
-    fileptr = fopen(filename, "r");
-    fscanf(fileptr, "num_topics %d\n", &num_topics);
-    fscanf(fileptr, "num_terms %d\n", &num_terms);
-    fscanf(fileptr, "alpha %f\n", &alpha);
-    fclose(fileptr);
-
-    lda_model* model = new_lda_model(num_terms, num_topics);
-    model->alpha = alpha;
-
-    sprintf(filename, "%s.beta", model_root);
-    Rprintf("loading %s\n", filename);
-    fileptr = fopen(filename, "r");
-    for (i = 0; i < num_topics; i++)
-    {
-        for (j = 0; j < num_terms; j++)
-        {
-            fscanf(fileptr, "%f", &x);
-            model->log_prob_w[i][j] = x;
-        }
-    }
-    fclose(fileptr);
-    return(model);
-}
