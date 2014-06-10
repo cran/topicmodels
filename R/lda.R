@@ -16,7 +16,7 @@ LDA_registry <- list(LDA_VEM.fit = c("VEM", "LDA_VEM", "LDA_VEM.fit"),
 LDA <- function(x, k, method = "VEM", control = NULL, model = NULL, ...)
 {
   if (is(x, "DocumentTermMatrix")) {
-    if (!any(attr(x, "Weighting") %in% c("term frequency", "tf"))) {
+    if (!any(attr(x, "weighting") %in% c("term frequency", "tf"))) {
       stop("The DocumentTermMatrix needs to have a term frequency weighting")
     }
   } else if (!is(x, "simple_triplet_matrix")) {

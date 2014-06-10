@@ -1,6 +1,14 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-1}{
+  \itemize{
+    \item \pkg{tm} version >=0.6 is required. 
+    \item The data set \code{AssociatedPress} as well as other code
+    checking document term matrices now conforms to the data structure
+    of document term matrices in \pkg{tm} version >=0.6.  
+  }
+}
 \section{Changes in topicmodels version 0.2-0}{
   \itemize{
     \item The specification of a seed for Gibbs sampling now leads to a
