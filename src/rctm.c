@@ -205,7 +205,6 @@ void expectation(corpus* corpus, llna_model* model, llna_ss* ss,
     {
       if ((verbose > 0) && ((i % (corpus->ndocs-1)) == 0) && (i>0)) Rprintf("doc %5d   ", i+1);
         doc = corpus->docs[i];
-        var[i] = new_llna_var_param(doc.nterms, model->k);
         if (reset_var)
             init_var_unif(var[i], &doc, model);
         else
@@ -458,6 +457,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   dir = CHAR(asChar(prefix));
 
   var = malloc(sizeof(llna_var_param*) * (corpus->ndocs));
+
   likelihood = gsl_vector_alloc(corpus->ndocs); 
   // START CODE FROM em (estimate.c)
   // set up the log likelihood log file
@@ -473,6 +473,10 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   // run em
 
   model = em_initial_model(NTOPICS, corpus, start, init_model);
+  for (d = 0; d < corpus->ndocs; d++) {
+    var[d] = new_llna_var_param(corpus->docs[d].nterms, model->k);
+  }
+
   ss = new_llna_ss(model);
   corpus_lambda = gsl_matrix_alloc(corpus->ndocs, model->k);
   corpus_nu = gsl_matrix_alloc(corpus->ndocs, model->k);

@@ -1,6 +1,15 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-2}{
+  \itemize{
+    \item A bug in the CTM implementation which led to unnecessary use
+    of memory fixed. Thanks to Florian Schwendinger for pointing the
+    issue out.
+    \item Functions from package \pkg{stats} are now correctly
+    imported before being used.  
+  }
+}
 \section{Changes in topicmodels version 0.2-1}{
   \itemize{
     \item \pkg{tm} version >=0.6 is required. 

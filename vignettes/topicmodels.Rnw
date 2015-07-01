@@ -414,7 +414,7 @@ and $\beta$ given $w$ and $z$ are given by
 \begin{align*} 
 \hat{\beta}^{(j)}_K &= \frac{n^{(j)}_K +
 \delta}{n^{(.)}_K + V \delta},& \hat{\theta}^{(d)}_K &=
-\frac{n^{(d)}_K + \alpha}{n^{(.)}_K + k \alpha}, 
+\frac{n^{(d)}_K + \alpha}{n^{(d)}_. + k \alpha}, 
 \end{align*} 
 for $j=1,\ldots,V$ and $d = 1,\ldots,D$.
 

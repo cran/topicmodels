@@ -15,7 +15,7 @@
 \source{
   Accompanying material to the source code for fitting LDA models
   provided by David M. Blei and co-authors. Downloaded from:
-  \url{http://www.cs.berkeley.edu/~blei}.
+  \url{http://www.cs.columbia.edu/~blei/}
 }
 \references{
   D. Harman (1992) Overview of the first text retrieval conference
