@@ -277,6 +277,24 @@ corpus* DocumentTermMatrix2corpus(int *i, int *j, double *v, int nrow, int ncol,
   return(c);
 }
 
+/*
+ * BG: deallocate corpus
+ *
+ */
+
+void free_corpus(corpus* corpus)
+{
+    int i;
+
+    for (i = 0; i < corpus->num_docs; i++)
+    {
+      free(corpus->docs[i].words);
+      free(corpus->docs[i].counts);
+    }
+    free(corpus->docs);
+    free(corpus);
+}
+
 SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
           SEXP control, SEXP k, SEXP prefix, SEXP init_model) 
 {
@@ -454,7 +472,9 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
     free(phi[d]);
   }
   free(phi); free(var_gamma); free(llh); free(logLiks);
-  free(corpus); free_lda_suffstats(ss, model->num_topics, model->num_terms); free_lda_model(model); 
+  free_corpus(corpus); free_lda_suffstats(ss, model->num_topics, model->num_terms); free_lda_model(model); 
   UNPROTECT(1);
   return(ans);
 }
+
+

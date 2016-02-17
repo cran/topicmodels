@@ -34,7 +34,7 @@
 #include "ctm.h"
 
 /*
- * create a new empty model
+ * create a new empty model and delete a model
  *
  */
 
@@ -49,6 +49,13 @@ llna_model* new_llna_model(int ntopics, int nterms)
     return(model);
 }
 
+void del_llna_model(llna_model * model)
+{
+    gsl_vector_free(model->mu);
+    gsl_matrix_free(model->cov);
+    gsl_matrix_free(model->inv_cov);
+    gsl_matrix_free(model->log_beta);
+}
 
 /*
  * create and delete sufficient statistics
@@ -74,7 +81,6 @@ void del_llna_ss(llna_ss * ss)
     gsl_matrix_free(ss->cov_ss);
     gsl_matrix_free(ss->beta_ss);
 }
-
 
 void reset_llna_ss(llna_ss * ss)
 {

@@ -51,10 +51,10 @@ model lda(int *i, int *j, int *v, int total,
   return(lda);
 }
 
-extern "C" {
-
 #include <R.h>
 #include <Rdefines.h>
+
+extern "C" {
 
 SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
   SEXP tp, I, J, V, wordassign, nms, z;

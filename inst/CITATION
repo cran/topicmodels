@@ -1,20 +1,14 @@
 citHeader("To cite topicmodels in publications use:")
 
-citEntry(entry = "Article",
-  title        = "{topicmodels}: An {R} Package for Fitting Topic Models",
-  author       = personList(as.person("Bettina Gr\\\"un"),
-                   as.person("Kurt Hornik")),
-  journal      = "Journal of Statistical Software",
-  year         = "2011",
-  volume       = "40",
-  number       = "13",
-  pages        = "1--30",
-  url          = "http://www.jstatsoft.org/v40/i13/",
-
-  textVersion  =
-  paste("Bettina Gruen, Kurt Hornik (2011).",
-        "topicmodels: An R Package for Fitting Topic Models.",
-        "Journal of Statistical Software, 40(13), 1-30.",
-        "URL http://www.jstatsoft.org/v40/i13/.")
-)
-
+bibentry("Article",
+         title = "{topicmodels}: An {R} Package for Fitting Topic Models",
+         author =
+             c(person("Bettina", "Gr\\\"un"),
+               person("Kurt", "Hornik")),
+         journal = "Journal of Statistical Software",
+         year = "2011",
+         volume = "40",
+         number = "13",
+         pages = "1--30",
+         doi = "10.18637/jss.v040.i13"
+         )

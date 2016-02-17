@@ -55,7 +55,7 @@ int dataset::readDocumentTermMatrix(int *i, int *j, int *v, int total) {
   // allocate words
   for (l = 0; l < M; l++) {
     documents[l] = new document(lengths[l]);
-  } 
+  }
   // assign words in documents
   for (k = 0; k < total; k++) {
     for (m = 0; m < v[k]; m++) {
@@ -69,5 +69,8 @@ int dataset::readDocumentTermMatrix(int *i, int *j, int *v, int total) {
   for (l = 0; l < M; l++) {
     add_doc(documents[l], l);
   } 
+  delete[] lengths;
+  delete[] ws;
+  delete[] documents;
   return 0;
 }

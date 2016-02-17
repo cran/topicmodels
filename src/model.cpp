@@ -66,6 +66,7 @@ model::~model() {
 		delete[] z[m];
 	    }
 	}
+	delete[] z;
     }
     if (wordassign) {
 	for (m = 0; m < M; m++) {
@@ -73,6 +74,7 @@ model::~model() {
 		delete[] wordassign[m];
 	    }
 	}
+	delete[] wordassign;
     }
     if (beta) {
       for (w = 0; w < V; w++) {
@@ -80,6 +82,7 @@ model::~model() {
 	  delete[] beta[w];
 	}
       }
+      delete[] beta;
     }
 
     if (nw) {
@@ -88,6 +91,7 @@ model::~model() {
 	  delete[] nw[w];
 	}
       }
+      delete[] nw;
     }
 
     if (nd) {
@@ -96,6 +100,7 @@ model::~model() {
 		delete[] nd[m];
 	    }
 	}
+	delete[] nd;
     } 
     
     if (Vbeta) {
@@ -114,6 +119,7 @@ model::~model() {
 		delete[] theta[m];
 	    }
 	}
+	delete[] theta;
     }
     
     if (phi) {
@@ -123,6 +129,7 @@ model::~model() {
 	    }
 	}
     }
+    delete[] phi;
 }
 
 void model::set_default_values() {

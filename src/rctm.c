@@ -21,6 +21,24 @@
 #include "rctm.h"
 
 /*
+ * BG: deallocate corpus
+ *
+ */
+
+void del_corpus(corpus* corpus)
+{
+    int i;
+
+    for (i = 0; i < corpus->ndocs; i++)
+    {
+      free(corpus->docs[i].word);
+      free(corpus->docs[i].count);
+    }
+    free(corpus->docs);
+    free(corpus);
+}
+
+/*
  * BG: construct return object
  *
  */
@@ -385,6 +403,7 @@ corpus* DocumentTermMatrix2Corpus(int *i, int *j, double *v, int nrow, int ncol,
     c->docs[i[k]-1].total += v[k];
     words[i[k]-1] += 1;
   }
+  free(words);
   return(c);
 }
 
@@ -566,8 +585,13 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   PROTECT(ans = NEW_OBJECT(MAKE_CLASS("CTM_VEM")));
   ans = returnObjectCTM(ans, model, corpus, corpus_lambda, corpus_nu, corpus_phi_sum, var, likelihood, iteration, logLiks, keep_iter);
 
-  for (d = 0; d < corpus->ndocs; d++) free_llna_var_param(var[d]);
-  free(var); free(corpus); free(ss); free(model);
+  for (d = 0; d < corpus->ndocs; d++) {
+    free_llna_var_param(var[d]);
+  }
+  del_corpus(corpus); 
+  free(var);
+  del_llna_model(model); free(model);
+  del_llna_ss(ss); free(ss);
   gsl_matrix_free(corpus_lambda); gsl_matrix_free(corpus_nu); gsl_matrix_free(corpus_phi_sum);
   gsl_vector_free(likelihood);
   UNPROTECT(1);

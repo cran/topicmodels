@@ -1,6 +1,14 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-3}{
+  \itemize{
+    \item Issues concerning memory deallocation in the C and C++ code
+    and inclusion of headers were fixed. Thanks to Prof. Ripley for
+    pointing the problem out, giving advise on how to fix the issues and
+    providing log files to help to identify the problems.
+  }
+}
 \section{Changes in topicmodels version 0.2-2}{
   \itemize{
     \item A bug in the CTM implementation which led to unnecessary use

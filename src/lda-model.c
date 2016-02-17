@@ -93,6 +93,7 @@ void free_lda_suffstats(lda_suffstats* ss, int num_topics, int num_terms)
 	free(ss->class_word[i]);
     }
     free(ss->class_word);
+    free(ss);
 }
 
 /*
@@ -197,6 +198,7 @@ void free_lda_model(lda_model* model)
 	free(model->log_prob_w[i]);
     }
     free(model->log_prob_w);
+    free(model);
 }
 
 

@@ -69,7 +69,7 @@ public:
 
     ~document() {
 	if (words) {
-	    delete [] words;
+	    delete[] words;
 	}
     }
 };
@@ -99,16 +99,6 @@ public:
 	    }
 	    delete[] docs;
 	}
-    }
-    
-    void deallocate() {
-	if (docs) {
-	    for (int i = 0; i < M; i++) {
-		delete docs[i];
-	    }
-	    delete[] docs;
-	}
-	docs = NULL;
     }
     
     void add_doc(document * doc, int idx) {

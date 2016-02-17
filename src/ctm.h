@@ -113,6 +113,7 @@ typedef struct corpus {
 
 void write_llna_model(llna_model*, char*, int);
 llna_model* new_llna_model(int, int);
+void del_llna_model(llna_model*);
 llna_model* random_init(int, int, int, int);
 llna_model* corpus_init(int, corpus*, int, int);
 llna_ss * new_llna_ss(llna_model*);
