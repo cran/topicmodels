@@ -28,26 +28,26 @@
  */
 #include "model.h"
 
-model lda(int *i, int *j, int *v, int total, 
+model* lda(int *i, int *j, int *v, int total, 
 	  int niters, int verbose, int save, int keep, int estimate_phi, int model_status, int seeded,
 	  int K, int M, int V, double alpha, double *beta,
 	  string dir, double *init_phi, int *z) 
 {
-  model lda;
-  lda.niters = niters;
-  lda.verbose = verbose;
-  lda.save = save;
-  lda.keep = keep;
-  lda.estimate_phi = estimate_phi;
-  lda.seeded = seeded;
-  lda.K = K;
-  lda.M = M;
-  lda.V = V;
-  lda.alpha = alpha;
-  lda.dir = dir;
-  lda.init(i, j, v, total, beta, z, init_phi, model_status);
-  lda.estimate();
-  lda.inference();
+  model* lda = new model();
+  lda->niters = niters;
+  lda->verbose = verbose;
+  lda->save = save;
+  lda->keep = keep;
+  lda->estimate_phi = estimate_phi;
+  lda->seeded = seeded;
+  lda->K = K;
+  lda->M = M;
+  lda->V = V;
+  lda->alpha = alpha;
+  lda->dir = dir;
+  lda->init(i, j, v, total, beta, z, init_phi, model_status);
+  lda->estimate();
+  lda->inference();
   return(lda);
 }
 
@@ -208,7 +208,7 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   }
 
   GetRNGstate();
-  model model = lda(INTEGER(i),
+  model* model = lda(INTEGER(i),
 		    INTEGER(j),
 		    INTEGER(v),
 		    LENGTH(v),
@@ -229,9 +229,10 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 		    init_z);
   // construct return object
   PROTECT(ans = NEW_OBJECT(MAKE_CLASS("LDA_Gibbs")));
-  ans = returnObjectGibbsLDA(ans, &model);
+  ans = returnObjectGibbsLDA(ans, model);
   PutRNGstate();
   UNPROTECT(1);
+  delete model;
   return(ans);
 }
 }

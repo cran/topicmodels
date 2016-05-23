@@ -1,6 +1,13 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-4}{
+  \itemize{
+    \item Issues concerning memory deallocation in the C++ code were
+    fixed. Thanks to Prof. Ripley for pointing the problem out and
+    providing log files to help to identify the problem.
+  }
+}
 \section{Changes in topicmodels version 0.2-3}{
   \itemize{
     \item Issues concerning memory deallocation in the C and C++ code

@@ -1,4 +1,4 @@
-fb5d4650f20e7d4f4c573aa302f63d61 *DESCRIPTION
+fbafdf7fb7562ccd299b12878ee735e7 *DESCRIPTION
 2173dd6da1cf7ae6ceed608767731709 *NAMESPACE
 1ba3e2fe59712761069f9f5ba4d181fa *R/allclasses.R
 2c6b699c7495d45b6183de2d48f50c04 *R/build_graph.R
@@ -6,13 +6,13 @@ fb5d4650f20e7d4f4c573aa302f63d61 *DESCRIPTION
 5020b5b4adc5130685a899af95449563 *R/ctm.R
 b55de0f0a6ff277ef8dd7526515d2366 *R/lda.R
 8db940a9a83cdbe1a23c5546f0357aa6 *R/utils.R
-4b2b791aa86c73ef1d133ba84b4b4ade *build/vignette.rds
-aa035c81f879bf35dc0d2ceabd8d9691 *data/AssociatedPress.rda
+7080a249b1da92dab9baad3bcdb70f3f *build/vignette.rds
+1e44cc7c64241cebc7f9fef062a3c90d *data/AssociatedPress.rda
 7fb9e60b303026053d206d5b6b36d507 *inst/CITATION
-924dfb2c070201ea52acbf547bf7a648 *inst/NEWS.Rd
+e5686fcc85bdf9358686c1faef798990 *inst/NEWS.Rd
 229259315c204ecdd8639a61376fbf3c *inst/doc/topicmodels.R
 1a88108bc769ec38da97e013b2a7d1e0 *inst/doc/topicmodels.Rnw
-6355768b1f3b59b00f9a2be6f4418e99 *inst/doc/topicmodels.pdf
+3177cb6cbac681b664dc04a67e6a5097 *inst/doc/topicmodels.pdf
 4f959e8d6600030b0a41abe11a609e8a *man/associatedpress.Rd
 4ed9a4763b98c7aad179682b41b111ee *man/build_graph.Rd
 19b8648a5988807493705ce13926670a *man/ctm.Rd
@@ -49,7 +49,7 @@ fb65f047ea8055de056268f16a06fc80 *src/gsl-wrappers.c
 6fb22fd1463f0a591514c18f83eca3c8 *src/lda.h
 64500ac7bd3954d37ed69d8c1efdd443 *src/model.cpp
 933f7df606189e34b3629fa2334cffde *src/model.h
-4e3d40045296bb16b3f366cb33410ed7 *src/rGibbslda.cpp
+90c02198be6d311e23fca3d789819992 *src/rGibbslda.cpp
 c2119bea4ef6c17f165892b9e383196f *src/rctm.c
 82ffec6a7beb87b4598e2e249da9e4be *src/rctm.h
 a8a45aa58f4a54ae812c892abddde236 *src/rlda.c
