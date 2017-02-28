@@ -721,12 +721,10 @@ if (!("corpus.JSS.papers" %in% installed.packages()[,"Package"])) {
 }
 if (!("corpus.JSS.papers" %in% installed.packages()[,"Package"])) {
   library("OAIHarvester")
-  x <- oaih_list_records("http://www.jstatsoft.org/oai")
-  JSS_papers <- oaih_transform(x[, "metadata"])
+  x <- oaih_list_records("http://www.jstatsoft.org/oai", se = "jss:ART")
+  x <- x[vapply(x[, "metadata"], length, 1L) > 0L, ]
+  JSS_papers  <- oaih_transform(x[, "metadata"])
   JSS_papers <- JSS_papers[order(as.Date(unlist(JSS_papers[, "date"]))), ]
-  JSS_papers <- JSS_papers[grep("Abstract:", JSS_papers[, "description"]), ]
-  JSS_papers[, "description"] <- sub(".*\nAbstract:\n", "", 
-                                     unlist(JSS_papers[, "description"]))
 } else {
   data("JSS_papers", package = "corpus.JSS.papers")
 }  
@@ -941,7 +939,8 @@ volume. The most likely topic of the papers which appeared in Volume
 is given by
 <<>>=
 (topics_v24 <- 
- topics(jss_TM[["VEM"]])[grep("/v24/", JSS_papers[, "identifier"])])
+ topics(jss_TM[["VEM"]])[grep("v024", vapply(JSS_papers[, "identifier"], 
+                                             "[", 2, FUN.VALUE = ""))])
 most_frequent_v24 <- which.max(tabulate(topics_v24))
 @ 
 

@@ -1,4 +1,4 @@
-useDynLib("topicmodels")
+useDynLib("topicmodels", .registration = TRUE, .fixes = "C_")
 
 import("methods")
 importFrom("modeltools", "posterior")

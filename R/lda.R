@@ -68,7 +68,7 @@ LDA_VEM.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
   for (i in seq_len(control@nstart)) {
     control_i <- control
     control_i@seed <- control@seed[i]
-    obj[[i]] <- .Call("rlda", 
+    obj[[i]] <- .Call(C_rlda, 
                       ## simple_triplet_matrix
                       as.integer(x$i),
                       as.integer(x$j),
@@ -82,8 +82,7 @@ LDA_VEM.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
                       ## directory for output files
                       result_dir, 
                       ## initial model
-                      model,
-                      PACKAGE = "topicmodels")
+                      model)
     obj[[i]]@gamma <- obj[[i]]@gamma/rowSums(obj[[i]]@gamma)
     obj[[i]] <- new(class(obj[[i]]), obj[[i]], call = call, control = control_i,
                     documents = x$dimnames[[1]], terms = x$dimnames[[2]], n = as.integer(sum(x$v)))
@@ -134,7 +133,7 @@ LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, seedwords = 
   obj <- vector("list", control@nstart)
   for (i in seq_len(control@nstart)) {
     if (!is.na(CONTROL_i@seed[i])) set.seed(CONTROL_i@seed[i])
-    obj[[i]] <- list(.Call("rGibbslda", 
+    obj[[i]] <- list(.Call(C_rGibbslda, 
                            ## simple_triplet_matrix
                            as.integer(x$i),
                            as.integer(x$j),
@@ -153,8 +152,7 @@ LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, seedwords = 
                            result_dir,
                            ## initial model
                            if (is.null(model)) NULL else model@beta,
-                           if (is.null(model)) NULL else model@z,
-                           PACKAGE = "topicmodels"))
+                           if (is.null(model)) NULL else model@z))
     obj[[i]][[1]] <- new(class(obj[[i]][[1]]), obj[[i]][[1]], call = call, control = CONTROL_i, seedwords = seedwords, 
                          documents = x$dimnames[[1]], terms = x$dimnames[[2]], n = as.integer(sum(x$v)))
     iterations <- unique(c(seq(CONTROL_i@iter, control@burnin + control@iter, by = control@thin),
@@ -162,7 +160,7 @@ LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, seedwords = 
     if (length(iterations) > 1) {
       for (j in seq_along(iterations)[-1]) {
         CONTROL_i@iter <- diff(iterations)[j-1]
-        obj[[i]][[j]] <- .Call("rGibbslda", 
+        obj[[i]][[j]] <- .Call(C_rGibbslda,
                                ## simple_triplet_matrix
                                as.integer(x$i),
                                as.integer(x$j),
@@ -181,8 +179,7 @@ LDA_Gibbs.fit <- function(x, k, control = NULL, model = NULL, call, seedwords = 
                                result_dir, 
                                ## initial model
                                obj[[i]][[j-1]]@beta,
-                               obj[[i]][[j-1]]@z,
-                               PACKAGE = "topicmodels")
+                               obj[[i]][[j-1]]@z)
         obj[[i]][[j]] <- new(class(obj[[i]][[j]]), obj[[i]][[j]], call = call, control = CONTROL_i, seedwords = seedwords,
                              documents = x$dimnames[[1]], terms = x$dimnames[[2]], n = as.integer(sum(x$v)))
       }

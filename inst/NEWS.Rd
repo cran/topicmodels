@@ -1,6 +1,17 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-5}{
+  \itemize{
+    \item C++11 added to SystemRequirements. Thanks to Prof. Ripley for
+    pointing out the problem.
+    \item The vignette was slightly modified with respect to the
+    retrieval of topics for Volume 24. This was necessary because JSS
+    has now different identifiers due to the change in its web
+    page. Thanks to Bruce Spencer for pointing the problem out.
+    \item Package now uses registration for native (C) routines.
+  }
+}
 \section{Changes in topicmodels version 0.2-4}{
   \itemize{
     \item Issues concerning memory deallocation in the C++ code were

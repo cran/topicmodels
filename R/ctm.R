@@ -51,7 +51,7 @@ CTM_VEM.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
   for (i in seq_len(control@nstart)) {
     control_i <- control
     control_i@seed <- control@seed[i]
-    obj[[i]] <- .Call("rctm",
+    obj[[i]] <- .Call(C_rctm,
                       ## simple_triplet_matrix
                       as.integer(x$i),
                       as.integer(x$j),
@@ -65,8 +65,7 @@ CTM_VEM.fit <- function(x, k, control = NULL, model = NULL, call, ...) {
                       ## directory for output files
                       result_dir,
                       ## initial model
-                      model,
-                      PACKAGE = "topicmodels")
+                      model)
     obj[[i]]@gamma <- cbind(exp(obj[[i]]@gamma), 1)
     obj[[i]]@gamma <- obj[[i]]@gamma/rowSums(obj[[i]]@gamma)
     obj[[i]] <- new(class(obj[[i]]), obj[[i]], call = call, control = control_i,
