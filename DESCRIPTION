@@ -1,7 +1,7 @@
 Package: topicmodels
 Type: Package
 Title: Topic Models
-Version: 0.2-5
+Version: 0.2-6
 Authors@R: c(person("Bettina", "Grün", role = c("aut", "cre"),
                     email = "Bettina.Gruen@jku.at"),
              person("Kurt", "Hornik", role = "aut"))
@@ -20,9 +20,9 @@ License: GPL-2
 Encoding: UTF-8
 LazyLoad: yes
 NeedsCompilation: yes
-Packaged: 2017-02-28 10:15:45 UTC; hornik
+Packaged: 2017-04-18 07:37:19 UTC; gruen
 Author: Bettina Grün [aut, cre],
   Kurt Hornik [aut]
 Maintainer: Bettina Grün <Bettina.Gruen@jku.at>
 Repository: CRAN
-Date/Publication: 2017-02-28 11:24:36
+Date/Publication: 2017-04-18 08:29:52 UTC

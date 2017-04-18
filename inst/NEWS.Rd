@@ -1,6 +1,12 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-6}{
+  \itemize{
+    \item Protections for R objects added in the external code. Thanks
+    to Tomas Kalibera for pointing out the potential problems.
+  }
+}
 \section{Changes in topicmodels version 0.2-5}{
   \itemize{
     \item C++11 added to SystemRequirements. Thanks to Prof. Ripley for

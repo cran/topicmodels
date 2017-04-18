@@ -301,7 +301,6 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 
   corpus* corpus;
   const char *start, *directory;
-  SEXP ans; 
   int iter, keep_iter, d, n, max_length, verbose = 0;
   lda_model *model = NULL;
   double **var_gamma, ***phi, *llh, *logLiks = NULL;
@@ -309,11 +308,16 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   char filename[100];
   lda_suffstats* ss = NULL;
   double likelihood, likelihood_old = 0, converged = 1;
+  SEXP control_var, control_em, ans;
 
-  VAR_MAX_ITER = *INTEGER(GET_SLOT(GET_SLOT(control, install("var")), install("iter.max")));
-  VAR_CONVERGED = *REAL(GET_SLOT(GET_SLOT(control, install("var")), install("tol")));
-  EM_MAX_ITER = *INTEGER(GET_SLOT(GET_SLOT(control, install("em")), install("iter.max")));
-  EM_CONVERGED = *REAL(GET_SLOT(GET_SLOT(control, install("em")), install("tol")));
+  control_var = PROTECT(GET_SLOT(control, install("var")));
+  control_em = PROTECT(GET_SLOT(control, install("em")));
+  VAR_MAX_ITER = *INTEGER(GET_SLOT(control_var, install("iter.max")));
+  VAR_CONVERGED = *REAL(GET_SLOT(control_var, install("tol")));
+  EM_MAX_ITER = *INTEGER(GET_SLOT(control_em, install("iter.max")));
+  EM_CONVERGED = *REAL(GET_SLOT(control_em, install("tol")));
+  UNPROTECT(2);
+  
   LAG = *INTEGER(GET_SLOT(control, install("verbose")));
   SAVE = *INTEGER(GET_SLOT(control, install("save")));
   KEEP = *INTEGER(GET_SLOT(control, install("keep")));

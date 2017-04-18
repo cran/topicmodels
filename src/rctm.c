@@ -444,14 +444,19 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   const char *start, *dir;
   int NTOPICS, d, iteration, keep_iter, verbose = 0;
   llna_var_param **var;
-  SEXP ans;
-     
-  PARAMS.var_max_iter = *INTEGER(GET_SLOT(GET_SLOT(control, install("var")), install("iter.max")));
-  PARAMS.var_convergence = *REAL(GET_SLOT(GET_SLOT(control, install("var")), install("tol")));
-  PARAMS.em_max_iter = *INTEGER(GET_SLOT(GET_SLOT(control, install("em")), install("iter.max")));
-  PARAMS.em_convergence = *REAL(GET_SLOT(GET_SLOT(control, install("em")), install("tol")));
-  PARAMS.cg_max_iter = *INTEGER(GET_SLOT(GET_SLOT(control, install("cg")), install("iter.max")));
-  PARAMS.cg_convergence = *REAL(GET_SLOT(GET_SLOT(control, install("cg")), install("tol")));
+  SEXP control_var, control_em, control_cg, ans;
+
+  control_var = PROTECT(GET_SLOT(control, install("var")));
+  control_em = PROTECT(GET_SLOT(control, install("em")));
+  control_cg = PROTECT(GET_SLOT(control, install("cg")));
+  PARAMS.var_max_iter = *INTEGER(GET_SLOT(control_var, install("iter.max")));
+  PARAMS.var_convergence = *REAL(GET_SLOT(control_var, install("tol")));
+  PARAMS.em_max_iter = *INTEGER(GET_SLOT(control_em, install("iter.max")));
+  PARAMS.em_convergence = *REAL(GET_SLOT(control_em, install("tol")));
+  PARAMS.cg_max_iter = *INTEGER(GET_SLOT(control_cg, install("iter.max")));
+  PARAMS.cg_convergence = *REAL(GET_SLOT(control_cg, install("tol")));
+  UNPROTECT(3);
+  
   PARAMS.verbose = *INTEGER(GET_SLOT(control, install("verbose")));
   PARAMS.save = *INTEGER(GET_SLOT(control, install("save")));
   PARAMS.seed = *INTEGER(GET_SLOT(control, install("seed")));
