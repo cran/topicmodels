@@ -1,7 +1,7 @@
 Package: topicmodels
 Type: Package
 Title: Topic Models
-Version: 0.2-6
+Version: 0.2-7
 Authors@R: c(person("Bettina", "Grün", role = c("aut", "cre"),
                     email = "Bettina.Gruen@jku.at"),
              person("Kurt", "Hornik", role = "aut"))
@@ -14,15 +14,15 @@ Depends: R (>= 2.15.0)
 Imports: stats4, methods, modeltools, slam, tm (>= 0.6)
 Suggests: lasso2, lattice, lda, OAIHarvester, SnowballC, XML,
         corpus.JSS.papers
-Additional_repositories: http://datacube.wu.ac.at
+Additional_repositories: https://datacube.wu.ac.at
 SystemRequirements: GNU Scientific Library version >= 1.8, C++11
 License: GPL-2
 Encoding: UTF-8
 LazyLoad: yes
 NeedsCompilation: yes
-Packaged: 2017-04-18 07:37:19 UTC; gruen
+Packaged: 2017-11-03 16:05:34 UTC; hornik
 Author: Bettina Grün [aut, cre],
   Kurt Hornik [aut]
 Maintainer: Bettina Grün <Bettina.Gruen@jku.at>
 Repository: CRAN
-Date/Publication: 2017-04-18 08:29:52 UTC
+Date/Publication: 2017-11-03 16:27:26 UTC

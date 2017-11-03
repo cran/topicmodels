@@ -713,49 +713,37 @@ the probability is above the specified \code{threshold}.
 %%------------------------------------------------------------------------
 \section{Illustrative example: Abstracts of JSS papers}\label{sec:illustr-exampl-abstr}
 
-<<echo=false, results=hide, eval=true>>=
-options(useFancyQuotes = FALSE)
-if (!("corpus.JSS.papers" %in% installed.packages()[,"Package"])) {
-  try(install.packages("corpus.JSS.papers", 
-                       repos = "http://datacube.wu.ac.at/", type = "source"))
-}
-if (!("corpus.JSS.papers" %in% installed.packages()[,"Package"])) {
-  library("OAIHarvester")
-  x <- oaih_list_records("http://www.jstatsoft.org/oai", se = "jss:ART")
-  x <- x[vapply(x[, "metadata"], length, 1L) > 0L, ]
-  JSS_papers  <- oaih_transform(x[, "metadata"])
-  JSS_papers <- JSS_papers[order(as.Date(unlist(JSS_papers[, "date"]))), ]
-} else {
-  data("JSS_papers", package = "corpus.JSS.papers")
-}  
-@ 
-
 The application of the package \pkg{topicmodels} is demonstrated on
 the collection of abstracts of the \emph{Journal of Statistical
 Software} (JSS) (up to 2010-08-05).  
 
 The JSS data is available as a list matrix in the package
-\pkg{corpus.JSS.papers} which can be installed and loaded by
-<<eval=false>>=
-install.packages("corpus.JSS.papers", 
-  repos = "http://datacube.wu.ac.at/", type = "source")
-data("JSS_papers", package = "corpus.JSS.papers")
+\pkg{corpus.JSS.papers} which can be installed from the repository
+available at \url{https://datacube.wu.ac.at/}.
+<<eval=true>>=
+if(!nzchar(system.file(package = "corpus.JSS.papers"))) {
+    templib <- tempfile(); dir.create(templib)
+    install.packages("corpus.JSS.papers", lib = templib,
+                     repos = "https://datacube.wu.ac.at/", 
+                     type = "source")
+    data("JSS_papers", package = "corpus.JSS.papers",
+         lib.loc = templib)
+} else {
+    data("JSS_papers", package = "corpus.JSS.papers")
+}
 @ 
-
 Alternatively, one can harvest JSS publication Dublin Core
-\url{http://dublincore.org/} metadata (including information on authors,
-publication date and the abstract) from the JSS web site using the Open
-Archives Initiative Protocol for Metadata Harvesting (OAI-PMH), for
-which package \pkg{OAIHarvester} \citep{topicmodels:Hornik:2011}
+(\url{http://dublincore.org/}) metadata (including information on
+authors, publication date and the abstract) from the JSS web site using
+the Open Archives Initiative Protocol for Metadata Harvesting (OAI-PMH),
+for which package \pkg{OAIHarvester} \citep{topicmodels:Hornik:2011}
 provides an \proglang{R} client.
 <<eval=false>>=
 library("OAIHarvester")
-x <- oaih_list_records("http://www.jstatsoft.org/oai")
-JSS_papers <- oaih_transform(x[, "metadata"])
+x <- oaih_list_records("http://www.jstatsoft.org/oai", se = "jss:ART")
+x <- x[vapply(x[, "metadata"], length, 1L) > 0L, ]
+JSS_papers  <- oaih_transform(x[, "metadata"])
 JSS_papers <- JSS_papers[order(as.Date(unlist(JSS_papers[, "date"]))), ]
-JSS_papers <- JSS_papers[grep("Abstract:", JSS_papers[, "description"]), ]
-JSS_papers[, "description"] <- sub(".*\nAbstract:\n", "", 
-                                   unlist(JSS_papers[, "description"]))
 @ 
 
 For reproducibility of results we use only abstracts published up to

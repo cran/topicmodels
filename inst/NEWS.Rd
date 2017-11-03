@@ -1,6 +1,15 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+
+\section{Changes in topicmodels version 0.2-7}{
+  \itemize{
+    \item Code shown for either installing package
+    \pkg{corpus.JSS.papers} and loading the data from the package or
+    obtaining the data with package \pkg{OAIHarvester} is now the same
+    as actually used in the vignette.
+  }
+}
 \section{Changes in topicmodels version 0.2-6}{
   \itemize{
     \item Protections for R objects added in the external code. Thanks

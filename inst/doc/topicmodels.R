@@ -57,46 +57,32 @@ cat(paste("R> ", prompt(LDA, filename = NA)$usage[[2]], "\n",
 
 
 ###################################################
-### code chunk number 6: topicmodels.Rnw:716-730
+### code chunk number 6: topicmodels.Rnw:723-733
 ###################################################
-options(useFancyQuotes = FALSE)
-if (!("corpus.JSS.papers" %in% installed.packages()[,"Package"])) {
-  try(install.packages("corpus.JSS.papers", 
-                       repos = "http://datacube.wu.ac.at/", type = "source"))
-}
-if (!("corpus.JSS.papers" %in% installed.packages()[,"Package"])) {
-  library("OAIHarvester")
-  x <- oaih_list_records("http://www.jstatsoft.org/oai", se = "jss:ART")
-  x <- x[vapply(x[, "metadata"], length, 1L) > 0L, ]
-  JSS_papers  <- oaih_transform(x[, "metadata"])
-  JSS_papers <- JSS_papers[order(as.Date(unlist(JSS_papers[, "date"]))), ]
+if(!nzchar(system.file(package = "corpus.JSS.papers"))) {
+    templib <- tempfile(); dir.create(templib)
+    install.packages("corpus.JSS.papers", lib = templib,
+                     repos = "https://datacube.wu.ac.at/", 
+                     type = "source")
+    data("JSS_papers", package = "corpus.JSS.papers",
+         lib.loc = templib)
 } else {
-  data("JSS_papers", package = "corpus.JSS.papers")
-}  
+    data("JSS_papers", package = "corpus.JSS.papers")
+}
 
 
 ###################################################
-### code chunk number 7: topicmodels.Rnw:739-742 (eval = FALSE)
-###################################################
-## install.packages("corpus.JSS.papers", 
-##   repos = "http://datacube.wu.ac.at/", type = "source")
-## data("JSS_papers", package = "corpus.JSS.papers")
-
-
-###################################################
-### code chunk number 8: topicmodels.Rnw:751-758 (eval = FALSE)
+### code chunk number 7: topicmodels.Rnw:741-746 (eval = FALSE)
 ###################################################
 ## library("OAIHarvester")
-## x <- oaih_list_records("http://www.jstatsoft.org/oai")
-## JSS_papers <- oaih_transform(x[, "metadata"])
+## x <- oaih_list_records("http://www.jstatsoft.org/oai", se = "jss:ART")
+## x <- x[vapply(x[, "metadata"], length, 1L) > 0L, ]
+## JSS_papers  <- oaih_transform(x[, "metadata"])
 ## JSS_papers <- JSS_papers[order(as.Date(unlist(JSS_papers[, "date"]))), ]
-## JSS_papers <- JSS_papers[grep("Abstract:", JSS_papers[, "description"]), ]
-## JSS_papers[, "description"] <- sub(".*\nAbstract:\n", "", 
-##                                    unlist(JSS_papers[, "description"]))
 
 
 ###################################################
-### code chunk number 9: topicmodels.Rnw:764-767
+### code chunk number 8: topicmodels.Rnw:752-755
 ###################################################
 JSS_papers <- JSS_papers[JSS_papers[,"date"] < "2010-08-05",]
 JSS_papers <- JSS_papers[sapply(JSS_papers[, "description"], 
@@ -104,7 +90,7 @@ JSS_papers <- JSS_papers[sapply(JSS_papers[, "description"],
 
 
 ###################################################
-### code chunk number 10: topicmodels.Rnw:776-786
+### code chunk number 9: topicmodels.Rnw:764-774
 ###################################################
 library("tm")
 library("XML")
@@ -119,7 +105,7 @@ corpus <- Corpus(VectorSource(sapply(JSS_papers[, "description"],
 
 
 ###################################################
-### code chunk number 11: topicmodels.Rnw:795-800
+### code chunk number 10: topicmodels.Rnw:783-788
 ###################################################
 Sys.setlocale("LC_COLLATE", "C")
 JSS_dtm <- DocumentTermMatrix(corpus, 
@@ -129,7 +115,7 @@ dim(JSS_dtm)
 
 
 ###################################################
-### code chunk number 12: topicmodels.Rnw:810-819
+### code chunk number 11: topicmodels.Rnw:798-807
 ###################################################
 library("slam")
 summary(col_sums(JSS_dtm))
@@ -143,13 +129,13 @@ summary(col_sums(JSS_dtm))
 
 
 ###################################################
-### code chunk number 13: topicmodels.Rnw:824-825
+### code chunk number 12: topicmodels.Rnw:812-813
 ###################################################
 dim(JSS_dtm)
 
 
 ###################################################
-### code chunk number 14: topicmodels.Rnw:849-862
+### code chunk number 13: topicmodels.Rnw:837-850
 ###################################################
 library("topicmodels")
 k <- 30
@@ -167,13 +153,13 @@ jss_TM <-
 
 
 ###################################################
-### code chunk number 15: topicmodels.Rnw:868-869
+### code chunk number 14: topicmodels.Rnw:856-857
 ###################################################
 sapply(jss_TM[1:2], slot, "alpha")
 
 
 ###################################################
-### code chunk number 16: topicmodels.Rnw:887-894
+### code chunk number 15: topicmodels.Rnw:875-882
 ###################################################
 methods <- c("VEM", "VEM_fixed", "Gibbs", "CTM")
 DF <- data.frame(posterior = unlist(lapply(jss_TM, function(x) apply(posterior(x)$topics, 1, max))),
@@ -185,7 +171,7 @@ print(histogram(~ posterior | method, data = DF, col = "white", as.table = TRUE,
 
 
 ###################################################
-### code chunk number 17: topicmodels.Rnw:911-914
+### code chunk number 16: topicmodels.Rnw:899-902
 ###################################################
 sapply(jss_TM, function(x) 
        mean(apply(posterior(x)$topics, 
@@ -193,20 +179,20 @@ sapply(jss_TM, function(x)
 
 
 ###################################################
-### code chunk number 18: topicmodels.Rnw:924-925
+### code chunk number 17: topicmodels.Rnw:912-913
 ###################################################
 Topic <- topics(jss_TM[["VEM"]], 1)
 
 
 ###################################################
-### code chunk number 19: topicmodels.Rnw:929-931
+### code chunk number 18: topicmodels.Rnw:917-919
 ###################################################
 Terms <- terms(jss_TM[["VEM"]], 5)
 Terms[,1:5]
 
 
 ###################################################
-### code chunk number 20: topicmodels.Rnw:940-944
+### code chunk number 19: topicmodels.Rnw:928-932
 ###################################################
 (topics_v24 <- 
  topics(jss_TM[["VEM"]])[grep("v024", vapply(JSS_papers[, "identifier"], 
@@ -215,7 +201,7 @@ most_frequent_v24 <- which.max(tabulate(topics_v24))
 
 
 ###################################################
-### code chunk number 21: topicmodels.Rnw:951-952
+### code chunk number 20: topicmodels.Rnw:939-940
 ###################################################
 terms(jss_TM[["VEM"]], 10)[, most_frequent_v24]
 
