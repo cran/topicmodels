@@ -1,10 +1,12 @@
 Package: topicmodels
 Type: Package
 Title: Topic Models
-Version: 0.2-7
+Version: 0.2-8
 Authors@R: c(person("Bettina", "Grün", role = c("aut", "cre"),
-                    email = "Bettina.Gruen@jku.at"),
-             person("Kurt", "Hornik", role = "aut"))
+                    email = "Bettina.Gruen@jku.at",
+		    comment = c(ORCID = "0000-0001-7265-4773")),
+             person("Kurt", "Hornik", role = "aut",
+	            comment = c(ORCID = "0000-0003-4198-9911")))
 Description: Provides an interface to the C code for Latent Dirichlet
 	     Allocation (LDA) models and Correlated Topics Models
 	     (CTM) by David M. Blei and co-authors and the C++ code
@@ -12,7 +14,7 @@ Description: Provides an interface to the C code for Latent Dirichlet
 	     Phan and co-authors.
 Depends: R (>= 2.15.0)
 Imports: stats4, methods, modeltools, slam, tm (>= 0.6)
-Suggests: lasso2, lattice, lda, OAIHarvester, SnowballC, XML,
+Suggests: lasso2, lattice, lda, OAIHarvester, SnowballC,
         corpus.JSS.papers
 Additional_repositories: https://datacube.wu.ac.at
 SystemRequirements: GNU Scientific Library version >= 1.8, C++11
@@ -20,9 +22,9 @@ License: GPL-2
 Encoding: UTF-8
 LazyLoad: yes
 NeedsCompilation: yes
-Packaged: 2017-11-03 16:05:34 UTC; hornik
-Author: Bettina Grün [aut, cre],
-  Kurt Hornik [aut]
+Packaged: 2018-12-21 09:57:50 UTC; hornik
+Author: Bettina Grün [aut, cre] (<https://orcid.org/0000-0001-7265-4773>),
+  Kurt Hornik [aut] (<https://orcid.org/0000-0003-4198-9911>)
 Maintainer: Bettina Grün <Bettina.Gruen@jku.at>
 Repository: CRAN
-Date/Publication: 2017-11-03 16:27:26 UTC
+Date/Publication: 2018-12-21 12:03:10 UTC

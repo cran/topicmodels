@@ -308,7 +308,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   char filename[100];
   lda_suffstats* ss = NULL;
   double likelihood, likelihood_old = 0, converged = 1;
-  SEXP control_var, control_em, ans;
+  SEXP control_var, control_em, ans, cls;
 
   control_var = PROTECT(GET_SLOT(control, install("var")));
   control_em = PROTECT(GET_SLOT(control, install("em")));
@@ -465,7 +465,8 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   }
 
   // construct return object
-  PROTECT(ans = NEW_OBJECT(MAKE_CLASS("LDA_VEM")));
+  PROTECT(cls = MAKE_CLASS("LDA_VEM"));
+  PROTECT(ans = NEW_OBJECT(cls));
   ans = returnObjectLDA(ans, model, corpus, phi, var_gamma, llh, iter, logLiks, keep_iter);
 
   for (d = 0; d < corpus->num_docs; d++) {
@@ -477,7 +478,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   }
   free(phi); free(var_gamma); free(llh); free(logLiks);
   free_corpus(corpus); free_lda_suffstats(ss, model->num_topics, model->num_terms); free_lda_model(model); 
-  UNPROTECT(1);
+  UNPROTECT(2);
   return(ans);
 }
 

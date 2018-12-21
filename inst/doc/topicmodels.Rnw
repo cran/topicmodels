@@ -67,7 +67,7 @@ lattice.options(default.theme=ltheme)
 \setkeys{Gin}{width=\textwidth}
 
 %\VignetteIndexEntry{topicmodels: An R Package for Fitting Topic Models}
-%\VignetteDepends{OAIHarvester, XML}
+%\VignetteDepends{OAIHarvester}
 %\VignetteKeywords{Gibbs sampling, R, text analysis, topic model, variational EM}
 %\VignettePackage{topicmodels}
 
@@ -756,22 +756,24 @@ JSS_papers <- JSS_papers[sapply(JSS_papers[, "description"],
 @ 
 
 The final data set contains \Sexpr{nrow(JSS_papers)} documents. Before
-analysis we transform it to a \code{"Corpus"} using package
-\pkg{tm}. HTML markup in the abstracts for greek letters,
-subscripting, etc., is removed using package \pkg{XML}
-\citep{topicmodels:Temple-Lang:2010}.
-
+analysis we transform it to a \code{"Corpus"} using package \pkg{tm}.
+% HTML markup in the abstracts for greek letters, subscripting, etc., is
+% removed using package \pkg{XML} \citep{topicmodels:Temple-Lang:2010}.
+% <<>>=
+% library("tm")
+% library("XML")
+% remove_HTML_markup <-
+% function(s) tryCatch({
+%     doc <- htmlTreeParse(paste("<!DOCTYPE html>", s),
+%                          asText = TRUE, trim = FALSE)
+%     xmlValue(xmlRoot(doc))
+% }, error = function(s) s)
+% corpus <- Corpus(VectorSource(sapply(JSS_papers[, "description"],
+%                                      remove_HTML_markup)))
+% @ 
 <<>>=
 library("tm")
-library("XML")
-remove_HTML_markup <-
-function(s) tryCatch({
-    doc <- htmlTreeParse(paste("<!DOCTYPE html>", s),
-                         asText = TRUE, trim = FALSE)
-    xmlValue(xmlRoot(doc))
-}, error = function(s) s)
-corpus <- Corpus(VectorSource(sapply(JSS_papers[, "description"],
-                                     remove_HTML_markup)))
+corpus <- Corpus(VectorSource(unlist(JSS_papers[, "description"])))
 @ 
 
 The corpus is exported to a document-term matrix using function

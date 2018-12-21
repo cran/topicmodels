@@ -444,7 +444,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   const char *start, *dir;
   int NTOPICS, d, iteration, keep_iter, verbose = 0;
   llna_var_param **var;
-  SEXP control_var, control_em, control_cg, ans;
+  SEXP control_var, control_em, control_cg, ans, cls;
 
   control_var = PROTECT(GET_SLOT(control, install("var")));
   control_em = PROTECT(GET_SLOT(control, install("em")));
@@ -587,7 +587,8 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   }
 
   // construct return object
-  PROTECT(ans = NEW_OBJECT(MAKE_CLASS("CTM_VEM")));
+  PROTECT(cls = MAKE_CLASS("CTM_VEM"));
+  PROTECT(ans = NEW_OBJECT(cls));
   ans = returnObjectCTM(ans, model, corpus, corpus_lambda, corpus_nu, corpus_phi_sum, var, likelihood, iteration, logLiks, keep_iter);
 
   for (d = 0; d < corpus->ndocs; d++) {
@@ -599,6 +600,6 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   del_llna_ss(ss); free(ss);
   gsl_matrix_free(corpus_lambda); gsl_matrix_free(corpus_nu); gsl_matrix_free(corpus_phi_sum);
   gsl_vector_free(likelihood);
-  UNPROTECT(1);
+  UNPROTECT(2);
   return(ans);
 }

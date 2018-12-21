@@ -93,8 +93,6 @@
       omitted in-between Gibbs iterations, by default equals \code{iter}.}
     \item{\code{burnin}:}{Object of class \code{"integer"}; number of
       omitted Gibbs iterations at beginning, by default equals 0.}
-    \item{\code{burnin}:}{Object of class \code{"integer"}; number of
-      omitted Gibbs iterations at beginning, by default equals 0.}
     \item{\code{initialize}:}{Object of class \code{"character"};
       one of \code{"random"}, \code{"beta"} and \code{"z"}, by
       default equals \code{"random"}.}

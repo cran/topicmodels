@@ -2,6 +2,12 @@
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
 
+\section{Changes in topicmodels version 0.2-8}{
+  \itemize{
+    \item Improve protection of R objects in the external code.
+  }
+}
+
 \section{Changes in topicmodels version 0.2-7}{
   \itemize{
     \item Code shown for either installing package

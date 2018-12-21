@@ -188,7 +188,7 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 	       SEXP control, SEXP initialize, SEXP seeded, SEXP seed, 
 	       SEXP k, SEXP prefix, SEXP phi, SEXP z) 
 {
-  SEXP ans;
+  SEXP ans, cls;
   double *init_phi, *delta;
   int *init_z;
 
@@ -228,10 +228,11 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 		    init_phi,
 		    init_z);
   // construct return object
-  PROTECT(ans = NEW_OBJECT(MAKE_CLASS("LDA_Gibbs")));
+  PROTECT(cls = MAKE_CLASS("LDA_Gibbs"));
+  PROTECT(ans = NEW_OBJECT(cls));
   ans = returnObjectGibbsLDA(ans, model);
   PutRNGstate();
-  UNPROTECT(1);
+  UNPROTECT(2);
   delete model;
   return(ans);
 }
