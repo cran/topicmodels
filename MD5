@@ -1,4 +1,4 @@
-ce1ad4471d9eeffcd53ba5cbb0af6dda *DESCRIPTION
+f5482b6247178406cf653c7254efa72d *DESCRIPTION
 71d836d6068259e11eb3080f52cd8a12 *NAMESPACE
 1ba3e2fe59712761069f9f5ba4d181fa *R/allclasses.R
 2c6b699c7495d45b6183de2d48f50c04 *R/build_graph.R
@@ -6,13 +6,13 @@ ce1ad4471d9eeffcd53ba5cbb0af6dda *DESCRIPTION
 1edcecf298e1ddb186d742f2b89aaa30 *R/ctm.R
 33cd14116e78adbc473c7ffa54f1ea01 *R/lda.R
 8db940a9a83cdbe1a23c5546f0357aa6 *R/utils.R
-bf6066de600e02596f626d86fe3b0260 *build/vignette.rds
-b9d0d75236d40df10854b24d7b268e7e *data/AssociatedPress.rda
+cba54dd10275444b2675737963db2e7c *build/vignette.rds
+4313909caf490ddd38f71c9c5195fb4a *data/AssociatedPress.rda
 7fb9e60b303026053d206d5b6b36d507 *inst/CITATION
-e038acbe4f97ed8e8bf9a00db99945b2 *inst/NEWS.Rd
+da4eb37ce8f838edb4350bc29ff3439d *inst/NEWS.Rd
 a1fe4c1a7c40e2c2175982b87126eded *inst/doc/topicmodels.R
 9f72d3af5dd248f8174883f2d35a854f *inst/doc/topicmodels.Rnw
-08a26299433c62c25d42b1f32d8267a3 *inst/doc/topicmodels.pdf
+b3d26f213027627e5caa9c3c211b139f *inst/doc/topicmodels.pdf
 4f959e8d6600030b0a41abe11a609e8a *man/associatedpress.Rd
 4ed9a4763b98c7aad179682b41b111ee *man/build_graph.Rd
 19b8648a5988807493705ce13926670a *man/ctm.Rd
@@ -44,7 +44,7 @@ f3084cb4b11f05315622f70f664a0cf2 *src/init.c
 0ee246f713170963f29704003f0a100a *src/lda-alpha.c
 3fdbb09a1a88265d2a06756537d3759a *src/lda-alpha.h
 7377dbe8b5795d43fc9e162717993eb1 *src/lda-inference.c
-1f3871562badc5d69fd09f3c8507627c *src/lda-inference.h
+fa5ea6823587aa912b452bbd51f8b69e *src/lda-inference.h
 21c982f301a19fd205717d38c818dcb2 *src/lda-model.c
 2bf2269774bd30fe36614dbf96f3ba45 *src/lda-model.h
 6fb22fd1463f0a591514c18f83eca3c8 *src/lda.h
@@ -53,7 +53,7 @@ f3084cb4b11f05315622f70f664a0cf2 *src/init.c
 7639f0f00b810782dd36e2989bab8149 *src/rGibbslda.cpp
 1feac18bf5a8417e57667756f8e9acbc *src/rctm.c
 82ffec6a7beb87b4598e2e249da9e4be *src/rctm.h
-77427a16d32483a5bb02c8b597800d62 *src/rlda.c
+cc3959fef296f7926a9edbe142a8ad19 *src/rlda.c
 0bb16fef8e3c10b6ab32d5f59d553838 *src/rlda.h
 c0c4c792fa313d44e2f48196ec8049d2 *src/utilities.cpp
 fb883ef7f45244fd298b177113eb399b *src/utilities.h

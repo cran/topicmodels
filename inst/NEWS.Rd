@@ -2,6 +2,15 @@
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
 
+\section{Changes in topicmodels version 0.2-9}{
+  \itemize{
+    \item Issues concerning installation failures with gcc trunk aka 10
+    were fixed. Thanks to Prof. Ripley for pointing out the problem.
+    \item The authors field was improved to contain also the
+    contributors of external code.
+  }
+}
+
 \section{Changes in topicmodels version 0.2-8}{
   \itemize{
     \item Improve protection of R objects in the external code.

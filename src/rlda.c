@@ -20,6 +20,9 @@
 
 #include "rlda.h"
 
+float VAR_CONVERGED;
+int VAR_MAX_ITER;
+
 /*
  * ArgMax
  *
