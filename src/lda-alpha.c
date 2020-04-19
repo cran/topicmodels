@@ -21,16 +21,14 @@
 
 /*
  * objective function and its derivatives
+ * BG: removed alhood
  *
  */
 
-double alhood(double a, double ss, int D, int K)
-{ return(D * (lgamma(K * a) - K * lgamma(a)) + (a - 1) * ss); }
-
-double d_alhood(double a, double ss, int D, int K)
+static double d_alhood(double a, double ss, int D, int K)
 { return(D * (K * digamma(K * a) - K * digamma(a)) + ss); }
 
-double d2_alhood(double a, int D, int K)
+static double d2_alhood(double a, int D, int K)
 { return(D * (K * K * trigamma(K * a) - K * trigamma(a))); }
 
 

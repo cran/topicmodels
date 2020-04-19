@@ -16,16 +16,6 @@
 #include "utils.h"
 #include "cokus.h"
 
-float EM_CONVERGED;
-int EM_MAX_ITER;
-int ESTIMATE_ALPHA;
-int SAVE;
-int KEEP;
-double INITIAL_ALPHA;
-int LAG;
-int NTOPICS;
-int SEED;
-
 SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 	  SEXP control, SEXP k, SEXP prefix, SEXP init_model);
 

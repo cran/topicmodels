@@ -209,7 +209,7 @@ void free_lda_model(lda_model* model)
 
 void save_lda_model(lda_model* model, char* model_root)
 {
-    char filename[100];
+    char filename[260];
     FILE* fileptr;
     int i, j;
 

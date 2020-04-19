@@ -9,10 +9,6 @@
 #include "common.h"
 // #include <assert.h>
 
-extern float VAR_CONVERGED;
-extern int VAR_MAX_ITER;
-
-double lda_inference(document*, lda_model*, double*, double**);
-double compute_likelihood(document*, lda_model*, double**, double*);
+double lda_inference(document*, lda_model*, double*, double**, float, int);
 
 #endif

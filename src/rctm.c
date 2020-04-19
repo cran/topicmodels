@@ -25,7 +25,7 @@
  *
  */
 
-void del_corpus(corpus* corpus)
+static void del_corpus(corpus* corpus)
 {
     int i;
 
@@ -43,7 +43,7 @@ void del_corpus(corpus* corpus)
  *
  */
 
-SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* corpus_lambda, gsl_matrix* corpus_nu,
+static SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* corpus_lambda, gsl_matrix* corpus_nu,
 		     gsl_matrix* corpus_phi_sum, llna_var_param** var, gsl_vector* likelihood, int iter, double* logLiks, int keep_iter) 
 {
   SEXP tp, I, J, V, wordassign, nms;
@@ -171,7 +171,7 @@ SEXP returnObjectCTM(SEXP ans, llna_model* model, corpus* corpus, gsl_matrix* co
   return(ans);
 }
 
-llna_model* R2llna_model(SEXP init_model) 
+static llna_model* R2llna_model(SEXP init_model) 
 {
   llna_model* model;
   int ntopics, nterms, i, j;
@@ -202,7 +202,7 @@ llna_model* R2llna_model(SEXP init_model)
  *
  */
 
-void expectation(corpus* corpus, llna_model* model, llna_ss* ss,
+static void expectation(corpus* corpus, llna_model* model, llna_ss* ss,
                  double* avg_niter, double* total_lhood,
 		 gsl_vector* likelihood,
                  gsl_matrix* corpus_lambda, gsl_matrix* corpus_nu,
@@ -255,7 +255,7 @@ void expectation(corpus* corpus, llna_model* model, llna_ss* ss,
  *
  */
 
-void cov_shrinkage(gsl_matrix* mle, int n, gsl_matrix* result)
+static void cov_shrinkage(gsl_matrix* mle, int n, gsl_matrix* result)
 {
     int p = mle->size1, i;
     double alpha = 0, tau = 0, log_lambda_s = 0;
@@ -327,7 +327,7 @@ void cov_shrinkage(gsl_matrix* mle, int n, gsl_matrix* result)
 
 
 
-void maximization(llna_model* model, llna_ss* ss)
+static void maximization(llna_model* model, llna_ss* ss)
 {
     int i, j;
     double sum;
@@ -374,7 +374,7 @@ void maximization(llna_model* model, llna_ss* ss)
     }
 }
 
-corpus* DocumentTermMatrix2Corpus(int *i, int *j, double *v, int nrow, int ncol, int length)
+static corpus* DocumentTermMatrix2Corpus(int *i, int *j, double *v, int nrow, int ncol, int length)
 {
   corpus* c;
   int l, k;
@@ -413,7 +413,7 @@ corpus* DocumentTermMatrix2Corpus(int *i, int *j, double *v, int nrow, int ncol,
  *
  */
 
-llna_model* em_initial_model(int k, corpus* corpus, const char* start, SEXP init_model)
+static llna_model* em_initial_model(int k, corpus* corpus, const char* start, SEXP init_model)
 {
     llna_model* model;
     if (PARAMS.verbose > 0) Rprintf("starting from %s\n", start);
@@ -433,7 +433,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   llna_model *model;
   llna_ss* ss;
   FILE* lhood_fptr = NULL;
-  char string[100];
+  char string[260];
   double convergence = 1, lhood = 0, lhood_old = 0;
   time_t t1,t2;
   double avg_niter, converged_pct;

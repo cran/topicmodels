@@ -32,21 +32,13 @@
 
 extern llna_params PARAMS;
 
-double f_lambda(const gsl_vector * p, void * params);
-void df_lambda(const gsl_vector * p, void * params, gsl_vector * df);
-void fdf_lambda(const gsl_vector * p, void * params, double * f, gsl_vector * df);
-
-double f_nu(const gsl_vector * p, void * params);
-void df_nu(const gsl_vector * p, void * params, gsl_vector * df);
-void fdf_nu(const gsl_vector * p, void * params, double * f, gsl_vector * df);
-
 /*
  * temporary k-1 vectors so we don't have to allocate, deallocate
  *
  */
 
 gsl_vector ** temp;
-int ntemp = 4;
+static int ntemp = 4;
 
 void init_temp_vectors(int size)
 {
@@ -62,7 +54,7 @@ void init_temp_vectors(int size)
  *
  */
 
-double expect_mult_norm(llna_var_param * var)
+static double expect_mult_norm(llna_var_param * var)
 {
     int i;
     double sum_exp = 0;
@@ -75,7 +67,7 @@ double expect_mult_norm(llna_var_param * var)
 }
 
 
-void lhood_bnd(llna_var_param* var, doc* doc, llna_model* mod)
+static void lhood_bnd(llna_var_param* var, doc* doc, llna_model* mod)
 {
     int i = 0, j = 0, k = mod->k;
     gsl_vector_set_zero(var->topic_scores);
@@ -129,7 +121,7 @@ void lhood_bnd(llna_var_param* var, doc* doc, llna_model* mod)
  *
  */
 
-int opt_zeta(llna_var_param * var, doc * doc, llna_model * mod)
+static int opt_zeta(llna_var_param * var, doc * doc, llna_model * mod)
 {
     int i;
 
@@ -146,7 +138,7 @@ int opt_zeta(llna_var_param * var, doc * doc, llna_model * mod)
  *
  */
 
-void opt_phi(llna_var_param * var, doc * doc, llna_model * mod)
+static void opt_phi(llna_var_param * var, doc * doc, llna_model * mod)
 {
     int i, n, K = mod->k;
     double log_sum_n = 0;
@@ -178,14 +170,7 @@ void opt_phi(llna_var_param * var, doc * doc, llna_model * mod)
  *
  */
 
-void fdf_lambda(const gsl_vector * p, void * params, double * f, gsl_vector * df)
-{
-    *f = f_lambda(p, params);
-    df_lambda(p, params, df);
-}
-
-
-double f_lambda(const gsl_vector * p, void * params)
+static double f_lambda(const gsl_vector * p, void * params)
 {
     double term1, term2, term3;
     int i;
@@ -213,7 +198,7 @@ double f_lambda(const gsl_vector * p, void * params)
 }
 
 
-void df_lambda(const gsl_vector * p, void * params, gsl_vector * df)
+static void df_lambda(const gsl_vector * p, void * params, gsl_vector * df)
 {
     // cast bundle {variational parameters, model, document}
 
@@ -246,8 +231,13 @@ void df_lambda(const gsl_vector * p, void * params, gsl_vector * df)
     gsl_vector_sub(df, temp[3]);
 }
 
+static void fdf_lambda(const gsl_vector * p, void * params, double * f, gsl_vector * df)
+{
+    *f = f_lambda(p, params);
+    df_lambda(p, params, df);
+}
 
-int opt_lambda(llna_var_param * var, doc * doc, llna_model * mod)
+static int opt_lambda(llna_var_param * var, doc * doc, llna_model * mod)
 {
     gsl_multimin_function_fdf lambda_obj;
     const gsl_multimin_fdfminimizer_type * T;
@@ -314,23 +304,11 @@ int opt_lambda(llna_var_param * var, doc * doc, llna_model * mod)
 
 /**
  * optimize nu
+ * BG: removed f_nu_i
  *
  */
 
-double f_nu_i(double nu_i, int i, llna_var_param * var,
-              llna_model * mod, doc * d)
-{
-    double v;
-
-    v = - (nu_i * mget(mod->inv_cov, i, i) * 0.5)
-        - (((double) d->total/var->zeta) * exp(vget(var->lambda, i) + nu_i/2))
-        + (0.5 * safe_log(nu_i));
-
-    return(v);
-}
-
-
-double df_nu_i(double nu_i, int i, llna_var_param * var,
+static double df_nu_i(double nu_i, int i, llna_var_param * var,
                llna_model * mod, doc * d)
 {
     double v;
@@ -343,7 +321,7 @@ double df_nu_i(double nu_i, int i, llna_var_param * var,
 }
 
 
-double d2f_nu_i(double nu_i, int i, llna_var_param * var, llna_model * mod, doc * d)
+static double d2f_nu_i(double nu_i, int i, llna_var_param * var, llna_model * mod, doc * d)
 {
     double v;
 
@@ -353,31 +331,12 @@ double d2f_nu_i(double nu_i, int i, llna_var_param * var, llna_model * mod, doc 
     return(v);
 }
 
+/**
+ * BG: removed fixed_point_iter_i
+ *
+ */
 
-void opt_nu(llna_var_param * var, doc * d, llna_model * mod)
-{
-    int i;
-
-    // !!! here i changed to k-1
-    for (i = 0; i < mod->k-1; i++)
-        opt_nu_i(i, var, mod, d);
-}
-
-
-double fixed_point_iter_i(int i, llna_var_param * var, llna_model * mod, doc * d)
-{
-    double v;
-    double lambda = vget(var->lambda, i);
-    double nu = vget(var->nu, i);
-    double c = ((double) d->total / var->zeta);
-
-    v = mget(mod->inv_cov,i,i) + c * exp(lambda + nu/2);
-
-    return(v);
-}
-
-
-void opt_nu_i(int i, llna_var_param * var, llna_model * mod, doc * d)
+static void opt_nu_i(int i, llna_var_param * var, llna_model * mod, doc * d)
 {
     double init_nu = 10;
     double nu_i = 0, log_nu_i = 0, df = 0, d2f = 0;
@@ -396,8 +355,6 @@ void opt_nu_i(int i, llna_var_param * var, llna_model * mod, doc * d)
             log_nu_i = log(init_nu);
             nu_i = init_nu;
         }
-        // f = f_nu_i(nu_i, i, var, mod, d);
-        // Rprintf("%5.5f  %5.5f \n", nu_i, f);
         df = df_nu_i(nu_i, i, var, mod, d);
         d2f = d2f_nu_i(nu_i, i, var, mod, d);
         log_nu_i = log_nu_i - (df*nu_i)/(d2f*nu_i*nu_i+df*nu_i);
@@ -405,6 +362,15 @@ void opt_nu_i(int i, llna_var_param * var, llna_model * mod, doc * d)
     while (fabs(df) > NEWTON_THRESH);
 
     vset(var->nu, i, exp(log_nu_i));
+}
+
+static void opt_nu(llna_var_param * var, doc * d, llna_model * mod)
+{
+    int i;
+
+    // !!! here i changed to k-1
+    for (i = 0; i < mod->k-1; i++)
+        opt_nu_i(i, var, mod, d);
 }
 
 /**
@@ -547,75 +513,17 @@ void update_expected_ss(llna_var_param* var, doc* d, llna_ss* ss)
 }
 
 /*
+ * BG: removed sample_term
  * importance sampling the likelihood based on the variational posterior
  *
  */
 
-double sample_term(llna_var_param* var, doc* d, llna_model* mod, double* eta)
-{
-    int i, j, n;
-    double t1, t2, sum, theta[mod->k];
-    double word_term;
-
-    t1 = (0.5) * mod->log_det_inv_cov;
-    t1 += - (0.5) * (mod->k) * 1.837877;
-    for (i = 0; i < mod->k; i++)
-        for (j = 0; j < mod->k ; j++)
-            t1 -= (0.5) *
-                (eta[i] - vget(mod->mu, i)) *
-                mget(mod->inv_cov, i, j) *
-                (eta[j] - vget(mod->mu, j));
-
-    // compute theta
-    sum = 0;
-    for (i = 0; i < mod->k; i++)
-    {
-        theta[i] = exp(eta[i]);
-        sum += theta[i];
-    }
-    for (i = 0; i < mod->k; i++)
-    {
-        theta[i] = theta[i] / sum;
-    }
-
-    // compute word probabilities
-    for (n = 0; n < d->nterms; n++)
-    {
-        word_term = 0;
-        for (i = 0; i < mod->k; i++)
-            word_term += theta[i]*exp(mget(mod->log_beta,i,d->word[n]));
-        t1 += d->count[n] * safe_log(word_term);
-    }
-
-    // log(q(\eta | lambda, nu))
-    t2 = 0;
-    for (i = 0; i < mod->k; i++)
-        t2 += log(gsl_ran_gaussian_pdf(eta[i] - vget(var->lambda,i), sqrt(vget(var->nu,i))));
-    return(t1-t2);
-}
-
 /*
+ * BG: removed log_mult_prob
  * log probability of the document under proportions theta and topics
  * beta
  *
  */
-
-double log_mult_prob(doc* d, gsl_vector* theta, gsl_matrix* log_beta)
-{
-    int i, k;
-    double ret = 0;
-    double term_prob;
-
-    for (i = 0; i < d->nterms; i++)
-    {
-        term_prob = 0;
-        for (k = 0; k < log_beta->size1; k++)
-            term_prob += vget(theta, k) * exp(mget(log_beta, k, d->word[i]));
-        ret = ret + safe_log(term_prob) * d->count[i];
-    }
-    return(ret);
-}
-
 
 /*
  * BG: removed write_word_assignment 

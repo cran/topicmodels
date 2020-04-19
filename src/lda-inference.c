@@ -20,11 +20,53 @@
 #include "lda-inference.h"
 
 /*
+ * compute likelihood bound
+ *
+ */
+
+static double
+compute_likelihood(document* doc, lda_model* model, double** phi, double* var_gamma)
+{
+    double likelihood = 0, digsum = 0, var_gamma_sum = 0, dig[model->num_topics];
+    int k, n;
+
+    for (k = 0; k < model->num_topics; k++)
+    {
+      dig[k] = digamma(var_gamma[k]);
+      var_gamma_sum += var_gamma[k];
+    }
+    digsum = digamma(var_gamma_sum);
+      
+    likelihood =
+	lgamma(model->alpha * model -> num_topics)
+	- model -> num_topics * lgamma(model->alpha)
+	- (lgamma(var_gamma_sum));
+    for (k = 0; k < model->num_topics; k++)
+    {
+	likelihood +=
+	    (model->alpha - 1)*(dig[k] - digsum) + lgamma(var_gamma[k])
+	    - (var_gamma[k] - 1)*(dig[k] - digsum);
+
+	for (n = 0; n < doc->length; n++)
+	{
+            if (phi[n][k] > 0)
+            {
+                likelihood += doc->counts[n]*
+                    (phi[n][k]*((dig[k] - digsum) - log(phi[n][k])
+                                + model->log_prob_w[k][doc->words[n]]));
+            }
+        }
+    }
+    return(likelihood);
+}
+
+/*
  * variational inference
  *
  */
 
-double lda_inference(document* doc, lda_model* model, double* var_gamma, double** phi)
+double lda_inference(document* doc, lda_model* model, double* var_gamma, double** phi,
+		     float VAR_CONVERGED, int VAR_MAX_ITER)
 {
     double converged = 1;
     double phisum = 0, likelihood = 0;
@@ -86,43 +128,3 @@ double lda_inference(document* doc, lda_model* model, double* var_gamma, double*
 }
 
 
-/*
- * compute likelihood bound
- *
- */
-
-double
-compute_likelihood(document* doc, lda_model* model, double** phi, double* var_gamma)
-{
-    double likelihood = 0, digsum = 0, var_gamma_sum = 0, dig[model->num_topics];
-    int k, n;
-
-    for (k = 0; k < model->num_topics; k++)
-    {
-      dig[k] = digamma(var_gamma[k]);
-      var_gamma_sum += var_gamma[k];
-    }
-    digsum = digamma(var_gamma_sum);
-      
-    likelihood =
-	lgamma(model->alpha * model -> num_topics)
-	- model -> num_topics * lgamma(model->alpha)
-	- (lgamma(var_gamma_sum));
-    for (k = 0; k < model->num_topics; k++)
-    {
-	likelihood +=
-	    (model->alpha - 1)*(dig[k] - digsum) + lgamma(var_gamma[k])
-	    - (var_gamma[k] - 1)*(dig[k] - digsum);
-
-	for (n = 0; n < doc->length; n++)
-	{
-            if (phi[n][k] > 0)
-            {
-                likelihood += doc->counts[n]*
-                    (phi[n][k]*((dig[k] - digsum) - log(phi[n][k])
-                                + model->log_prob_w[k][doc->words[n]]));
-            }
-        }
-    }
-    return(likelihood);
-}

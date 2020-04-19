@@ -20,7 +20,7 @@
 #include "gsl-wrappers.h"
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
-#include <gsl/gsl_permutation.h>
+#include <gsl/gsl_permutation.h> 
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_eigen.h>
 
@@ -75,56 +75,6 @@ void col_sum(gsl_matrix* m, gsl_vector* val)
     for (i = 0; i < m->size1; i++)
         for (j = 0; j < m->size2; j++)
             vinc(val, j, mget(m, i, j));
-}
-
-
-void vprint(const gsl_vector * v)
-{
-    int i;
-    for (i = 0; i < v->size; i++)
-	Rprintf("%5.5f ", vget(v, i));
-    Rprintf("\n\n");
-}
-
-
-void vfprint(const gsl_vector * v, FILE * f)
-{
-    int i;
-    for (i = 0; i < v->size; i++)
-	fprintf(f, "%5.5f ", vget(v, i));
-    fprintf(f, "\n");
-    fflush(f);
-}
-
-
-
-void mprint(const gsl_matrix * m)
-{
-    int i, j;
-    for (i = 0; i < m->size1; i++)
-    {
-	for (j = 0; j < m->size2; j++)
-	    Rprintf("%5.5f ", mget(m, i, j));
-	Rprintf("\n");
-    }
-}
-
-
-void scanf_vector(char* filename, gsl_vector* v)
-{
-    FILE* fileptr;
-    fileptr = fopen(filename, "r");
-    gsl_vector_fscanf(fileptr, v);
-    fclose(fileptr);
-}
-
-
-void scanf_matrix(char* filename, gsl_matrix * m)
-{
-    FILE* fileptr;
-    fileptr = fopen(filename, "r");
-    gsl_matrix_fscanf(fileptr, m);
-    fclose(fileptr);
 }
 
 void printf_vector(const char* filename, gsl_vector* v)
@@ -196,49 +146,6 @@ void sym_eigen(gsl_matrix* m, gsl_vector* vals, gsl_matrix* vects)
     gsl_eigen_symmv_free(wk);
     gsl_matrix_free(mcpy);
 }
-
-
-double sum(gsl_vector* v)
-{
-    double *data = v->data, val = 0;
-    int size = v->size;
-    int i;
-    for (i = 0; i < size; i++)
-        val += data[i];
-    return(val);
-}
-
-
-void center(gsl_vector* v)
-{
-    int size = v->size;
-    double mean = sum(v)/size;
-    int i;
-    for (i = 0; i < size; i++)
-        vset(v, i, vget(v,i)-mean);
-}
-
-
-void normalize(gsl_vector* v)
-{
-    int size = v->size;
-    double sum_v = sum(v);
-    int i;
-    for (i = 0; i < size; i++)
-        vset(v, i, vget(v,i)/sum_v);
-}
-
-
-double norm(gsl_vector *v)
-{
-    double val = 0;
-    int i;
-
-    for (i = 0; i < v->size; i++)
-        val += vget(v, i) * vget(v, i);
-    return(sqrt(val));
-}
-
 
 int argmax(gsl_vector *v)
 {

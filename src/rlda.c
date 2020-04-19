@@ -20,15 +20,12 @@
 
 #include "rlda.h"
 
-float VAR_CONVERGED;
-int VAR_MAX_ITER;
-
 /*
  * ArgMax
  *
  */
 
-int ArgMax(double* x, int n)
+static int ArgMax(double* x, int n)
 {
     int i;
     double max = x[0];
@@ -49,7 +46,7 @@ int ArgMax(double* x, int n)
  *
  */
 
-int max_corpus_length(corpus* c)
+static int max_corpus_length(corpus* c)
 {
     int n, max = 0;
     for (n = 0; n < c->num_docs; n++)
@@ -63,7 +60,7 @@ int max_corpus_length(corpus* c)
  *
  */
 
-void save_gamma(char* filename, double** gamma, int num_docs, int num_topics)
+static void save_gamma(char* filename, double** gamma, int num_docs, int num_topics)
 {
     FILE* fileptr;
     int d, k;
@@ -88,15 +85,16 @@ void save_gamma(char* filename, double** gamma, int num_docs, int num_topics)
  *
  */
 
-double doc_e_step(document* doc, double* gamma, double** phi,
-                  lda_model* model, lda_suffstats* ss)
+static double doc_e_step(document* doc, double* gamma, double** phi,
+			 lda_model* model, lda_suffstats* ss,
+			 float VAR_CONVERGED, int VAR_MAX_ITER)
 {
     double likelihood;
     int n, k;
 
     // posterior inference
 
-    likelihood = lda_inference(doc, model, gamma, phi);
+    likelihood = lda_inference(doc, model, gamma, phi, VAR_CONVERGED, VAR_MAX_ITER);
 
     // update sufficient statistics
 
@@ -127,7 +125,7 @@ double doc_e_step(document* doc, double* gamma, double** phi,
  *
  */
 
-SEXP returnObjectLDA(SEXP ans, lda_model* model, corpus* corpus, double ***phi, 
+static SEXP returnObjectLDA(SEXP ans, lda_model* model, corpus* corpus, double ***phi, 
 		     double **var_gamma, double *likelihood, int iter, double *logLiks, int keep_iter) {
   SEXP tp, I, J, V, wordassign, nms;
   document* doc;
@@ -176,7 +174,7 @@ SEXP returnObjectLDA(SEXP ans, lda_model* model, corpus* corpus, double ***phi,
   SET_SLOT(ans, install("gamma"), tp);
   UNPROTECT(1);
    
-  if ((KEEP > 0) && (EM_MAX_ITER > 0)) {
+  if (keep_iter > 0) {
     tp = PROTECT(allocVector(REALSXP, keep_iter));
     for (i = 0; i < keep_iter; i++) 
       REAL(tp)[i] = logLiks[i];
@@ -231,7 +229,7 @@ SEXP returnObjectLDA(SEXP ans, lda_model* model, corpus* corpus, double ***phi,
   return(ans);
 }
 
-lda_model* R2lda_model(SEXP init_model)
+static lda_model* R2lda_model(SEXP init_model)
 {
     int i, j, num_terms, num_topics;
     lda_model* model;
@@ -247,7 +245,7 @@ lda_model* R2lda_model(SEXP init_model)
     return(model);
 }
 
-corpus* DocumentTermMatrix2corpus(int *i, int *j, double *v, int nrow, int ncol, int length)
+static corpus* DocumentTermMatrix2corpus(int *i, int *j, double *v, int nrow, int ncol, int length)
 {
   corpus* c;
   int l, k;
@@ -285,7 +283,7 @@ corpus* DocumentTermMatrix2corpus(int *i, int *j, double *v, int nrow, int ncol,
  *
  */
 
-void free_corpus(corpus* corpus)
+static void free_corpus(corpus* corpus)
 {
     int i;
 
@@ -299,16 +297,27 @@ void free_corpus(corpus* corpus)
 }
 
 SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
-          SEXP control, SEXP k, SEXP prefix, SEXP init_model) 
+	  SEXP control, SEXP k, SEXP prefix, SEXP init_model) 
 {
-
+  int KEEP;
+  int EM_MAX_ITER;
+  float EM_CONVERGED;
+  int ESTIMATE_ALPHA;
+  int SAVE;
+  double INITIAL_ALPHA;
+  int LAG;
+  int NTOPICS;
+  int SEED;
+  float VAR_CONVERGED;
+  int VAR_MAX_ITER;
+  
   corpus* corpus;
   const char *start, *directory;
   int iter, keep_iter, d, n, max_length, verbose = 0;
   lda_model *model = NULL;
   double **var_gamma, ***phi, *llh, *logLiks = NULL;
   FILE* likelihood_file = NULL;
-  char filename[100];
+  char filename[260];
   lda_suffstats* ss = NULL;
   double likelihood, likelihood_old = 0, converged = 1;
   SEXP control_var, control_em, ans, cls;
@@ -411,7 +420,8 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 				   var_gamma[d],
 				   phi[d],
 				   model,
-				   ss);
+				   ss,
+				   VAR_CONVERGED, VAR_MAX_ITER);
         }
       
       // m-step
@@ -448,7 +458,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   
   for (d = 0; d < corpus->num_docs; d++) {
     if ((LAG > 0) && ((d % (corpus->num_docs-1)) == 0) && (d>0)) Rprintf("final e step document %d\n",d+1);
-      llh[d] = lda_inference(&(corpus->docs[d]), model, var_gamma[d], phi[d]);
+    llh[d] = lda_inference(&(corpus->docs[d]), model, var_gamma[d], phi[d], VAR_CONVERGED, VAR_MAX_ITER);
       likelihood += llh[d];
     }
   // END CODE FROM run_em (lda-estimate.c)

@@ -25,6 +25,9 @@ setClass("TopicModelcontrol",
 
 init_TopicModelcontrol <- function(.Object, prefix, seed, nstart, ...) {
   if (missing(prefix)) prefix <- tempfile()
+  if (nchar(prefix) > 200) {
+      stop("prefix is too long, please use a shorter prefix")
+  }
   if (missing(seed)) {
     if (missing(nstart)) {
       nstart <- 1L

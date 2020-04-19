@@ -119,6 +119,5 @@ llna_model* corpus_init(int, corpus*, int, int);
 llna_ss * new_llna_ss(llna_model*);
 void del_llna_ss(llna_ss*);
 void reset_llna_ss(llna_ss*);
-void write_ss(llna_ss*);
 
 #endif

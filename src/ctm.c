@@ -91,12 +91,6 @@ void reset_llna_ss(llna_ss * ss)
 }
 
 
-void write_ss(llna_ss * ss)
-{
-    printf_matrix("cov_ss", ss->cov_ss);
-    printf_matrix("beta_ss", ss->beta_ss);
-    printf_vector("mu_ss", ss->mu_ss);
-}
 /*
  * initialize a model with zero-mean, diagonal covariance gaussian and
  * topics seeded from the corpus
@@ -202,7 +196,7 @@ llna_model* random_init(int ntopics, int nterms, int verbose, int seed)
 
 void write_llna_model(llna_model * model, char * root, int verbose)
 {
-    char filename[200];
+    char filename[260];
     FILE* fileptr;
 
     // write parameters

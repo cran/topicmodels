@@ -21,7 +21,6 @@ typedef unsigned long uint32;
 #define mixBits(u, v)  (hiBit(u)|loBits(v))  // move hi bit of u to hi bit of v
 
 void seedMT(uint32 seed);
-uint32 reloadMT(void);
 uint32 randomMT(void);
 
 #endif

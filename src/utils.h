@@ -10,6 +10,5 @@
 
 double trigamma(double x);
 double digamma(double x);
-double log_gamma(double x);
 
 #endif

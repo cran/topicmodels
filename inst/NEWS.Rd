@@ -2,6 +2,21 @@
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
 
+\section{Changes in topicmodels version 0.2-11}{
+  \itemize{
+    \item The limit of file names in the external code was extended from
+    100 to 260 and a check for the length of the prefix included.
+    Thanks to Julia Silge for pointing the issue out.
+  }
+}
+
+\section{Changes in topicmodels version 0.2-10}{
+  \itemize{
+    \item The symbols and functions exposed by the external code were
+    reduced. Thanks to Prof. Ripley for pointing out the problem.
+  }
+}
+
 \section{Changes in topicmodels version 0.2-9}{
   \itemize{
     \item Issues concerning installation failures with gcc trunk aka 10

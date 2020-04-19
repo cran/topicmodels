@@ -58,20 +58,11 @@ typedef struct bundle {
  */
 
 void init_temp_vectors(int size);
-int opt_lambda(llna_var_param * var, doc * doc, llna_model * mod);
-void opt_phi(llna_var_param * var, doc * doc, llna_model * mod);
-void opt_nu(llna_var_param * var, doc * doc, llna_model * mod);
-int opt_zeta(llna_var_param * var, doc * doc, llna_model * mod);
-void lhood_bnd(llna_var_param *var, doc* doc, llna_model* mod);
 double var_inference(llna_var_param * var, doc * doc, llna_model * mod);
 llna_var_param* new_llna_var_param(int, int);
 void free_llna_var_param(llna_var_param *);
 void update_expected_ss(llna_var_param* , doc*, llna_ss*);
 void init_var_unif(llna_var_param * var, doc * doc, llna_model * mod);
 void init_var(llna_var_param *var, doc *doc, llna_model *mod, gsl_vector *lambda, gsl_vector *nu);
-void opt_nu_i(int i, llna_var_param * var, llna_model * mod, doc * d);
-double fixed_point_iter_i(int, llna_var_param *, llna_model *, doc *);
-double log_mult_prob(doc* d, gsl_vector* theta, gsl_matrix* log_beta);
-void write_word_assignment(FILE* f, doc* d, gsl_matrix* phi);
 
 #endif
