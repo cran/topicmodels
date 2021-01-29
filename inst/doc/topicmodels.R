@@ -1,8 +1,7 @@
 ### R code from vignette source 'topicmodels.Rnw'
-### Encoding: UTF-8
 
 ###################################################
-### code chunk number 1: topicmodels.Rnw:55-62
+### code chunk number 1: topicmodels.Rnw:54-61
 ###################################################
 k <- 30
 fold <- 1
@@ -75,7 +74,7 @@ if(!nzchar(system.file(package = "corpus.JSS.papers"))) {
 ### code chunk number 7: topicmodels.Rnw:741-746 (eval = FALSE)
 ###################################################
 ## library("OAIHarvester")
-## x <- oaih_list_records("http://www.jstatsoft.org/oai", se = "jss:ART")
+## x <- oaih_list_records("https://www.jstatsoft.org/oai", se = "jss:ART")
 ## x <- x[vapply(x[, "metadata"], length, 1L) > 0L, ]
 ## JSS_papers  <- oaih_transform(x[, "metadata"])
 ## JSS_papers <- JSS_papers[order(as.Date(unlist(JSS_papers[, "date"]))), ]

@@ -1,6 +1,11 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-12}{
+  \itemize{
+    \item Maintainer e-mail changed.
+  }
+}
 
 \section{Changes in topicmodels version 0.2-11}{
   \itemize{
@@ -107,7 +112,7 @@
     does not have any dimnames any more. 
     \item Package \pkg{corpus.JSS.papers} is now listed in the
     DESCRIPTION file together with the information that is available
-    from the additional repository \url{http://datacube.wu.ac.at}.
+    from the additional repository \url{https://datacube.wu.ac.at}.
   }
 }
 \section{Changes in topicmodels version 0.1-12}{
@@ -206,7 +211,7 @@
   \itemize{
     \item The package vignette has been published in the Journal of
       Statistical Software, Volume 40, Issue 13
-      (\url{http://www.jstatsoft.org/v40/i13}), and the paper should be
+      (\url{https://www.jstatsoft.org/v40/i13}), and the paper should be
       used as citation for the package, run
       \code{citation("topicmodels")} for details. 
   }

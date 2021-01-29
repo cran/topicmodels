@@ -1,10 +1,10 @@
-\documentclass[nojss]{jss}
+\documentclass[nojss,notitle]{jss}
 
 %% \usepackage{Sweave}
 \usepackage{amsmath,amsfonts,enumerate}
 
 \author{Bettina Gr\"un\\
-  Johannes Kepler Universit{\"at} Linz \And
+  WU Wirtschaftsuniversit\"at Wien \And
   Kurt Hornik\\WU Wirtschaftsuniversit\"at Wien} 
 \Plainauthor{Bettina Gr\"un, Kurt Hornik}
 
@@ -37,12 +37,11 @@
 
 \Address{
   Bettina Gr\"un\\
-  Institut f\"ur Angewandte Statistik / IFAS\\
-  Johannes Kepler Universit{\"at} Linz\\
-  Altenbergerstra{\ss }e 69\\
-  4040 Linz, Austria\\
-  E-mail: \email{Bettina.Gruen@jku.at}\\
-  URL: \url{http://ifas.jku.at/gruen/}
+  Institute for Statistics and Mathematics\\
+  Wirtschaftsuniversit{\"a}t Wien\\
+  Welthandelsplatz 1\\
+  1020 Wien, Austria\\
+  E-mail: \email{Bettina.Gruen@R-project.org}\\
 
   Kurt Hornik\\
   Institute for Statistics and Mathematics\\
@@ -50,7 +49,7 @@
   Augasse 2--6\\
   1090 Wien, Austria\\
   E-mail: \email{Kurt.Hornik@R-project.org}\\
-  URL: \url{http://statmath.wu.ac.at/~hornik/}
+  URL: \url{https://statmath.wu.ac.at/~hornik/}
 }
 <<echo=false, results=hide>>=
 k <- 30
@@ -62,6 +61,7 @@ ltheme <- canonical.theme("postscript", FALSE)
 lattice.options(default.theme=ltheme)
 @ 
 \begin{document}
+\maketitle
 \sloppy
 \SweaveOpts{eps=false, keep.source=true, width=8, height=4}
 \setkeys{Gin}{width=\textwidth}
@@ -156,7 +156,7 @@ page (\url{http://www.ics.uci.edu/~iporteou/fastlda/}).
 
 For \proglang{R}, an environment for statistical computing and
 graphics \citep{topicmodels:Team:2011}, \proglang{CRAN}
-(\url{http://CRAN.R-project.org}) features two packages for fitting
+(\url{https://CRAN.R-project.org}) features two packages for fitting
 topic models: \pkg{topicmodels} and \pkg{lda}. The \proglang{R}
 package \pkg{lda} \citep{topicmodels:Chang:2010} provides collapsed
 Gibbs sampling methods for LDA and related topic model variants, with
@@ -740,7 +740,7 @@ for which package \pkg{OAIHarvester} \citep{topicmodels:Hornik:2011}
 provides an \proglang{R} client.
 <<eval=false>>=
 library("OAIHarvester")
-x <- oaih_list_records("http://www.jstatsoft.org/oai", se = "jss:ART")
+x <- oaih_list_records("https://www.jstatsoft.org/oai", se = "jss:ART")
 x <- x[vapply(x[, "metadata"], length, 1L) > 0L, ]
 JSS_papers  <- oaih_transform(x[, "metadata"])
 JSS_papers <- JSS_papers[order(as.Date(unlist(JSS_papers[, "date"]))), ]
