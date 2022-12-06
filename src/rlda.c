@@ -390,7 +390,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
       ss = new_lda_suffstats(model);
     }
   
-  sprintf(filename,"%s/000",directory);
+  snprintf(filename, 260, "%s/000",directory);
   if (SAVE > 0) save_lda_model(model, filename);
   
   // run expectation maximization
@@ -399,7 +399,7 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   keep_iter = 0;
 
   if (SAVE > 0) {
-    sprintf(filename, "%s/likelihood.dat", directory);
+    snprintf(filename, 260,  "%s/likelihood.dat", directory);
     likelihood_file = fopen(filename, "w");
   }
   
@@ -446,9 +446,9 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 	fflush(likelihood_file);
 	if ((iter % SAVE) == 0)
 	  {
-	    sprintf(filename,"%s/%03d",directory, iter);
+	    snprintf(filename, 260, "%s/%03d",directory, iter);
 	    save_lda_model(model, filename);
-	    sprintf(filename,"%s/%03d.gamma",directory, iter);
+	    snprintf(filename, 260, "%s/%03d.gamma",directory, iter);
 	    save_gamma(filename, var_gamma, corpus->num_docs, model->num_topics);
 	  }
       }
@@ -467,9 +467,9 @@ SEXP rlda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   
   if (SAVE > 0) {
     fclose(likelihood_file);
-    sprintf(filename,"%s/final",directory);
+    snprintf(filename, 260, "%s/final",directory);
     save_lda_model(model, filename);
-    sprintf(filename,"%s/final.gamma",directory);
+    snprintf(filename, 260, "%s/final.gamma",directory);
     save_gamma(filename, var_gamma, corpus->num_docs, model->num_topics);
   }
   

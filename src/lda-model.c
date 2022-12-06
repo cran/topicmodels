@@ -213,7 +213,7 @@ void save_lda_model(lda_model* model, char* model_root)
     FILE* fileptr;
     int i, j;
 
-    sprintf(filename, "%s.beta", model_root);
+    snprintf(filename, 260, "%s.beta", model_root);
     fileptr = fopen(filename, "w");
     for (i = 0; i < model->num_topics; i++)
     {
@@ -225,7 +225,7 @@ void save_lda_model(lda_model* model, char* model_root)
     }
     fclose(fileptr);
 
-    sprintf(filename, "%s.other", model_root);
+    snprintf(filename, 260, "%s.other", model_root);
     fileptr = fopen(filename, "w");
     fprintf(fileptr, "num_topics %d\n", model->num_topics);
     fprintf(fileptr, "num_terms %d\n", model->num_terms);

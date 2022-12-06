@@ -487,7 +487,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   // set up the log likelihood log file
   
   if (PARAMS.save > 0) {
-    sprintf(string, "%s/likelihood.dat", dir);
+    snprintf(string, 260, "%s/likelihood.dat", dir);
     lhood_fptr = fopen(string, "w");
   }
   if ((PARAMS.keep > 0) && (PARAMS.em_max_iter > 0)) {
@@ -508,7 +508,7 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   (void) time(&t1);
   init_temp_vectors(model->k-1); // !!! hacky
   keep_iter = iteration = 0;
-  sprintf(string, "%s/start", dir);
+  snprintf(string, 260, "%s/start", dir);
   if (PARAMS.save > 0) write_llna_model(model, string, PARAMS.verbose);
   while ((iteration < PARAMS.em_max_iter) &&
 	 ((convergence > PARAMS.em_convergence) || (convergence < 0)))
@@ -529,11 +529,11 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 		iteration, lhood, convergence, difftime(t2, t1), avg_niter, converged_pct);
 	if (((iteration % PARAMS.save)==0) || isnan(lhood))
 	  {
-	    sprintf(string, "%s/%03d", dir, iteration);
+	    snprintf(string, 260, "%s/%03d", dir, iteration);
 	    write_llna_model(model, string, PARAMS.verbose);
-	    sprintf(string, "%s/%03d-lambda.dat", dir, iteration);
+	    snprintf(string, 260, "%s/%03d-lambda.dat", dir, iteration);
 	    printf_matrix(string, corpus_lambda);
-	    sprintf(string, "%s/%03d-nu.dat", dir, iteration);
+	    snprintf(string, 260, "%s/%03d-nu.dat", dir, iteration);
 	    printf_matrix(string, corpus_nu);
 	  }
 	(void) time(&t1);
@@ -573,11 +573,11 @@ SEXP rctm(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 
 
   if (PARAMS.save > 0) {
-    sprintf(string, "%s/final", dir);
+    snprintf(string, 260, "%s/final", dir);
     write_llna_model(model, string, PARAMS.verbose);
-    sprintf(string, "%s/final-lambda.dat", dir);
+    snprintf(string, 260, "%s/final-lambda.dat", dir);
     printf_matrix(string, corpus_lambda);
-    sprintf(string, "%s/final-nu.dat", dir);
+    snprintf(string, 260, "%s/final-nu.dat", dir);
     printf_matrix(string, corpus_nu);
     fclose(lhood_fptr);
   }

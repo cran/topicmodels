@@ -1,6 +1,14 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-13}{
+  \itemize{
+    \item \code{sprintf} replaced by \code{snprintf} in external code to
+    avoid warnings.
+    \item \code{build_graph} removed due to archival of \pkg{lasso2} on
+    CRAN.
+  }
+}
 \section{Changes in topicmodels version 0.2-12}{
   \itemize{
     \item Maintainer e-mail changed.
@@ -211,7 +219,7 @@
   \itemize{
     \item The package vignette has been published in the Journal of
       Statistical Software, Volume 40, Issue 13
-      (\url{https://www.jstatsoft.org/v40/i13}), and the paper should be
+      (\doi{10.18637/jss.v040.i13}), and the paper should be
       used as citation for the package, run
       \code{citation("topicmodels")} for details. 
   }

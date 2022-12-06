@@ -201,25 +201,25 @@ void write_llna_model(llna_model * model, char * root, int verbose)
 
     // write parameters
     if (verbose > 0) Rprintf("writing params\n");
-    sprintf(filename, "%s-param.txt", root);
+    snprintf(filename, 260, "%s-param.txt", root);
     fileptr = fopen(filename, "w");
     fprintf(fileptr, "num_topics %d\n", model->k);
     fprintf(fileptr, "num_terms %d\n", (int) model->log_beta->size2);
     fclose(fileptr);
     // write gaussian
     if (verbose > 0) Rprintf("writing gaussian\n");
-    sprintf(filename, "%s-mu.dat", root);
+    snprintf(filename, 260, "%s-mu.dat", root);
     printf_vector(filename, model->mu);
-    sprintf(filename, "%s-cov.dat", root);
+    snprintf(filename, 260, "%s-cov.dat", root);
     printf_matrix(filename, model->cov);
-    sprintf(filename, "%s-inv-cov.dat", root);
+    snprintf(filename, 260, "%s-inv-cov.dat", root);
     printf_matrix(filename, model->inv_cov);
-    sprintf(filename, "%s-log-det-inv-cov.dat", root);
+    snprintf(filename, 260, "%s-log-det-inv-cov.dat", root);
     fileptr = fopen(filename, "w");
     fprintf(fileptr, "%lf\n", model->log_det_inv_cov);
     fclose(fileptr);
     // write topic matrix
     if (verbose > 0) Rprintf("writing topics\n");
-    sprintf(filename, "%s-log-beta.dat", root);
+    snprintf(filename, 260, "%s-log-beta.dat", root);
     printf_matrix(filename, model->log_beta);
 }

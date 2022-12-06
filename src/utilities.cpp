@@ -40,15 +40,15 @@ string utilities::generate_model_name(int iter) {
     char buff[BUFF_SIZE_SHORT];
     
     if (0 <= iter && iter < 10) {
-	sprintf(buff, "0000%d", iter);
+      snprintf(buff, BUFF_SIZE_SHORT, "0000%d", iter);
     } else if (10 <= iter && iter < 100) {
-	sprintf(buff, "000%d", iter);
+      snprintf(buff, BUFF_SIZE_SHORT, "000%d", iter);
     } else if (100 <= iter && iter < 1000) {
-	sprintf(buff, "00%d", iter);
+      snprintf(buff, BUFF_SIZE_SHORT, "00%d", iter);
     } else if (1000 <= iter && iter < 10000) {
-	sprintf(buff, "0%d", iter);
+      snprintf(buff, BUFF_SIZE_SHORT, "0%d", iter);
     } else {
-	sprintf(buff, "%d", iter);
+      snprintf(buff, BUFF_SIZE_SHORT, "%d", iter);
     }
     
     if (iter >= 0) {
