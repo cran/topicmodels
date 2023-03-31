@@ -1,14 +1,14 @@
-citHeader(sprintf("To cite package %s in publications use:",
-                  sQuote(meta$Package)))
-
 bibentry("Manual",
          other = unlist(citation(auto = meta), recursive = FALSE))
 
 bibentry("Article",
          title = "{topicmodels}: An {R} Package for Fitting Topic Models",
          author =
-             c(person("Bettina", "Gr\\\"un"),
-               person("Kurt", "Hornik")),
+             c(person("Bettina", "Gr\\\"un",
+                      comment = c(ORCID = "0000-0001-7265-4773")),
+               person("Kurt", "Hornik",
+                      email = "Kurt.Hornik@R-project.org",
+                      comment = c(ORCID = "0000-0003-4198-9911"))),
          journal = "Journal of Statistical Software",
          year = "2011",
          volume = "40",

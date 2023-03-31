@@ -1,6 +1,12 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-14}{
+  \itemize{
+    \item System requirement \code{C++11} removed from the DESCRIPTION
+    file.
+ }    
+}
 \section{Changes in topicmodels version 0.2-13}{
   \itemize{
     \item \code{sprintf} replaced by \code{snprintf} in external code to
