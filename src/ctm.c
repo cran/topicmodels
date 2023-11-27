@@ -162,7 +162,7 @@ llna_model* random_init(int ntopics, int nterms, int verbose, int seed)
     double sum, val;
     llna_model* model = new_llna_model(ntopics, nterms);
     gsl_rng * r = gsl_rng_alloc(gsl_rng_taus);
-    if (verbose > 0) Rprintf("RANDOM SEED = %ld\n", seed);
+    if (verbose > 0) Rprintf("RANDOM SEED = %d\n", seed);
     gsl_rng_set(r, seed);
 
     for (i = 0; i < ntopics-1; i++)

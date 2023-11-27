@@ -1,7 +1,7 @@
 Package: topicmodels
 Type: Package
 Title: Topic Models
-Version: 0.2-14
+Version: 0.2-15
 Authors@R: c(person("Bettina", "Grün", role = c("aut", "cre"),
                     email = "Bettina.Gruen@R-project.org",
 		    comment = c(ORCID = "0000-0001-7265-4773")),
@@ -33,7 +33,7 @@ License: GPL-2
 Encoding: UTF-8
 LazyLoad: yes
 NeedsCompilation: yes
-Packaged: 2023-03-31 05:52:56 UTC; hornik
+Packaged: 2023-11-27 07:03:36 UTC; gruen
 Author: Bettina Grün [aut, cre] (<https://orcid.org/0000-0001-7265-4773>),
   Kurt Hornik [aut] (<https://orcid.org/0000-0003-4198-9911>),
   David M Blei [ctb, cph] (VEM estimation of LDA and CTM),
@@ -44,4 +44,4 @@ Author: Bettina Grün [aut, cre] (<https://orcid.org/0000-0001-7265-4773>),
   Shawn Cokus [ctb] (Mersenne Twister RNG)
 Maintainer: Bettina Grün <Bettina.Gruen@R-project.org>
 Repository: CRAN
-Date/Publication: 2023-03-31 06:43:33 UTC
+Date/Publication: 2023-11-27 08:25:00 UTC

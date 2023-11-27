@@ -1,6 +1,15 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-15}{
+  \itemize{
+    \item Clarified the documentation for class
+    \code{"LDA_Gibbscontrol"} to indicate that \code{iter} refers to the
+    number of iterations in addition to the \code{burnin} iterations
+    specified.
+    \item Typo resolved in ctm.c referring to long int while only int.
+ }    
+}
 \section{Changes in topicmodels version 0.2-14}{
   \itemize{
     \item System requirement \code{C++11} removed from the DESCRIPTION

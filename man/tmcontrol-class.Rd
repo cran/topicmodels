@@ -88,7 +88,8 @@
     \item{\code{delta}:}{Object of class \code{"numeric"}; initial value
       for delta, by default equals 0.1.}
     \item{\code{iter}:}{Object of class \code{"integer"}; number of
-      Gibbs iterations, by default equals 2000.}
+      Gibbs iterations (after omitting the \code{burnin} iterations), by
+      default equals 2000.}
     \item{\code{thin}:}{Object of class \code{"integer"}; number of
       omitted in-between Gibbs iterations, by default equals \code{iter}.}
     \item{\code{burnin}:}{Object of class \code{"integer"}; number of
