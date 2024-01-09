@@ -715,23 +715,12 @@ the probability is above the specified \code{threshold}.
 
 The application of the package \pkg{topicmodels} is demonstrated on
 the collection of abstracts of the \emph{Journal of Statistical
-Software} (JSS) (up to 2010-08-05).  
-
-The JSS data is available as a list matrix in the package
-\pkg{corpus.JSS.papers} which can be installed from the repository
-available at \url{https://datacube.wu.ac.at/}.
+  Software} (JSS) (up to 2010-08-05).  The JSS data covering this time
+frame is available in package \pkg{topicmodels}.
 <<eval=true>>=
-if(!nzchar(system.file(package = "corpus.JSS.papers"))) {
-    templib <- tempfile(); dir.create(templib)
-    install.packages("corpus.JSS.papers", lib = templib,
-                     repos = "https://datacube.wu.ac.at/", 
-                     type = "source")
-    data("JSS_papers", package = "corpus.JSS.papers",
-         lib.loc = templib)
-} else {
-    data("JSS_papers", package = "corpus.JSS.papers")
-}
-@ 
+data("JSS_papers", package = "topicmodels")
+@
+
 Alternatively, one can harvest JSS publication Dublin Core
 (\url{http://dublincore.org/}) metadata (including information on
 authors, publication date and the abstract) from the JSS web site using
@@ -744,6 +733,15 @@ x <- oaih_list_records("https://www.jstatsoft.org/oai", se = "jss:ART")
 x <- x[vapply(x[, "metadata"], length, 1L) > 0L, ]
 JSS_papers  <- oaih_transform(x[, "metadata"])
 JSS_papers <- JSS_papers[order(as.Date(unlist(JSS_papers[, "date"]))), ]
+@ 
+
+Note that JSS data containing more recent publications is also readily
+available from package \pkg{corpus.JSS.papers} which can be installed
+from the repository available at \url{https://datacube.wu.ac.at/}.
+<<eval=false>>=
+install.packages("corpus.JSS.papers", lib = templib,
+                 repos = "https://datacube.wu.ac.at/", 
+                 type = "source")
 @ 
 
 For reproducibility of results we use only abstracts published up to

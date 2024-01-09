@@ -1,7 +1,7 @@
 Package: topicmodels
 Type: Package
 Title: Topic Models
-Version: 0.2-15
+Version: 0.2-16
 Authors@R: c(person("Bettina", "Grün", role = c("aut", "cre"),
                     email = "Bettina.Gruen@R-project.org",
 		    comment = c(ORCID = "0000-0001-7265-4773")),
@@ -24,16 +24,15 @@ Description: Provides an interface to the C code for Latent Dirichlet
 	     (CTM) by David M. Blei and co-authors and the C++ code
 	     for fitting LDA models using Gibbs sampling by Xuan-Hieu
 	     Phan and co-authors.
-Depends: R (>= 2.15.0)
+Depends: R (>= 3.5.0)
 Imports: stats4, methods, modeltools, slam, tm (>= 0.6)
-Suggests: lattice, lda, OAIHarvester, SnowballC, corpus.JSS.papers
-Additional_repositories: https://datacube.wu.ac.at
+Suggests: lattice, lda, OAIHarvester, SnowballC
 SystemRequirements: GNU Scientific Library version >= 1.8
 License: GPL-2
 Encoding: UTF-8
 LazyLoad: yes
 NeedsCompilation: yes
-Packaged: 2023-11-27 07:03:36 UTC; gruen
+Packaged: 2024-01-09 13:38:45 UTC; hornik
 Author: Bettina Grün [aut, cre] (<https://orcid.org/0000-0001-7265-4773>),
   Kurt Hornik [aut] (<https://orcid.org/0000-0003-4198-9911>),
   David M Blei [ctb, cph] (VEM estimation of LDA and CTM),
@@ -44,4 +43,4 @@ Author: Bettina Grün [aut, cre] (<https://orcid.org/0000-0001-7265-4773>),
   Shawn Cokus [ctb] (Mersenne Twister RNG)
 Maintainer: Bettina Grün <Bettina.Gruen@R-project.org>
 Repository: CRAN
-Date/Publication: 2023-11-27 08:25:00 UTC
+Date/Publication: 2024-01-09 15:15:47 UTC

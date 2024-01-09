@@ -1,6 +1,14 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-16}{
+  \itemize{
+    \item \pkg{corpus.JSS.papers} was removed as suggested package and
+    the dataset added to the package to ensure that the vignette code
+    can be successfully executed even if the package is not available
+    for installation.
+ }    
+}
 \section{Changes in topicmodels version 0.2-15}{
   \itemize{
     \item Clarified the documentation for class
