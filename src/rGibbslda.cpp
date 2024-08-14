@@ -62,57 +62,57 @@ static SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
   int *It, *Jt, *word_new;
   double *m, *Vt;
 
-  tp = PROTECT(allocVector(INTSXP, 1));
+  tp = PROTECT(Rf_allocVector(INTSXP, 1));
   *INTEGER(tp) = model->niters;
-  SET_SLOT(ans, install("iter"), tp);
+  SET_SLOT(ans, Rf_install("iter"), tp);
   UNPROTECT(1);
 
-  tp = PROTECT(allocVector(INTSXP, 1));
+  tp = PROTECT(Rf_allocVector(INTSXP, 1));
   *INTEGER(tp) = model->K;
-  SET_SLOT(ans, install("k"), tp);
+  SET_SLOT(ans, Rf_install("k"), tp);
   UNPROTECT(1);
 
-  tp = PROTECT(allocVector(REALSXP, 1));
+  tp = PROTECT(Rf_allocVector(REALSXP, 1));
   REAL(tp)[0] = model->alpha;
-  SET_SLOT(ans, install("alpha"), tp);
+  SET_SLOT(ans, Rf_install("alpha"), tp);
   UNPROTECT(1);
   
-  tp = PROTECT(allocVector(INTSXP, 2));
+  tp = PROTECT(Rf_allocVector(INTSXP, 2));
   INTEGER(tp)[0] = model->M;
   INTEGER(tp)[1] = model->V;
-  SET_SLOT(ans, install("Dim"), tp);
+  SET_SLOT(ans, Rf_install("Dim"), tp);
   UNPROTECT(1);
   
-  tp = PROTECT(allocMatrix(REALSXP, model->K, model->V));
+  tp = PROTECT(Rf_allocMatrix(REALSXP, model->K, model->V));
   for (i = 0; i < model->K; i++)
     for (j = 0; j < model->V; j++)
       REAL(tp)[i + model->K * j] = log(model->phi[i][j]);
-  SET_SLOT(ans, install("beta"), tp);
+  SET_SLOT(ans, Rf_install("beta"), tp);
   UNPROTECT(1);
 
-  tp = PROTECT(allocMatrix(REALSXP, model->M, model->K));
+  tp = PROTECT(Rf_allocMatrix(REALSXP, model->M, model->K));
   m = REAL(tp);
   for (i = 0; i < model->M; i++)
     for (j = 0; j < model->K; j++)
       m[i + model->M * j] = model->theta[i][j];
-  SET_SLOT(ans, install("gamma"), tp);
+  SET_SLOT(ans, Rf_install("gamma"), tp);
   UNPROTECT(1);
   
-  tp = PROTECT(allocVector(REALSXP, 1));
+  tp = PROTECT(Rf_allocVector(REALSXP, 1));
   *REAL(tp) = model->loglikelihood;
-  SET_SLOT(ans, install("loglikelihood"), tp);
+  SET_SLOT(ans, Rf_install("loglikelihood"), tp);
   UNPROTECT(1);
 
   if (model->keep > 0) {
     int keepiter = ceil((double)(model->niters/model->keep));
-    tp = PROTECT(allocVector(REALSXP, keepiter));
+    tp = PROTECT(Rf_allocVector(REALSXP, keepiter));
     for (i = 0; i < keepiter; i++) 
       REAL(tp)[i] = model->logLiks[i];
-    SET_SLOT(ans, install("logLiks"), tp);
+    SET_SLOT(ans, Rf_install("logLiks"), tp);
     UNPROTECT(1);
   }
 
-  wordassign = PROTECT(allocVector(VECSXP, 5));
+  wordassign = PROTECT(Rf_allocVector(VECSXP, 5));
   total = 0;
   for (d = 0; d < model->M; d++) {
     total += model->ptrndata->docs[d]->length;
@@ -138,9 +138,9 @@ static SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
     }
     free(word_new);
   }
-  I = PROTECT(allocVector(INTSXP, i));
-  J = PROTECT(allocVector(INTSXP, i));
-  V = PROTECT(allocVector(REALSXP, i));
+  I = PROTECT(Rf_allocVector(INTSXP, i));
+  J = PROTECT(Rf_allocVector(INTSXP, i));
+  V = PROTECT(Rf_allocVector(REALSXP, i));
   for (j = 0; j < i; j++) {    
       INTEGER(I)[j] = It[j];
       INTEGER(J)[j] = Jt[j];
@@ -151,27 +151,27 @@ static SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
   SET_VECTOR_ELT(wordassign, 2, V);
   UNPROTECT(3);
 
-  tp = PROTECT(allocVector(INTSXP, 1));
+  tp = PROTECT(Rf_allocVector(INTSXP, 1));
   INTEGER(tp)[0] = model->M;
   SET_VECTOR_ELT(wordassign, 3, tp);
   UNPROTECT(1);
-  tp = PROTECT(allocVector(INTSXP, 1));
+  tp = PROTECT(Rf_allocVector(INTSXP, 1));
   INTEGER(tp)[0] = model->V;
   SET_VECTOR_ELT(wordassign, 4, tp);
   UNPROTECT(1);
 
-  setAttrib(wordassign, R_NamesSymbol, nms = allocVector(STRSXP, 5));
-  SET_STRING_ELT(nms, 0, mkChar("i"));
-  SET_STRING_ELT(nms, 1, mkChar("j"));
-  SET_STRING_ELT(nms, 2, mkChar("v"));
-  SET_STRING_ELT(nms, 3, mkChar("nrow"));
-  SET_STRING_ELT(nms, 4, mkChar("ncol"));
-  setAttrib(wordassign, R_ClassSymbol, mkString("simple_triplet_matrix"));
-  SET_SLOT(ans, install("wordassignments"), wordassign);
+  Rf_setAttrib(wordassign, R_NamesSymbol, nms = Rf_allocVector(STRSXP, 5));
+  SET_STRING_ELT(nms, 0, Rf_mkChar("i"));
+  SET_STRING_ELT(nms, 1, Rf_mkChar("j"));
+  SET_STRING_ELT(nms, 2, Rf_mkChar("v"));
+  SET_STRING_ELT(nms, 3, Rf_mkChar("nrow"));
+  SET_STRING_ELT(nms, 4, Rf_mkChar("ncol"));
+  Rf_setAttrib(wordassign, R_ClassSymbol, Rf_mkString("simple_triplet_matrix"));
+  SET_SLOT(ans, Rf_install("wordassignments"), wordassign);
   UNPROTECT(1);
   free(It); free(Jt); free(Vt);
 
-  z = PROTECT(allocVector(INTSXP, total));
+  z = PROTECT(Rf_allocVector(INTSXP, total));
   i = 0;
   for (d = 0; d < model->M; d++) {    
     for (j = 0; j < model->ptrndata->docs[d]->length; j++) {
@@ -179,7 +179,7 @@ static SEXP returnObjectGibbsLDA(SEXP ans, model * model) {
       i++;
     }
   }
-  SET_SLOT(ans, install("z"), z);
+  SET_SLOT(ans, Rf_install("z"), z);
   UNPROTECT(1);
   return(ans);
 }
@@ -195,7 +195,7 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   init_z = NULL; 
   init_phi = NULL;
 
-  if (*INTEGER(initialize) == 1 || *INTEGER(GET_SLOT(control, install("estimate.beta"))) == 0) {
+  if (*INTEGER(initialize) == 1 || *INTEGER(GET_SLOT(control, Rf_install("estimate.beta"))) == 0) {
     init_phi = REAL(phi);
   } 
   if (*INTEGER(initialize) == 2) {
@@ -204,7 +204,7 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
   if (*LOGICAL(seeded) == 1){
     delta = REAL(seed);
   } else {
-    delta = REAL(GET_SLOT(control, install("delta")));
+    delta = REAL(GET_SLOT(control, Rf_install("delta")));
   }
 
   GetRNGstate();
@@ -212,19 +212,19 @@ SEXP rGibbslda(SEXP i, SEXP j, SEXP v, SEXP nrow, SEXP ncol,
 		    INTEGER(j),
 		    INTEGER(v),
 		    LENGTH(v),
-		    *INTEGER(GET_SLOT(control, install("iter"))),
-		    *INTEGER(GET_SLOT(control, install("verbose"))),
-		    *INTEGER(GET_SLOT(control, install("save"))),
-		    *INTEGER(GET_SLOT(control, install("keep"))),
-		    *LOGICAL(GET_SLOT(control, install("estimate.beta"))),
+		    *INTEGER(GET_SLOT(control, Rf_install("iter"))),
+		    *INTEGER(GET_SLOT(control, Rf_install("verbose"))),
+		    *INTEGER(GET_SLOT(control, Rf_install("save"))),
+		    *INTEGER(GET_SLOT(control, Rf_install("keep"))),
+		    *LOGICAL(GET_SLOT(control, Rf_install("estimate.beta"))),
 		    *INTEGER(initialize),
 		    *LOGICAL(seeded),
 		    *INTEGER(k),
 		    *INTEGER(nrow), 
 		    *INTEGER(ncol),
-		    *REAL(GET_SLOT(control, install("alpha"))),
+		    *REAL(GET_SLOT(control, Rf_install("alpha"))),
 		    delta,
-		    CHAR(asChar(prefix)),
+		    CHAR(Rf_asChar(prefix)),
 		    init_phi,
 		    init_z);
   // construct return object

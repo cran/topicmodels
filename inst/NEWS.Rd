@@ -1,6 +1,12 @@
 \name{NEWS}
 \title{News for Package 'topicmodels'}
 \encoding{UTF-8}
+\section{Changes in topicmodels version 0.2-17}{
+  \itemize{
+    \item Internal changes to C++ code to make use of R_NO_REMAP by
+    preprending \code{Rf_}.
+ }    
+}
 \section{Changes in topicmodels version 0.2-16}{
   \itemize{
     \item \pkg{corpus.JSS.papers} was removed as suggested package and
